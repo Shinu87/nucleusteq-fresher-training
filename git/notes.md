@@ -1,5 +1,3 @@
-# Git Quick Command Cheat Sheet
-
 git clone <repo_url>
 Use when: downloading an existing repository from GitHub to local system.
 
