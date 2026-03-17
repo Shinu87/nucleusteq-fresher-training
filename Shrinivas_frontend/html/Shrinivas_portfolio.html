@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- meta charset is used to tell the browser what character encoding the page is using -->
+    <meta charset="UTF-8" />
+    <!-- viewport meta tag is used so that the page adjusts properly on different screen sizes like mobile and laptop -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- title tag shows the name of the page in the browser tab -->
+    <title>Shrinivas - Portfolio</title>
+  </head>
+  <body>
+    <header>
+      <!-- I used the header tag because this section contains the main introduction of my portfolio -->
+      <!-- h1 is used for my full name since it should be the heading of the page -->
+      <h1>More Shrinivas Balaji</h1>
+      <!-- h2 is used to show my professional title below my name -->
+      <h2>Computer Science and Engineering Student</h2>
+      <!-- Figure tag wraps the image and its caption -->
+      <figure>
+        <!-- Img tag is used to show the profile picture on the portfolio -->
+        <!-- alt text is used so if the image is not available, this text will be shown -->
+        <img src="PROFILE.jpg" alt="Profile Picture" width="150" height="150" />
+        <figcaption>Profile Photo</figcaption>
+      </figure>
+    </header>
+    <!-- nav tag is used to contain the navigation links of the page -->
+    <nav>
+      <!-- I used an unordered list to organize the navigation links as menu items -->
+      <ul>
+        <!-- each list item contains a link that navigates to a section of the same page -->
+        <li><a href="#about">About</a></li>
+        <li>
+          Skills
+          <!-- nested list is used to show categories inside the skills section -->
+          <ul>
+            <li><a href="#technical-skills">Technical Skills</a></li>
+            <li><a href="#soft-skills">Soft Skills</a></li>
+          </ul>
+        </li>
+        <li><a href="#education">Education</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <!-- hr tag is used to visually separate the navigation section from the About section -->
+    <hr />
+    <!-- I used a section tag here to group the content related to the About Me part -->
+    <section id="about">
+      <!--h2 is used because this is a main section heading-->
+      <h2>About Me</h2>
+      <!-- paragraph tag is used to describe my professional summary -->
+
+      <p>
+        I am a
+        <!-- strong tag is used to show important information -->
+
+        <strong>final-year CSE student</strong> at
+        <!-- abbr tag is used so that the full form of NIT appears when hovered -->
+
+        <abbr title="National Institute of Technology">NIT</abbr> Andhra Pradesh
+        with a strong interest in
+        <!-- em tag is used to highlight areas of interest -->
+        <em>Machine Learning, Artificial Intelligence, and Data Science</em>. I
+        enjoy working with data to build intelligent systems that can solve
+        real-world problems.
+      </p>
+    </section>
+    <hr />
+    <section>
+      <!-- section is used to group all skills related information -->
+      <h2>Skills</h2>
+
+      <!-- unordered list is used to organize skills into categories -->
+      <ul type="circle">
+        <!-- this item represents technical skills -->
+        <li id="technical-skills">
+          <h3>Technical Skills</h3>
+          <ul type="disc">
+            <li>
+              Programming Languages
+              <ul>
+                <li>Python</li>
+                <li>SQL</li>
+                <li>Java</li>
+                <li>JavaScript</li>
+              </ul>
+            </li>
+
+            <li>
+              Machine Learning & Data Libraries
+              <ul>
+                <li>NumPy</li>
+                <li>Pandas</li>
+                <li>Scikit-learn</li>
+                <li>TensorFlow</li>
+                <li>Matplotlib</li>
+                <li>Seaborn</li>
+              </ul>
+            </li>
+
+            <li>
+              Frameworks & Web Technologies
+              <ul>
+                <li>React</li>
+                <li>HTML</li>
+                <li>CSS</li>
+              </ul>
+            </li>
+
+            <li>
+              Tools & Platforms
+              <ul>
+                <li>Jupyter Notebook</li>
+                <li>Google Colab</li>
+                <li>GitHub</li>
+                <li>VS Code</li>
+                <li>Eclipse IDE</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <!-- this item represents soft skills -->
+        <li id="soft-skills">
+          <h3>Soft Skills</h3>
+          <ul type="square">
+            <li>Problem Solving</li>
+            <li>Communication</li>
+            <li>Teamwork</li>
+            <li>Time Management</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+    <hr />
+    <section id="education">
+      <!-- section tag is used to group all the education related information -->
+      <h2>Education</h2>
+
+      <!-- table tag is used to display education details in rows and columns -->
+      <table border="1">
+        <tr>
+          <!-- rowspan is used to merge the header cells across two rows -->
+          <th rowspan="2">Degree</th>
+
+          <!-- colspan is used to divide University into two sub columns -->
+          <th colspan="2">University / Institute</th>
+
+          <th rowspan="2">Year</th>
+          <th rowspan="2">CGPA / Marks (%)</th>
+        </tr>
+
+        <tr>
+          <!-- second header row is used to show sub headings under University -->
+          <th>Institute Name</th>
+          <th>Location</th>
+        </tr>
+
+        <!-- table row for B.Tech details -->
+        <tr>
+          <td>B.Tech</td>
+          <td>NIT Andhra Pradesh</td>
+          <td>Tadepalligudem</td>
+          <td>2026</td>
+          <td>8.45</td>
+        </tr>
+
+        <!-- table row for Intermediate / XII -->
+        <tr>
+          <td>XII</td>
+          <td>Janta Junior College</td>
+          <td>Naigaon, Nanded, Maharashtra</td>
+          <td>2022</td>
+          <td>88.50%</td>
+        </tr>
+
+        <!-- table row for X class -->
+        <tr>
+          <td>X</td>
+          <td>Blue Bells E/M School</td>
+          <td>Naigaon, Nanded, Maharashtra</td>
+          <td>2020</td>
+          <td>92.60%</td>
+        </tr>
+      </table>
+    </section>
+    <hr />
+    <section id="projects">
+      <!-- section groups all project-related details -->
+      <h2>Projects</h2>
+      <!-- h2 tag is used as main heading for the section it gives semantic meaning  -->
+
+      <ol type="1">
+        <!-- ol tag is used for ordered list to show projects in a sequence -->
+        <li>
+          <!-- each li represents one project -->
+
+          <article>
+            <!-- each project is wrapped in an article for semantic clarity -->
+
+            <h3><strong>Medical Chatbot with Custom Book Data</strong></h3>
+            <!-- h3 is used for project title to highlight  -->
+
+            <h4>
+              <!-- h4 is used for technologies used in the project -->
+              Technologies Used :
+              <em>Python, Flask, Gemini 1.5, LangChain, Pinecone</em>
+              <a
+                href="https://github.com/Shinu87/Mental_Health_Chatbot"
+                target="_blank"
+                >(GitHub)</a
+              >
+              <!-- Link to GitHub opens in new tab-->
+            </h4>
+            <ul>
+              <!-- ul tag is used to list features in bullet points for readability -->
+
+              <li>
+                Built a medical chatbot that answers health-related questions
+                using the GALE Encyclopedia of Medicine.
+              </li>
+              <li>
+                Converted book content into vector embeddings and stored them in
+                Pinecone for fast retrieval.
+              </li>
+              <li>
+                Used LangChain and Gemini 1.5 to generate answers based on
+                retrieved medical information.
+              </li>
+              <li>
+                Implemented RAG to provide accurate and context-based responses.
+              </li>
+            </ul>
+          </article>
+        </li>
+
+        <li>
+          <article>
+            <h3>
+              <strong>Resume Classification using Hybrid NLP Models</strong>
+            </h3>
+            <h4>
+              Technologies Used :
+              <em>Python, TF-IDF, BERT, NLTK, Gemini API</em>
+              <a
+                href="https://github.com/Shinu87/Resume_Analyzer_and_Feedback.git"
+                target="_blank"
+                >(GitHub)</a
+              >
+            </h4>
+            <ul>
+              <li>
+                Built a system to classify resumes into job categories using
+                NLP.
+              </li>
+              <li>
+                Processed text using NLTK (tokenization and stop-word removal).
+              </li>
+              <li>
+                Used TF-IDF and BERT embeddings to convert text into numerical
+                vectors.
+              </li>
+              <li>
+                Handled imbalanced data using SMOTE and achieved 71.2% accuracy.
+              </li>
+              <li>
+                Integrated Gemini API to generate resume improvement
+                suggestions.
+              </li>
+            </ul>
+          </article>
+        </li>
+
+        <li>
+          <article>
+            <h3><strong>Full-Stack Game Portal</strong></h3>
+            <h4>
+              Technologies Used :
+              <em>Node.js, Express, MongoDB, React</em>
+              <a
+                href="https://github.com/Shinu87/Game_Website.git"
+                target="_blank"
+                >(GitHub)</a
+              >
+            </h4>
+            <ul>
+              <li>
+                Built authentication system with login, registration, and
+                JWT-based security.
+              </li>
+              <li>
+                Implemented role-based access for user and admin dashboards.
+              </li>
+              <li>
+                Developed score tracking for games like KBC, Memory Game, and
+                Tetris.
+              </li>
+              <li>Added real-time notifications using React Toastify.</li>
+            </ul>
+          </article>
+        </li>
+      </ol>
+    </section>
+    <hr />
+    <section id="contact">
+      <!-- I used section tag to group all contact-related content together -->
+
+      <h2>Contact Me</h2>
+      <!-- h2 tag is used because this is a main section heading -->
+
+      <form action="#" method="post">
+        <!-- form tag is used so visitors can send me a message -->
+
+        <label>Name :</label>
+        <!-- label is used to show what the input is for -->
+        <input type="text" name="name" required />
+        <!-- input type text to take the visitor's name -->
+
+        <br /><br />
+
+        <label>Email :</label>
+        <!-- label tells the user to enter their email -->
+        <input type="email" name="email" required />
+        <!-- input type email ensures a valid email format -->
+
+        <br /><br />
+
+        <label>Topic of discussion :</label>
+        <!-- label tells the user what the dropdown is for -->
+        <select name="topic">
+          <!-- select tag allows users to pick one option from a list -->
+          <option value="AI">Artificial Intelligence</option>
+          <option value="ML">Machine Learning</option>
+          <option value="Web">Web Development</option>
+          <option value="DS">Data Science</option>
+        </select>
+
+        <br /><br />
+
+        <label>Message :</label>
+        <!-- label shows the user where to type their message -->
+        <textarea name="message" rows="4" cols="30"></textarea>
+        <!-- textarea allows multi-line input -->
+
+        <br /><br />
+
+        <input type="submit" value="Send Message" />
+        <!-- submit button to send the form -->
+      </form>
+    </section>
+    <hr />
+    <footer>
+      <!-- footer tag used for page-end info -->
+
+      <h5>Contact & Social</h5>
+      <!-- h5 shows a subheading inside the footer -->
+
+      <p>&copy; 2026 More Shrinivas Balaji. All rights reserved.</p>
+
+      <h6>Follow Me</h6>
+      <!-- h6 is a smaller heading to introduce my social links -->
+
+      <p>
+        LinkedIn:
+        <a
+          href="http://www.linkedin.com/in/shrinivas-more-39a19a299"
+          target="_blank"
+          >My LinkedIn</a
+        >
+        | GitHub:
+        <a href="https://github.com/Shinu87" target="_blank">My GitHub</a>
+      </p>
+    </footer>
+  </body>
+</html>
