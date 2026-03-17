@@ -301,5 +301,52 @@
         </li>
       </ol>
     </section>
+    <hr />
+    <section id="contact">
+      <!-- I used section tag to group all contact-related content together -->
+
+      <h2>Contact Me</h2>
+      <!-- h2 tag is used because this is a main section heading -->
+
+      <form action="#" method="post">
+        <!-- form tag is used so visitors can send me a message -->
+
+        <label>Name :</label>
+        <!-- label is used to show what the input is for -->
+        <input type="text" name="name" required />
+        <!-- input type text to take the visitor's name -->
+
+        <br /><br />
+
+        <label>Email :</label>
+        <!-- label tells the user to enter their email -->
+        <input type="email" name="email" required />
+        <!-- input type email ensures a valid email format -->
+
+        <br /><br />
+
+        <label>Topic of discussion :</label>
+        <!-- label tells the user what the dropdown is for -->
+        <select name="topic">
+          <!-- select tag allows users to pick one option from a list -->
+          <option value="AI">Artificial Intelligence</option>
+          <option value="ML">Machine Learning</option>
+          <option value="Web">Web Development</option>
+          <option value="DS">Data Science</option>
+        </select>
+
+        <br /><br />
+
+        <label>Message :</label>
+        <!-- label shows the user where to type their message -->
+        <textarea name="message" rows="4" cols="30"></textarea>
+        <!-- textarea allows multi-line input -->
+
+        <br /><br />
+
+        <input type="submit" value="Send Message" />
+        <!-- submit button to send the form -->
+      </form>
+    </section>
   </body>
 </html>
