@@ -1,0 +1,13 @@
+/* I reset margin and padding because browsers apply their own default spacing */
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+/* I chose a simple and readable font so the portfolio looks like a resume */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F5F7FA;
+    color: #333333;
+}
