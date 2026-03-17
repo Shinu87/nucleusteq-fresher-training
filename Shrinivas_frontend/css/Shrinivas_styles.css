@@ -11,3 +11,32 @@ body {
     background-color: #F5F7FA;
     color: #333333;
 }
+
+/* I centered everything in the header so the focus stays on my name and role */
+header {
+    text-align: center;
+    background-color: #F8FAFC;
+    color: black;
+    padding: 30px 20px;
+}
+
+/* I kept the name slightly bigger so it stands out immediately when someone opens the portfolio */
+header h1 {
+    font-size: 30px;
+}
+
+/* Subtitle is smaller than the name to maintain visual hierarchy */
+header h2 {
+    font-size: 20px;
+}
+
+/* Added spacing from the top so the image doesn't feel cramped.Rounded it fully to give a clean profile look .Border helps separate the image from the background */
+img {
+    margin-top: 15px;
+    border-radius: 50%;
+    border: 3px solid gray;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
