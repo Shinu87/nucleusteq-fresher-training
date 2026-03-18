@@ -40,3 +40,55 @@ img {
     object-fit: cover;
 }
 
+/* I used flexbox to arrange the navigation items in a row.Keeping everything centered makes the layout feel balanced */
+nav ul {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    padding-top: 25px 25px 25px 25px;
+    gap: 150px;
+    background-color: #34495e;
+    height: 50px;
+}
+
+/* I removed default link styling and used white color so the text is clearly visible on the dark background */
+nav ul a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: larger;
+}
+
+/* Added a hover color to give feedback when the user interacts.This makes the navigation feel more responsive */
+nav ul a:hover {
+    color: #878787;
+}
+
+/* I made the parent list item relative so the dropdown is positioned correctly with respect to it */
+nav ul li {
+    position: relative;/* children with absolute position will use as reference */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    align-items: center;
+}
+
+/* This is for dropdown menus.
+   I hide them initially and only show them when the user hovers on the parent item */
+nav ul li ul {
+    display: none;
+    position: absolute;/*element is placed freely on screen*/
+    background-color: #34495e;
+    list-style: none;
+    padding: 10px;
+    color: #000000;
+}
+
+/* When hovering over a menu item, its submenu becomes visible */
+nav ul li:hover ul {
+    display: block;
+    height: fit-content;
+    width: fit-content;
+    color: #000000;
+} 
