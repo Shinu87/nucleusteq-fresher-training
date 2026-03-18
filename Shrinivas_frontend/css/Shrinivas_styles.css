@@ -85,10 +85,29 @@ nav ul li ul {
     color: #000000;
 }
 
-/* When hovering over a menu item, its submenu becomes visible */
+/* When hovering over a menu item its submenu becomes visible */
 nav ul li:hover ul {
     display: block;
     height: fit-content;
     width: fit-content;
     color: #000000;
 } 
+/* I used borders and rounded corners to separate each section visually */
+section {
+    border: 3px solid black;
+    border-radius: 0 25px 0 25px;
+
+    /* I added uneven padding to give more space on the left making the content less cramped */
+    padding: 10px 15px 15px 25px;
+
+    /* Margin keeps space between sections so they dont stick together */
+    margin: 15px;
+
+    /* Shadow adds depth so sections don’t look flat */
+    box-shadow: 0 4px 12px rgba(5, 40, 215, 0.2);
+}
+
+/* I removed the horizontal line because section borders already separate content clearly */
+hr {
+    display: none;
+}
