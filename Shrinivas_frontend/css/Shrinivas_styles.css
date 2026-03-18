@@ -143,6 +143,7 @@ hr {
     margin-left: 15px;
     padding: 3px 0;
     position: relative;
+    line-height: 1.2;
 }
 
 /* I used grid layout here to display technical skills in 4 columns */
@@ -166,4 +167,34 @@ hr {
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    column-count: 2;
+    column-gap: 25px;
+}
+/* I collapsed borders so the table looks clean and not double-lined */
+#education table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+/* I added borders and padding to make the table readable and well spaced */
+#education table tr th,
+#education table tr td {
+    border: 1.5px solid #1F2937;
+    padding: 15px;
+    text-align: center;
+}
+
+/* I styled the header row differently so it stands out from the data */
+#education table tr:first-child {
+    font-weight: bold;
+    color: #2563EB;
+    background-color: #F9FAFB;
+}
+
+#education table tr:nth-child(2) {
+    font-weight: bold;
+    color: #2563EB;
+    background-color: #F9FAFB;
 }
