@@ -198,3 +198,53 @@ hr {
     color: #2563EB;
     background-color: #F9FAFB;
 }
+
+/* I treated each project like a card so it stands out as an individual item*/
+#projects ol li article {
+    margin-bottom: 20px;
+    background-color: #F5F7FA;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* On hover I slightly lift the card to make it feel interactive */
+#projects ol li article:hover {
+    transform: translateY(-5px);
+    box-shadow: 2px 8px 8px #1abc9c;
+}
+
+/* Project title is kept darker for strong visibility */
+#projects ol li article h3 {
+    color: #1F2937;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* Subtitle/description is slightly lighter for hierarchy */
+#projects ol li article h4 {
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+#projects ol li article h4 a {
+    text-decoration: none;
+    margin-left: 10px;
+    color: #2563EB;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect gives visual feedback when interacting with links */
+#projects ol li article h4 a:hover {
+    color: #1abc9c;
+}
+
+#projects ol li ul li {
+    list-style: none;
+    margin-left: 15px;
+    line-height: 1.6;
+}
+
