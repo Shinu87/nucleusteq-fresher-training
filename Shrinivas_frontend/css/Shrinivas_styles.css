@@ -296,3 +296,42 @@ hr {
 #contact form input[type="submit"]:hover {
     background-color: #095363;
 }
+
+/* I used a dark background to clearly separate footer from rest of page */
+footer {
+    background-color: #1F2937;
+    color: #F9FAFB;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+/* I added spacing below the heading so it doesn’t stick to the content below */
+footer h4 {
+    margin-bottom: 10px;
+}
+
+/* I kept paragraph text subtle so it doesn't overpower links */
+footer p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Social links arranged in a row with spacing */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Styled links to match theme */
+footer a {
+    text-decoration: none;
+    color: #60A5FA;
+    font-weight: 500;
+}
+
+/* Hover gives interactive feedback */
+footer a:hover {
+    color: #1abc9c;
+}
