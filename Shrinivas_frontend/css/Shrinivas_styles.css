@@ -248,3 +248,51 @@ hr {
     line-height: 1.6;
 }
 
+#contact form {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    padding: 25px;
+    max-width: 100%;
+    border-radius: 12px;
+    background-color: #F9FAFB;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Labels are bold so user can quickly scan fields */
+#contact form label {
+    font-weight: 600;
+}
+
+/* Inputs, select, textarea share same styling for consistency */
+#contact form input,
+#contact form select,
+#contact form textarea {
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+}
+
+/* When user clicks input, highlight it */
+#contact form input:focus,
+#contact form select:focus,
+#contact form textarea:focus {
+    outline: none;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Submit button styled differently to stand out */
+#contact form input[type="submit"] {
+    background-color: #25c3eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Hover gives feedback */
+#contact form input[type="submit"]:hover {
+    background-color: #095363;
+}
