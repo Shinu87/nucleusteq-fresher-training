@@ -56,3 +56,21 @@ const students = [
     attendance: 88,
   },
 ];
+
+// I used a nested loop approach because each student has multiple subjects,
+// so I first loop through all students and then loop through their marks.
+// I chose for...of because I need direct access to objects
+// For each student, I reset total marks to 0 and keep adding each subject score.
+// This helps in calculating the total marks accurately for every student.
+function totalmarks(students) {
+  for (let obj of students) {
+    let studentname = obj.name;
+    let totalmark = 0;
+    for (let mark of obj.marks) {
+      totalmark += mark.score;
+    }
+    console.log(studentname + " total marks " + totalmark);
+  }
+}
+
+totalmarks(students);
