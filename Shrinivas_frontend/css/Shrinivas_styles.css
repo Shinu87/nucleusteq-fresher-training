@@ -44,12 +44,11 @@ img {
 nav ul {
     display: flex;
     list-style: none;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    padding-top: 25px 25px 25px 25px;
-    gap: 150px;
     background-color: #34495e;
     height: 50px;
+    padding:0px 40px;
 }
 
 /* I removed default link styling and used white color so the text is clearly visible on the dark background */
@@ -297,7 +296,7 @@ hr {
     background-color: #095363;
 }
 
-/* I used a dark background to clearly separate footer from rest of page */
+/* I used a dark background to clearly separate footer from above page */
 footer {
     background-color: #1F2937;
     color: #F9FAFB;
@@ -334,4 +333,57 @@ footer a {
 /* Hover gives interactive feedback */
 footer a:hover {
     color: #1abc9c;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    nav ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding: 15px;
+        background-color: #34495e;
+        height: auto;
+        flex-wrap: wrap;
+    }
+
+    #technical-skills>ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    #education table tr th,
+    #education table tr td {
+        padding: 8px;
+        font-size: 12px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        padding: 10px;
+        background-color: #34495e;
+        height: auto;
+    }
+
+    #technical-skills>ul {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #education table tr th,
+    #education table tr td {
+        padding: 8px;
+        font-size: 10px;
+    }
 }
