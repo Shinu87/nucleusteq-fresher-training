@@ -30,7 +30,7 @@ header h2 {
     font-size: 20px;
 }
 
-/* Added spacing from the top so the image doesnt feel cramped.Rounded it fully to give a clean profile look .Border helps separate the image from the background */
+/* Added spacing from the top so the image doesnt feel cramped.Rounded it fully to give a clean profile look.*/
 img {
     margin-top: 15px;
     border-radius: 50%;
@@ -101,8 +101,6 @@ section {
 
     /* Margin keeps space between sections so they dont stick together */
     margin: 15px;
-
-    /* Shadow adds depth so sections don’t look flat */
     box-shadow: 0 4px 12px rgba(5, 40, 215, 0.2);
 }
 
@@ -131,13 +129,13 @@ hr {
     color: #1F2937;
 }
 
-/* Sub-headings are given a different color so they stand out */
+/* Sub-headings are given a different color */
 #skills h4 {
     margin: 10px 0 5px 10px;
     color: #2563EB;
 }
 
-/* Added spacing between individual skills so they don’t feel cramped */
+/* Added spacing between individual skills */
 #skills li ul li {
     margin-left: 15px;
     padding: 3px 0;
@@ -222,7 +220,7 @@ hr {
     margin-bottom: 8px;
 }
 
-/* Subtitle/description is slightly lighter for hierarchy */
+/* description is slightly lighter */
 #projects ol li article h4 {
     color: #374151;
     font-weight: 500;
@@ -258,7 +256,7 @@ hr {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Labels are bold so user can quickly scan fields */
+/* Labels are bold so user can quickly see it */
 #contact form label {
     font-weight: 600;
 }
@@ -282,7 +280,7 @@ hr {
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
-/* Submit button styled differently to stand out */
+/* Submit button styled differently */
 #contact form input[type="submit"] {
     background-color: #25c3eb;
     color: white;
@@ -291,12 +289,12 @@ hr {
     font-weight: 600;
 }
 
-/* Hover gives feedback */
+/* Hover gives interactive feedback */
 #contact form input[type="submit"]:hover {
     background-color: #095363;
 }
 
-/* I used a dark background to clearly separate footer from above page */
+/* I used a dark background to clearly separate footer */
 footer {
     background-color: #1F2937;
     color: #F9FAFB;
@@ -310,7 +308,7 @@ footer h4 {
     margin-bottom: 10px;
 }
 
-/* I kept paragraph text subtle so it doesn't overpower links */
+/* I kept paragraph text subtle */
 footer p {
     font-size: 14px;
     margin-bottom: 10px;
@@ -330,7 +328,6 @@ footer a {
     font-weight: 500;
 }
 
-/* Hover gives interactive feedback */
 footer a:hover {
     color: #1abc9c;
 }
