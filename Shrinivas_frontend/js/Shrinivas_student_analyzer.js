@@ -72,5 +72,28 @@ function totalmarks(students) {
     console.log(studentname + " total marks " + totalmark);
   }
 }
+// I created this function to calculate average marks for each student.
+// I used a loop to go through each student because the data is stored in an array.
+// Inside that, I used another loop to go through each subject's marks,
+// since marks are also stored as an array inside each student.
+// I first calculate total marks and then divide by number of subjects
+// to get the average for each student.
 
+function avgmarks(students) {
+  for (let obj of students) {
+    let totalsubjects = obj.marks.length;
+    let studentname = obj.name;
+    let totalmark = 0;
+    for (let mark of obj.marks) {
+      totalmark += mark.score;
+    }
+    let average = totalmark / totalsubjects;
+    console.log(studentname + " average marks is " + average);
+  }
+}
+console.log("---------------");
+console.log("TOTAL MARKS");
 totalmarks(students);
+console.log("---------------");
+console.log("AVERAGE MARKS");
+avgmarks(students);
