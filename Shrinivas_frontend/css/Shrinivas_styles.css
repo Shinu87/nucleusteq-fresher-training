@@ -1,0 +1,386 @@
+/* I reset margin and padding because browsers apply their own default spacing */
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+/* I chose a simple and readable font so the portfolio looks like a resume */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F5F7FA;
+    color: #333333;
+}
+
+/* I centered everything in the header so the focus stays on my name and role */
+header {
+    text-align: center;
+    background-color: #F8FAFC;
+    color: black;
+    padding: 30px 20px;
+}
+
+/* I kept the name slightly bigger so it stands out immediately when someone opens the portfolio */
+header h1 {
+    font-size: 30px;
+}
+
+/* Subtitle is smaller than the name to maintain visual hierarchy */
+header h2 {
+    font-size: 20px;
+}
+
+/* Added spacing from the top so the image doesnt feel cramped.Rounded it fully to give a clean profile look.*/
+img {
+    margin-top: 15px;
+    border-radius: 50%;
+    border: 3px solid gray;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+}
+
+/* I used flexbox to arrange the navigation items in a row.Keeping everything centered makes the layout feel balanced */
+nav ul {
+    display: flex;
+    list-style: none;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #34495e;
+    height: 50px;
+    padding:0px 40px;
+}
+
+/* I removed default link styling and used white color so the text is clearly visible on the dark background */
+nav ul a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: larger;
+}
+
+/* Added a hover color to give feedback when the user interacts.This makes the navigation feel more responsive */
+nav ul a:hover {
+    color: #878787;
+}
+
+/* I made the parent list item relative so the dropdown is positioned correctly with respect to it */
+nav ul li {
+    position: relative;/* children with absolute position will use as reference */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    align-items: center;
+}
+
+/* This is for dropdown menus.
+   I hide them initially and only show them when the user hovers on the parent item */
+nav ul li ul {
+    display: none;
+    position: absolute;/*element is placed freely on screen*/
+    background-color: #34495e;
+    list-style: none;
+    padding: 10px;
+    color: #000000;
+}
+
+/* When hovering over a menu item its submenu becomes visible */
+nav ul li:hover ul {
+    display: block;
+    height: fit-content;
+    width: fit-content;
+    color: #000000;
+} 
+/* I used borders and rounded corners to separate each section visually */
+section {
+    border: 3px solid black;
+    border-radius: 0 25px 0 25px;
+
+    /* I added uneven padding to give more space on the left making the content less cramped */
+    padding: 10px 15px 15px 25px;
+
+    /* Margin keeps space between sections so they dont stick together */
+    margin: 15px;
+    box-shadow: 0 4px 12px rgba(5, 40, 215, 0.2);
+}
+
+/* I removed the horizontal line because section borders already separate content clearly */
+hr {
+    display: none;
+}
+
+/* I removed default list styling so the skills section looks cleaner */
+#skills ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Each main skill block is styled like a card to visually separate categories */
+#skills>ul>li {
+    margin: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+#skills h3 {
+    margin-bottom: 10px;
+    color: #1F2937;
+}
+
+/* Sub-headings are given a different color */
+#skills h4 {
+    margin: 10px 0 5px 10px;
+    color: #2563EB;
+}
+
+/* Added spacing between individual skills */
+#skills li ul li {
+    margin-left: 15px;
+    padding: 3px 0;
+    position: relative;
+    line-height: 1.2;
+}
+
+/* I used grid layout here to display technical skills in 4 columns */
+#technical-skills>ul {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Each category is styled as a mini card for consistency */
+#technical-skills>ul>li {
+    background: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Soft skills are grouped in a single container */
+#soft-skills>ul {
+    background: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    column-count: 2;
+    column-gap: 25px;
+}
+/* I collapsed borders so the table looks clean and not double-lined */
+#education table {
+    border-collapse: collapse;
+    margin-top: 20px;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+/* I added borders and padding to make the table readable and well spaced */
+#education table tr th,
+#education table tr td {
+    border: 1.5px solid #1F2937;
+    padding: 15px;
+    text-align: center;
+}
+
+/* I styled the header row differently so it stands out from the data */
+#education table tr:first-child {
+    font-weight: bold;
+    color: #2563EB;
+    background-color: #F9FAFB;
+}
+
+#education table tr:nth-child(2) {
+    font-weight: bold;
+    color: #2563EB;
+    background-color: #F9FAFB;
+}
+
+/* I treated each project like a card so it stands out as an individual item*/
+#projects ol li article {
+    margin-bottom: 20px;
+    background-color: #F5F7FA;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* On hover I slightly lift the card to make it feel interactive */
+#projects ol li article:hover {
+    transform: translateY(-5px);
+    box-shadow: 2px 8px 8px #1abc9c;
+}
+
+/* Project title is kept darker for strong visibility */
+#projects ol li article h3 {
+    color: #1F2937;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* description is slightly lighter */
+#projects ol li article h4 {
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+#projects ol li article h4 a {
+    text-decoration: none;
+    margin-left: 10px;
+    color: #2563EB;
+    transition: color 0.3s ease;
+}
+
+/* Hover effect gives visual feedback when interacting with links */
+#projects ol li article h4 a:hover {
+    color: #1abc9c;
+}
+
+#projects ol li ul li {
+    list-style: none;
+    margin-left: 15px;
+    line-height: 1.6;
+}
+
+#contact form {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    padding: 25px;
+    max-width: 100%;
+    border-radius: 12px;
+    background-color: #F9FAFB;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Labels are bold so user can quickly see it */
+#contact form label {
+    font-weight: 600;
+}
+
+/* Inputs, select, textarea share same styling for consistency */
+#contact form input,
+#contact form select,
+#contact form textarea {
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+}
+
+/* When user clicks input, highlight it */
+#contact form input:focus,
+#contact form select:focus,
+#contact form textarea:focus {
+    outline: none;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Submit button styled differently */
+#contact form input[type="submit"] {
+    background-color: #25c3eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Hover gives interactive feedback */
+#contact form input[type="submit"]:hover {
+    background-color: #095363;
+}
+
+/* I used a dark background to clearly separate footer */
+footer {
+    background-color: #1F2937;
+    color: #F9FAFB;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+/* I added spacing below the heading so it doesn’t stick to the content below */
+footer h4 {
+    margin-bottom: 10px;
+}
+
+/* I kept paragraph text subtle */
+footer p {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Social links arranged in a row with spacing */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Styled links to match theme */
+footer a {
+    text-decoration: none;
+    color: #60A5FA;
+    font-weight: 500;
+}
+
+footer a:hover {
+    color: #1abc9c;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    nav ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding: 15px;
+        background-color: #34495e;
+        height: auto;
+        flex-wrap: wrap;
+    }
+
+    #technical-skills>ul {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    #education table tr th,
+    #education table tr td {
+        padding: 8px;
+        font-size: 12px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    nav ul {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        padding: 10px;
+        background-color: #34495e;
+        height: auto;
+    }
+
+    #technical-skills>ul {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #education table tr th,
+    #education table tr td {
+        padding: 8px;
+        font-size: 10px;
+    }
+}
