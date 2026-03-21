@@ -91,7 +91,63 @@ function filterData(products, filterKey) {
   renderProducts(filteredData);
 }
 
+// Function to filter, sort, and render products
+function applyfilter() {
+  let searchKey = searchinput.value;
+  let categoryKey = categoryfilter.value;
+  let stockKey = stockfilter.value;
+  let sortKey = sortoption.value;
+
+  let filtered = [...products];
+
+  // Apply search filter
+  if (searchKey !== "") {
+    filtered = filtered.filter((product) =>
+      product.name.toLowerCase().includes(searchKey.toLowerCase()),
+    );
+  }
+
+  // Apply category filter
+  if (categoryKey !== "all") {
+    filtered = filtered.filter((product) => product.category === categoryKey);
+  }
+
+  // Apply stock filter
+  if (stockKey === "low") {
+    filtered = filtered.filter((product) => product.stock < 5);
+  }
+
+  // Apply sorting
+  if (sortKey === "low-high") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortKey === "high-low") {
+    filtered.sort((a, b) => b.price - a.price);
+  } else if (sortKey === "a-z") {
+    filtered.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortKey === "z-a") {
+    filtered.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  // Render the final filtered array
+  renderProducts(filtered);
+}
+
 let searchinput = document.getElementById("search-input");
 searchinput.addEventListener("input", () => {
-  filterData(products, searchinput.value);
+  applyfilter();
+});
+
+let categoryfilter = document.getElementById("category-filter");
+categoryfilter.addEventListener("change", () => {
+  applyfilter();
+});
+
+let stockfilter = document.getElementById("stock-filter");
+stockfilter.addEventListener("change", () => {
+  applyfilter();
+});
+
+let sortoption = document.getElementById("sort-option");
+sortoption.addEventListener("change", () => {
+  applyfilter();
 });
