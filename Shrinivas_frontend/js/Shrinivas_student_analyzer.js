@@ -179,6 +179,44 @@ function classtopper(students) {
   );
 }
 
+// Function to calculate and print grades for all students
+function calculategradeofstudents(students) {
+  // Reuse the totalMarks function to get total marks for each student
+  let studentTotals = totalmarks(students); // totalmarks returns an object {name: total}
+
+  for (let student of students) {
+    let studentName = student.name;
+    let total = studentTotals[studentName];
+
+    // Step 1: Check attendance
+    if (student.attendance < 75) {
+      console.log(studentName + " Grade: Fail (Low Attendance)");
+      continue;
+    }
+
+    // Step 2: Check if student failed in any subject
+    let failedSubject = student.marks.find((mark) => mark.score <= 40);
+    if (failedSubject) {
+      console.log(
+        studentName + " Grade: Fail (Failed in " + failedSubject.subject + ")",
+      );
+      continue;
+    }
+
+    // Step 3: Calculate average marks (reuse total from totalMarks)
+    let average = total / student.marks.length;
+
+    // Step 4: Assign grade based on average
+    let grade = "";
+    if (average >= 85) grade = "A";
+    else if (average >= 70) grade = "B";
+    else if (average >= 50) grade = "C";
+    else grade = "Fail";
+
+    console.log(studentName + " Grade: " + grade);
+  }
+}
+
 console.log("---------------");
 console.log("TOTAL MARKS");
 let studenttotalmarks = totalmarks(students);
@@ -206,3 +244,7 @@ subjectwiseaverage(students);
 console.log("---------------");
 console.log("CLASS TOPPER");
 classtopper(students);
+
+console.log("---------------");
+console.log("GRADE SHEET OF STUDENTS");
+calculategradeofstudents(students);
