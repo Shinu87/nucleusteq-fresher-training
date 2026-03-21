@@ -63,14 +63,16 @@ const students = [
 // For each student, I reset total marks to 0 and keep adding each subject score.
 // This helps in calculating the total marks accurately for every student.
 function totalmarks(students) {
+  let studenttotalmark = {};
   for (let obj of students) {
     let studentname = obj.name;
     let totalmark = 0;
     for (let mark of obj.marks) {
       totalmark += mark.score;
     }
-    console.log(studentname + " total marks " + totalmark);
+    studenttotalmark[studentname] = totalmark;
   }
+  return studenttotalmark;
 }
 // I created this function to calculate average marks for each student.
 // I used a loop to go through each student because the data is stored in an array.
@@ -123,17 +125,84 @@ function subjectwisetopper(students) {
   return subjectToppers;
 }
 
+// This function calculates the average score for each subject across all students.
+// I first loop through each student and then through their marks array.
+// For each subject I store all scores in an array inside totalsubjectscore object.
+// After collecting all scores I loop through each subject array, calculate sum,
+// and divide by number of scores to get the average.
+
+function subjectwiseaverage(students) {
+  let subjectScores = {};
+
+  for (let student of students) {
+    for (let subjectMark of student.marks) {
+      let subject = subjectMark.subject;
+      let score = subjectMark.score;
+
+      if (subject in subjectScores) {
+        subjectScores[subject].push(score);
+      } else {
+        subjectScores[subject] = [score];
+      }
+    }
+  }
+
+  for (let subject in subjectScores) {
+    let totalCount = subjectScores[subject].length;
+    let totalScore = 0;
+
+    for (let score of subjectScores[subject]) {
+      totalScore += score;
+    }
+
+    let avg = totalScore / totalCount;
+    console.log("Average of " + subject + " is " + avg);
+  }
+}
+
+// This function finds the overall class topper based on total marks.
+// I first calculate total marks for each student using a helper function.
+// Then I loop through each students total marks to find the maximum.
+// Finally I print the name of the topper along with their total score.
+function classtopper(students) {
+  let studenttotalmarks = totalmarks(students);
+  let studentName = null;
+  let studentmaxtotalscore = 0;
+  for (let key in studenttotalmarks) {
+    if (studentmaxtotalscore < studenttotalmarks[key]) {
+      studentName = key;
+      studentmaxtotalscore = studenttotalmarks[key];
+    }
+  }
+  console.log(
+    "Class Topper is " + studentName + " with " + studentmaxtotalscore,
+  );
+}
+
 console.log("---------------");
 console.log("TOTAL MARKS");
-totalmarks(students);
+let studenttotalmarks = totalmarks(students);
+for (student in studenttotalmarks) {
+  console.log(student + " total marks " + studenttotalmarks[student]);
+}
 console.log("---------------");
+
 console.log("AVERAGE MARKS");
 avgmarks(students);
+
 console.log("---------------");
+
 console.log("SUBJECT WISE TOPPER");
 let toppers = subjectwisetopper(students);
 for (let subject in toppers) {
   let [score, name] = toppers[subject];
   console.log(`${subject} topper is ${name} with score ${score}`);
 }
-subjectwisetopper(students);
+
+console.log("---------------");
+console.log("SUBJECT WISE AVERAGE");
+subjectwiseaverage(students);
+
+console.log("---------------");
+console.log("CLASS TOPPER");
+classtopper(students);
