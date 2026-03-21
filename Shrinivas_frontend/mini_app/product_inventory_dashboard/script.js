@@ -151,3 +151,50 @@ let sortoption = document.getElementById("sort-option");
 sortoption.addEventListener("change", () => {
   applyfilter();
 });
+
+// Function to add a new product from the form
+function addproduct() {
+  let productname = document.getElementById("product-name").value.trim();
+  let productprice = Number(document.getElementById("product-price").value);
+  let productstock = Number(document.getElementById("product-stock").value);
+  let productcategory = document.getElementById("product-category").value;
+
+  if (productname === "") {
+    alert("Product name cannot be empty!");
+    return;
+  }
+  if (productprice <= 0) {
+    alert("Price must be greater than 0!");
+    return;
+  }
+  if (productstock < 0) {
+    alert("Stock cannot be negative!");
+    return;
+  }
+  if (productcategory === "") {
+    alert("Please select a category!");
+    return;
+  }
+
+  let newId =
+    products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+
+  let newProduct = {
+    id: newId,
+    name: productname,
+    price: productprice,
+    stock: productstock,
+    category: productcategory,
+  };
+  products.push(newProduct);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts(products);
+  document.getElementById("add-product-form").reset();
+}
+
+// --- Attach event listener to the add product form ---
+let formsubmit = document.getElementById("add-product-form");
+formsubmit.addEventListener("submit", (event) => {
+  event.preventDefault(); // Correct capitalization
+  addproduct(); // Call function to add product
+});
