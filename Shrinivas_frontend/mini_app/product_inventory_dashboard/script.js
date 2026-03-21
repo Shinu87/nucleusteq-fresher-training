@@ -198,3 +198,17 @@ formsubmit.addEventListener("submit", (event) => {
   event.preventDefault(); // Correct capitalization
   addproduct(); // Call function to add product
 });
+
+// Function to delete a product from the product grid
+function deleteproduct(deleteid) {
+  products = products.filter((p) => p.id !== deleteid);
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts(products);
+}
+
+let productdelete = document.getElementById("product-container");
+productdelete.addEventListener("click", (event) => {
+  if (event.target.tagName == "BUTTON") {
+    deleteproduct(Number(event.target.dataset.id));
+  }
+});
