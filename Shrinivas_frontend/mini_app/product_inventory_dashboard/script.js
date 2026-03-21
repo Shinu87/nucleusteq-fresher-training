@@ -75,3 +75,23 @@ products = dummyProducts;
 
 // initial render
 renderProducts(products);
+
+// Function to filter products based on search input
+function filterData(products, filterKey) {
+  let filteredData = [];
+  if (filterKey === "") {
+    renderProducts(products);
+    return;
+  }
+  for (let data of products) {
+    if (data.name.toLowerCase().includes(filterKey.toLowerCase())) {
+      filteredData.push(data);
+    }
+  }
+  renderProducts(filteredData);
+}
+
+let searchinput = document.getElementById("search-input");
+searchinput.addEventListener("input", () => {
+  filterData(products, searchinput.value);
+});
