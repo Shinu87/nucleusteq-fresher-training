@@ -178,42 +178,37 @@ function classtopper(students) {
     "Class Topper is " + studentName + " with " + studentmaxtotalscore,
   );
 }
-
 // Function to calculate and print grades for all students
-function calculategradeofstudents(students) {
-  // Reuse the totalMarks function to get total marks for each student
-  let studentTotals = totalmarks(students); // totalmarks returns an object {name: total}
+function calculateGradeOfStudents(students) {
+  // Get total marks for each student: { name: total }
+  let studentTotals = totalmarks(students);
 
   for (let student of students) {
-    let studentName = student.name;
-    let total = studentTotals[studentName];
+    const { name, marks, attendance } = student;
+    const total = studentTotals[name];
+    const average = total / marks.length;
 
-    // Step 1: Check attendance
-    if (student.attendance < 75) {
-      console.log(studentName + " Grade: Fail (Low Attendance)");
+    // Fail check: low attendance
+    if (attendance < 75) {
+      console.log(`${name} Grade: Fail (Low Attendance)`);
       continue;
     }
 
-    // Step 2: Check if student failed in any subject
-    let failedSubject = student.marks.find((mark) => mark.score <= 40);
+    // Fail check: any subject ≤ 40
+    const failedSubject = marks.find((m) => m.score <= 40);
     if (failedSubject) {
-      console.log(
-        studentName + " Grade: Fail (Failed in " + failedSubject.subject + ")",
-      );
+      console.log(`${name} Grade: Fail (Failed in ${failedSubject.subject})`);
       continue;
     }
 
-    // Step 3: Calculate average marks (reuse total from totalMarks)
-    let average = total / student.marks.length;
-
-    // Step 4: Assign grade based on average
-    let grade = "";
+    // Assign grade based on average
+    let grade;
     if (average >= 85) grade = "A";
     else if (average >= 70) grade = "B";
     else if (average >= 50) grade = "C";
     else grade = "Fail";
 
-    console.log(studentName + " Grade: " + grade);
+    console.log(`${name} Grade: ${grade}`);
   }
 }
 
@@ -247,4 +242,4 @@ classtopper(students);
 
 console.log("---------------");
 console.log("GRADE SHEET OF STUDENTS");
-calculategradeofstudents(students);
+calculateGradeOfStudents(students);
