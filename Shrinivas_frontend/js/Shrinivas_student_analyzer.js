@@ -74,13 +74,13 @@ function totalmarks(students) {
   }
   return studenttotalmark;
 }
+
 // I created this function to calculate average marks for each student.
 // I used a loop to go through each student because the data is stored in an array.
-// Inside that, I used another loop to go through each subject's marks,
+// Inside that I used another loop to go through each subjects marks,
 // since marks are also stored as an array inside each student.
 // I first calculate total marks and then divide by number of subjects
 // to get the average for each student.
-
 function avgmarks(students) {
   for (let obj of students) {
     let totalsubjects = obj.marks.length;
@@ -127,10 +127,9 @@ function subjectwisetopper(students) {
 
 // This function calculates the average score for each subject across all students.
 // I first loop through each student and then through their marks array.
-// For each subject I store all scores in an array inside totalsubjectscore object.
+// For each subject I store all scores in an array inside subjectscore object.
 // After collecting all scores I loop through each subject array, calculate sum,
 // and divide by number of scores to get the average.
-
 function subjectwiseaverage(students) {
   let subjectScores = {};
 
@@ -178,6 +177,7 @@ function classtopper(students) {
     "Class Topper is " + studentName + " with " + studentmaxtotalscore,
   );
 }
+
 // Function to calculate and print grades for all students
 function calculateGradeOfStudents(students) {
   // Get total marks for each student: { name: total }
