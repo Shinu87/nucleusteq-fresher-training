@@ -91,9 +91,49 @@ function avgmarks(students) {
     console.log(studentname + " average marks is " + average);
   }
 }
+
+// This function finds the topper in each subject for the given students.
+// I used a nested loop because each student has multiple subjects.
+// The outer loop goes through each student and the inner loop goes through each subject score.
+// I keep a dictionary subjectToppers where each subject is a key.
+// For each subject I store an array containing [highest score , student name].
+// If a new student has a higher score than the current topper I update it.
+// At the end I return the object containing all subject-wise toppers.
+function subjectwisetopper(students) {
+  let subjectToppers = {};
+
+  for (let student of students) {
+    let studentName = student.name;
+
+    for (let mark of student.marks) {
+      let subject = mark.subject;
+      let score = mark.score;
+
+      if (subject in subjectToppers) {
+        if (subjectToppers[subject][0] < score) {
+          subjectToppers[subject][0] = score;
+          subjectToppers[subject][1] = studentName;
+        }
+      } else {
+        subjectToppers[subject] = [score, studentName];
+      }
+    }
+  }
+
+  return subjectToppers;
+}
+
 console.log("---------------");
 console.log("TOTAL MARKS");
 totalmarks(students);
 console.log("---------------");
 console.log("AVERAGE MARKS");
 avgmarks(students);
+console.log("---------------");
+console.log("SUBJECT WISE TOPPER");
+let toppers = subjectwisetopper(students);
+for (let subject in toppers) {
+  let [score, name] = toppers[subject];
+  console.log(`${subject} topper is ${name} with score ${score}`);
+}
+subjectwisetopper(students);
