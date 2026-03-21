@@ -190,6 +190,7 @@ function addproduct() {
   localStorage.setItem("products", JSON.stringify(products));
   renderProducts(products);
   document.getElementById("add-product-form").reset();
+  updateAnalytics();
 }
 
 // --- Attach event listener to the add product form ---
@@ -204,6 +205,7 @@ function deleteproduct(deleteid) {
   products = products.filter((p) => p.id !== deleteid);
   localStorage.setItem("products", JSON.stringify(products));
   renderProducts(products);
+  updateAnalytics();
 }
 
 let productdelete = document.getElementById("product-container");
@@ -212,3 +214,27 @@ productdelete.addEventListener("click", (event) => {
     deleteproduct(Number(event.target.dataset.id));
   }
 });
+
+// Function to update the inventory analytics dashboard
+function updateAnalytics() {
+  let totalproduct = document.getElementById("total-products");
+  let totalvalue = document.getElementById("total-value");
+  let totaloutofstock = document.getElementById("out-of-stock");
+  let totalprice = 0;
+  let countoutofstock = 0;
+  for (let product of products) {
+    if (product.stock == 0) {
+      countoutofstock += 1;
+    }
+    totalprice += product.price * product.stock;
+  }
+  totalproduct.innerHTML = products.length;
+  totalvalue.innerHTML = totalprice;
+  totaloutofstock.innerHTML = countoutofstock;
+}
+
+function init() {
+  updateAnalytics();
+}
+
+init();
