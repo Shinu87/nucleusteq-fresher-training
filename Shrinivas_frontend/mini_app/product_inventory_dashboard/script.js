@@ -62,7 +62,8 @@ function renderProducts(data) {
         <h3>Price: ₹${product.price}</h3>
         <h3>Stock: ${product.stock}</h3>
         <h3>Category: ${product.category}</h3>
-        <button data-id="${product.id}">Delete</button>
+        <button data-id="${product.id}" data-action="delete">Delete</button>
+        <button data-id="${product.id}" data-action="edit">Edit</button>
       </div>
     `;
   }
@@ -146,54 +147,6 @@ sortoption.addEventListener("change", () => {
   applyfilter();
 });
 
-// Function to add a new product from the form
-function addproduct() {
-  let productname = document.getElementById("product-name").value.trim();
-  let productprice = Number(document.getElementById("product-price").value);
-  let productstock = Number(document.getElementById("product-stock").value);
-  let productcategory = document.getElementById("product-category").value;
-
-  if (productname === "") {
-    alert("Product name cannot be empty!");
-    return;
-  }
-  if (productprice <= 0) {
-    alert("Price must be greater than 0!");
-    return;
-  }
-  if (productstock < 0) {
-    alert("Stock cannot be negative!");
-    return;
-  }
-  if (productcategory === "") {
-    alert("Please select a category!");
-    return;
-  }
-
-  let newId =
-    products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
-
-  let newProduct = {
-    id: newId,
-    name: productname,
-    price: productprice,
-    stock: productstock,
-    category: productcategory,
-  };
-  products.push(newProduct);
-  localStorage.setItem("products", JSON.stringify(products));
-  renderProducts(products);
-  document.getElementById("add-product-form").reset();
-  updateAnalytics();
-}
-
-// --- Attach event listener to the add product form ---
-let formsubmit = document.getElementById("add-product-form");
-formsubmit.addEventListener("submit", (event) => {
-  event.preventDefault(); // Correct capitalization
-  addproduct(); // Call function to add product
-});
-
 // Function to delete a product from the product grid
 function deleteproduct(deleteid) {
   products = products.filter((p) => p.id !== deleteid);
@@ -202,10 +155,68 @@ function deleteproduct(deleteid) {
   updateAnalytics();
 }
 
+let editingProductId = null;
+
+let form = document.getElementById("add-product-form");
+// Handle form submit for Add or Edit
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const name = document.getElementById("product-name").value.trim();
+  const price = Number(document.getElementById("product-price").value);
+  const stock = Number(document.getElementById("product-stock").value);
+  const category = document.getElementById("product-category").value;
+
+  if (!name || price <= 0 || stock < 0 || !category) {
+    alert("Please fill all fields correctly!");
+    return;
+  }
+
+  if (editingProductId !== null) {
+    // EDIT existing product
+    const product = products.find((p) => p.id === editingProductId);
+    product.name = name;
+    product.price = price;
+    product.stock = stock;
+    product.category = category;
+    editingProductId = null;
+  } else {
+    // ADD new product
+    const newId =
+      products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+    products.push({ id: newId, name, price, stock, category });
+  }
+
+  localStorage.setItem("products", JSON.stringify(products));
+  renderProducts(products);
+  updateAnalytics();
+  form.reset();
+});
+
+function updateproduct(productid) {
+  const product = products.find((p) => p.id === productid);
+  if (!product) return;
+
+  // Fill the form with product data
+  document.getElementById("product-name").value = product.name;
+  document.getElementById("product-price").value = product.price;
+  document.getElementById("product-stock").value = product.stock;
+  document.getElementById("product-category").value = product.category;
+
+  editingProductId = productid;
+  document.getElementById("submit-btn").textContent = "Update Product";
+}
+
 let productdelete = document.getElementById("product-container");
 productdelete.addEventListener("click", (event) => {
-  if (event.target.tagName == "BUTTON") {
-    deleteproduct(Number(event.target.dataset.id));
+  if (event.target.tagName === "BUTTON") {
+    let id = Number(event.target.dataset.id);
+    let action = event.target.dataset.action;
+    if (action === "delete") {
+      deleteproduct(id);
+    } else {
+      updateproduct(id);
+    }
   }
 });
 
