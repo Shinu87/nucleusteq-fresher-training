@@ -42,19 +42,26 @@ let products = [];
 let productcontainer = document.getElementById("product-container");
 let noProductsMessage = document.getElementById("no-products-message");
 
+function showMessage(message) {
+  noProductsMessage.style.display = "block";
+  noProductsMessage.innerText = message;
+}
+
+function hideMessage() {
+  noProductsMessage.style.display = "none";
+}
+
 function renderProducts(data) {
   productcontainer.innerHTML = "";
 
-  // handle empty state
   if (data.length === 0) {
-    noProductsMessage.style.display = "block";
+    showMessage("No products found matching your criteria.");
     return;
   } else {
-    noProductsMessage.style.display = "none";
+    hideMessage();
   }
 
   let html = "";
-
   for (let product of data) {
     html += `
       <div class="product-card">
@@ -146,6 +153,11 @@ let sortoption = document.getElementById("sort-option");
 sortoption.addEventListener("change", () => {
   applyfilter();
 });
+
+searchinput.disabled = true;
+categoryfilter.disabled = true;
+stockfilter.disabled = true;
+sortoption.disabled = true;
 
 // Function to delete a product from the product grid
 function deleteproduct(deleteid) {
@@ -258,6 +270,11 @@ function init() {
     products = data;
     renderProducts(products);
     updateAnalytics();
+    // Enable filters after data loads
+    searchinput.disabled = false;
+    categoryfilter.disabled = false;
+    stockfilter.disabled = false;
+    sortoption.disabled = false;
   });
 }
 
