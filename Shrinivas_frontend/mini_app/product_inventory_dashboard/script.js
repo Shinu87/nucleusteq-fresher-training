@@ -70,12 +70,6 @@ function renderProducts(data) {
   productcontainer.innerHTML = html;
 }
 
-// initialize data
-products = dummyProducts;
-
-// initial render
-renderProducts(products);
-
 // Function to filter products based on search input
 function filterData(products, filterKey) {
   let filteredData = [];
@@ -233,8 +227,27 @@ function updateAnalytics() {
   totaloutofstock.innerHTML = countoutofstock;
 }
 
+function fetchproducts() {
+  return new Promise((resolve) => {
+    noProductsMessage.style.display = "block";
+    noProductsMessage.innerHTML = "Loading products...";
+    setTimeout(() => {
+      const storedproduct = localStorage.getItem("products");
+      if (storedproduct) {
+        resolve(JSON.parse(storedproduct));
+      } else {
+        resolve(dummyProducts);
+      }
+    }, 1500);
+  });
+}
+
 function init() {
-  updateAnalytics();
+  fetchproducts().then((data) => {
+    products = data;
+    renderProducts(products);
+    updateAnalytics();
+  });
 }
 
 init();
