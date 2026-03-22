@@ -95,7 +95,7 @@ This dashboard allows users to manage a product inventory directly in the browse
 
 > Clicking Edit on a product card populates the form for updating the product details.
 
-![Edit Product](./screenshots/edit-product.jpg)
+![Edit Product](./screenshots/edit-product-v2.jpg)
 
 ---
 
