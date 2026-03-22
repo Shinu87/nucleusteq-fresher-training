@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Inventory Dashboard</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <!-- ================= HEADER ================= -->
+    <header>
+      <h1>Product Inventory Dashboard</h1>
+    </header>
+
+    <!-- ================= CONTROLS ================= -->
+    <h2>Filter & Sort Products</h2>
+    <section id="controls">
+      <!-- Search -->
+      <div>
+        <label for="search-input">Search Product</label>
+        <input type="text" id="search-input" placeholder="Search product..." />
+      </div>
+
+      <!-- Category Filter -->
+      <div>
+        <label for="category-filter">Category</label>
+        <select id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="electronics">Electronics</option>
+          <option value="clothing">Clothing</option>
+          <option value="books">Books</option>
+          <option value="accessories">Accessories</option>
+        </select>
+      </div>
+
+      <!-- Stock Filter -->
+      <div>
+        <label for="stock-filter">Stock</label>
+        <select id="stock-filter">
+          <option value="all">All</option>
+          <option value="low">Low Stock (&lt; 5)</option>
+        </select>
+      </div>
+
+      <!-- Sorting -->
+      <div>
+        <label for="sort-option">Sort By</label>
+        <select id="sort-option">
+          <option value="">Select</option>
+          <option value="low-high">Price: Low to High</option>
+          <option value="high-low">Price: High to Low</option>
+          <option value="a-z">A - Z</option>
+          <option value="z-a">Z - A</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ================= ANALYTICS ================= -->
+    <h2>Inventory Analytics</h2>
+    <div
+      id="analytics-section"
+      style="display: flex; gap: 20px; flex-wrap: wrap"
+    >
+      <div class="analytics-box">
+        <h3>Total Products</h3>
+        <p id="total-products">0</p>
+      </div>
+
+      <div class="analytics-box">
+        <h3>Total Inventory Value</h3>
+        <p id="total-value">0</p>
+      </div>
+
+      <div class="analytics-box">
+        <h3>Out of Stock</h3>
+        <p id="out-of-stock">0</p>
+      </div>
+
+      <div class="analytics-box" id="category-analytics">
+        <h3>Products per Category</h3>
+        <ul id="category-count-list"></ul>
+      </div>
+    </div>
+
+    <!-- ================= PRODUCT GRID ================= -->
+    <h2>PRODUCTS</h2>
+    <section id="product-grid">
+      <div id="product-container">
+        <!-- Products will be rendered here using JavaScript -->
+      </div>
+
+      <!-- Empty state -->
+      <p id="no-products-message" style="display: none">No products found.</p>
+    </section>
+    <div id="pagination-controls"></div>
+    <!-- ================= ADD PRODUCT FORM ================= -->
+    <section id="add-product-section">
+      <h2>Add Product</h2>
+      <form id="add-product-form">
+        <div>
+          <label for="product-name">Product Name</label>
+          <input type="text" id="product-name" required />
+        </div>
+
+        <div>
+          <label for="product-price">Price</label>
+          <input type="number" id="product-price" required />
+        </div>
+
+        <div>
+          <label for="product-stock">Stock Quantity</label>
+          <input type="number" id="product-stock" required />
+        </div>
+
+        <div>
+          <label for="product-category">Category</label>
+          <select id="product-category" required>
+            <option value="">Select Category</option>
+            <option value="electronics">Electronics</option>
+            <option value="clothing">Clothing</option>
+            <option value="books">Books</option>
+            <option value="accessories">Accessories</option>
+          </select>
+        </div>
+
+        <button type="submit" id="submit-btn">Add Product</button>
+      </form>
+    </section>
+    <!-- ================= FOOTER ================= -->
+    <footer>
+      <p>&copy; 2026 Product Inventory Dashboard. All Rights Reserved.</p>
+    </footer>
+    <script src="./script.js"></script>
+  </body>
+</html>
