@@ -108,7 +108,7 @@ function renderPaginationControls(totalItems) {
     btn.className = i === currentPage ? "active-page" : "";
     btn.addEventListener("click", () => {
       currentPage = i;
-      applyFilter(false); // false = do NOT reset currentPage
+      applyFilter(false);
     });
     paginationControls.appendChild(btn);
   }
@@ -215,6 +215,11 @@ function updateProduct(id) {
   document.getElementById("product-category").value = product.category;
 
   editingProductId = id;
+  // Change the form heading
+  document.querySelector("#add-product-section h2").textContent =
+    "Edit Product";
+
+  // Change the button text
   document.getElementById("submit-btn").textContent = "Update Product";
 }
 
@@ -241,18 +246,27 @@ function updateAnalytics() {
   let totalProducts = document.getElementById("total-products");
   let totalValue = document.getElementById("total-value");
   let totalOutOfStock = document.getElementById("out-of-stock");
+  let categoryCountList = document.getElementById("category-count-list");
 
   let priceSum = 0;
   let outOfStockCount = 0;
+  let categoryCounts = {};
 
   for (let p of products) {
-    if (p.stock === 0) outOfStockCount++;
     priceSum += p.price * p.stock;
+    if (p.stock === 0) outOfStockCount++;
+    if (categoryCounts[p.category]) categoryCounts[p.category]++;
+    else categoryCounts[p.category] = 1;
   }
-
   totalProducts.innerText = products.length;
   totalValue.innerText = priceSum;
   totalOutOfStock.innerText = outOfStockCount;
+  categoryCountList.innerHTML = "";
+  for (let category in categoryCounts) {
+    const li = document.createElement("li");
+    li.innerText = `${category}: ${categoryCounts[category]}`;
+    categoryCountList.appendChild(li);
+  }
 }
 
 // Fetch products from localStorage or dummy

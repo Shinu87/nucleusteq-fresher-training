@@ -14,6 +14,7 @@
     </header>
 
     <!-- ================= CONTROLS ================= -->
+    <h2>Filter & Sort Products</h2>
     <section id="controls">
       <!-- Search -->
       <div>
@@ -56,24 +57,34 @@
     </section>
 
     <!-- ================= ANALYTICS ================= -->
-    <section id="analytics">
-      <div>
+    <h2>Inventory Analytics</h2>
+    <div
+      id="analytics-section"
+      style="display: flex; gap: 20px; flex-wrap: wrap"
+    >
+      <div class="analytics-box">
         <h3>Total Products</h3>
         <p id="total-products">0</p>
       </div>
 
-      <div>
+      <div class="analytics-box">
         <h3>Total Inventory Value</h3>
         <p id="total-value">0</p>
       </div>
 
-      <div>
+      <div class="analytics-box">
         <h3>Out of Stock</h3>
         <p id="out-of-stock">0</p>
       </div>
-    </section>
+
+      <div class="analytics-box" id="category-analytics">
+        <h3>Products per Category</h3>
+        <ul id="category-count-list"></ul>
+      </div>
+    </div>
 
     <!-- ================= PRODUCT GRID ================= -->
+    <h2>PRODUCTS</h2>
     <section id="product-grid">
       <div id="product-container">
         <!-- Products will be rendered here using JavaScript -->
@@ -86,7 +97,6 @@
     <!-- ================= ADD PRODUCT FORM ================= -->
     <section id="add-product-section">
       <h2>Add Product</h2>
-
       <form id="add-product-form">
         <div>
           <label for="product-name">Product Name</label>
@@ -114,9 +124,13 @@
           </select>
         </div>
 
-        <button type="submit">Add Product</button>
+        <button type="submit" id="submit-btn">Add Product</button>
       </form>
     </section>
+    <!-- ================= FOOTER ================= -->
+    <footer>
+      <p>&copy; 2026 Product Inventory Dashboard. All Rights Reserved.</p>
+    </footer>
     <script src="./script.js"></script>
   </body>
 </html>
