@@ -39,7 +39,7 @@ const dummyProducts = [
 
 let products = [];
 
-let productcontainer = document.getElementById("product-container");
+let productContainer = document.getElementById("product-container");
 let noProductsMessage = document.getElementById("no-products-message");
 
 function showMessage(message) {
@@ -51,18 +51,31 @@ function hideMessage() {
   noProductsMessage.style.display = "none";
 }
 
+let currentPage = 1;
+let itemsPerPage = 6;
+
+// Pagination function
+function paginate(data, page = 1, perPage = 6) {
+  const start = (page - 1) * perPage;
+  return data.slice(start, start + perPage);
+}
+
+// Render products with pagination
 function renderProducts(data) {
-  productcontainer.innerHTML = "";
+  productContainer.innerHTML = "";
 
   if (data.length === 0) {
     showMessage("No products found matching your criteria.");
+    paginationControls.innerHTML = "";
     return;
   } else {
     hideMessage();
   }
 
+  const paginatedData = paginate(data, currentPage, itemsPerPage);
+
   let html = "";
-  for (let product of data) {
+  for (let product of paginatedData) {
     html += `
       <div class="product-card">
         <h2>${product.name}</h2>
@@ -75,104 +88,90 @@ function renderProducts(data) {
     `;
   }
 
-  productcontainer.innerHTML = html;
+  productContainer.innerHTML = html;
+
+  renderPaginationControls(data.length);
 }
 
-// Function to filter products based on search input
-function filterData(products, filterKey) {
-  let filteredData = [];
-  if (filterKey === "") {
-    renderProducts(products);
-    return;
+// Pagination controls
+let paginationControls = document.getElementById("pagination-controls");
+
+function renderPaginationControls(totalItems) {
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  paginationControls.innerHTML = "";
+
+  if (totalPages <= 1) return;
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i;
+    btn.className = i === currentPage ? "active-page" : "";
+    btn.addEventListener("click", () => {
+      currentPage = i;
+      applyFilter(false); // false = do NOT reset currentPage
+    });
+    paginationControls.appendChild(btn);
   }
-  for (let data of products) {
-    if (data.name.toLowerCase().includes(filterKey.toLowerCase())) {
-      filteredData.push(data);
-    }
-  }
-  renderProducts(filteredData);
 }
 
-// Function to filter, sort, and render products
-function applyfilter() {
-  let searchKey = searchinput.value;
-  let categoryKey = categoryfilter.value;
-  let stockKey = stockfilter.value;
-  let sortKey = sortoption.value;
+// Filters and sorting
+let searchInput = document.getElementById("search-input");
+let categoryFilter = document.getElementById("category-filter");
+let stockFilter = document.getElementById("stock-filter");
+let sortOption = document.getElementById("sort-option");
+
+searchInput.addEventListener("input", () => applyFilter(true));
+categoryFilter.addEventListener("change", () => applyFilter(true));
+stockFilter.addEventListener("change", () => applyFilter(true));
+sortOption.addEventListener("change", () => applyFilter(true));
+
+searchInput.disabled = true;
+categoryFilter.disabled = true;
+stockFilter.disabled = true;
+sortOption.disabled = true;
+
+// Apply filters, sorting, and render products
+function applyFilter(resetPage = true) {
+  if (resetPage) currentPage = 1;
 
   let filtered = [...products];
+  const searchKey = searchInput.value.toLowerCase();
+  const categoryKey = categoryFilter.value;
+  const stockKey = stockFilter.value;
+  const sortKey = sortOption.value;
 
-  // Apply search filter
-  if (searchKey !== "") {
-    filtered = filtered.filter((product) =>
-      product.name.toLowerCase().includes(searchKey.toLowerCase()),
-    );
+  // Search
+  if (searchKey) {
+    filtered = filtered.filter((p) => p.name.toLowerCase().includes(searchKey));
   }
 
-  // Apply category filter
+  // Category
   if (categoryKey !== "all") {
-    filtered = filtered.filter((product) => product.category === categoryKey);
+    filtered = filtered.filter((p) => p.category === categoryKey);
   }
 
-  // Apply stock filter
+  // Stock
   if (stockKey === "low") {
-    filtered = filtered.filter((product) => product.stock < 5);
+    filtered = filtered.filter((p) => p.stock < 5);
   }
 
-  // Apply sorting
-  if (sortKey === "low-high") {
-    filtered.sort((a, b) => a.price - b.price);
-  } else if (sortKey === "high-low") {
-    filtered.sort((a, b) => b.price - a.price);
-  } else if (sortKey === "a-z") {
+  // Sorting
+  if (sortKey === "low-high") filtered.sort((a, b) => a.price - b.price);
+  else if (sortKey === "high-low") filtered.sort((a, b) => b.price - a.price);
+  else if (sortKey === "a-z")
     filtered.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortKey === "z-a") {
+  else if (sortKey === "z-a")
     filtered.sort((a, b) => b.name.localeCompare(a.name));
-  }
 
-  // Render the final filtered array
   renderProducts(filtered);
 }
 
-let searchinput = document.getElementById("search-input");
-searchinput.addEventListener("input", () => {
-  applyfilter();
-});
-
-let categoryfilter = document.getElementById("category-filter");
-categoryfilter.addEventListener("change", () => {
-  applyfilter();
-});
-
-let stockfilter = document.getElementById("stock-filter");
-stockfilter.addEventListener("change", () => {
-  applyfilter();
-});
-
-let sortoption = document.getElementById("sort-option");
-sortoption.addEventListener("change", () => {
-  applyfilter();
-});
-
-searchinput.disabled = true;
-categoryfilter.disabled = true;
-stockfilter.disabled = true;
-sortoption.disabled = true;
-
-// Function to delete a product from the product grid
-function deleteproduct(deleteid) {
-  products = products.filter((p) => p.id !== deleteid);
-  localStorage.setItem("products", JSON.stringify(products));
-  renderProducts(products);
-  updateAnalytics();
-}
-
+// Add/Edit product
 let editingProductId = null;
-
 let form = document.getElementById("add-product-form");
-// Handle form submit for Add or Edit
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
 
   const name = document.getElementById("product-name").value.trim();
   const price = Number(document.getElementById("product-price").value);
@@ -185,7 +184,6 @@ form.addEventListener("submit", (event) => {
   }
 
   if (editingProductId !== null) {
-    // EDIT existing product
     const product = products.find((p) => p.id === editingProductId);
     product.name = name;
     product.price = price;
@@ -193,88 +191,93 @@ form.addEventListener("submit", (event) => {
     product.category = category;
     editingProductId = null;
   } else {
-    // ADD new product
-    const newId =
-      products.length > 0 ? Math.max(...products.map((p) => p.id)) + 1 : 1;
+    const newId = products.length
+      ? Math.max(...products.map((p) => p.id)) + 1
+      : 1;
     products.push({ id: newId, name, price, stock, category });
   }
 
   localStorage.setItem("products", JSON.stringify(products));
-  renderProducts(products);
+  applyFilter(true);
   updateAnalytics();
   form.reset();
+  document.getElementById("submit-btn").textContent = "Add Product";
 });
 
-function updateproduct(productid) {
-  const product = products.find((p) => p.id === productid);
+// Update product
+function updateProduct(id) {
+  const product = products.find((p) => p.id === id);
   if (!product) return;
 
-  // Fill the form with product data
   document.getElementById("product-name").value = product.name;
   document.getElementById("product-price").value = product.price;
   document.getElementById("product-stock").value = product.stock;
   document.getElementById("product-category").value = product.category;
 
-  editingProductId = productid;
+  editingProductId = id;
   document.getElementById("submit-btn").textContent = "Update Product";
 }
 
-let productdelete = document.getElementById("product-container");
-productdelete.addEventListener("click", (event) => {
-  if (event.target.tagName === "BUTTON") {
-    let id = Number(event.target.dataset.id);
-    let action = event.target.dataset.action;
-    if (action === "delete") {
-      deleteproduct(id);
-    } else {
-      updateproduct(id);
-    }
+// Delete product
+function deleteProduct(id) {
+  products = products.filter((p) => p.id !== id);
+  localStorage.setItem("products", JSON.stringify(products));
+  applyFilter(false);
+  updateAnalytics();
+}
+
+// Product container click (edit/delete)
+productContainer.addEventListener("click", (e) => {
+  if (e.target.tagName === "BUTTON") {
+    const id = Number(e.target.dataset.id);
+    const action = e.target.dataset.action;
+    if (action === "delete") deleteProduct(id);
+    else updateProduct(id);
   }
 });
 
-// Function to update the inventory analytics dashboard
+// Analytics
 function updateAnalytics() {
-  let totalproduct = document.getElementById("total-products");
-  let totalvalue = document.getElementById("total-value");
-  let totaloutofstock = document.getElementById("out-of-stock");
-  let totalprice = 0;
-  let countoutofstock = 0;
-  for (let product of products) {
-    if (product.stock == 0) {
-      countoutofstock += 1;
-    }
-    totalprice += product.price * product.stock;
+  let totalProducts = document.getElementById("total-products");
+  let totalValue = document.getElementById("total-value");
+  let totalOutOfStock = document.getElementById("out-of-stock");
+
+  let priceSum = 0;
+  let outOfStockCount = 0;
+
+  for (let p of products) {
+    if (p.stock === 0) outOfStockCount++;
+    priceSum += p.price * p.stock;
   }
-  totalproduct.innerHTML = products.length;
-  totalvalue.innerHTML = totalprice;
-  totaloutofstock.innerHTML = countoutofstock;
+
+  totalProducts.innerText = products.length;
+  totalValue.innerText = priceSum;
+  totalOutOfStock.innerText = outOfStockCount;
 }
 
-function fetchproducts() {
+// Fetch products from localStorage or dummy
+function fetchProducts() {
   return new Promise((resolve) => {
     noProductsMessage.style.display = "block";
-    noProductsMessage.innerHTML = "Loading products...";
+    noProductsMessage.innerText = "Loading products...";
     setTimeout(() => {
-      const storedproduct = localStorage.getItem("products");
-      if (storedproduct) {
-        resolve(JSON.parse(storedproduct));
-      } else {
-        resolve(dummyProducts);
-      }
+      const stored = localStorage.getItem("products");
+      resolve(stored ? JSON.parse(stored) : dummyProducts);
     }, 1500);
   });
 }
 
+// Init
 function init() {
-  fetchproducts().then((data) => {
+  fetchProducts().then((data) => {
     products = data;
-    renderProducts(products);
+    applyFilter(true);
     updateAnalytics();
-    // Enable filters after data loads
-    searchinput.disabled = false;
-    categoryfilter.disabled = false;
-    stockfilter.disabled = false;
-    sortoption.disabled = false;
+
+    searchInput.disabled = false;
+    categoryFilter.disabled = false;
+    stockFilter.disabled = false;
+    sortOption.disabled = false;
   });
 }
 
