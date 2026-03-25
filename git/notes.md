@@ -1,74 +1,78 @@
-git clone <repo_url>
-Use when: downloading an existing repository from GitHub to local system.
+# Git Commands Notes
 
-git init
-Use when: starting Git in a new local project.
+These are the basic Git commands I used and practiced during the training.
 
-git status
-Use when: checking which files are modified, staged, or untracked.
+git clone <repo_url>  
+Used to copy a repo from GitHub to my local system.
 
-git add file_name
-Use when: adding a specific file to staging before commit.
+git init  
+Used to start git in a new project.
 
-git add .
-Use when: adding all changed files to staging.
+git status  
+Used to check which files are changed or not tracked.
 
-git commit -m "message"
-Use when: saving staged changes with a message.
+git add file_name  
+Used to add one file to staging.
 
-git branch
-Use when: seeing all branches in the repository.
+git add .  
+Used to add all files.
 
-git branch branch_name
-Use when: creating a new branch.
+git commit -m "message"  
+Used to save changes with a message.
 
-git checkout branch_name
-Use when: switching to another branch.
+git branch  
+Used to see all branches.
 
-git checkout -b branch_name
-Use when: creating and switching to a new branch in one step.
+git branch branch_name  
+Used to create a new branch.
 
-git push origin branch_name
-Use when: uploading commits from local branch to GitHub.
+git checkout branch_name  
+Used to switch branch.
 
-git push -u origin branch_name
-Use when: pushing a new branch to GitHub for the first time.
+git checkout -b branch_name  
+Used to create and switch branch at same time.
 
-git pull origin main
-Use when: getting the latest changes from the remote repository.
+git push origin branch_name  
+Used to push code to GitHub.
 
-git fetch
-Use when: downloading remote changes without merging them.
+git push -u origin branch_name  
+Used first time push for a branch.
 
-git merge branch_name
-Use when: combining another branch into the current branch.
+git pull origin main  
+Used to get latest code from main branch.
 
-git rebase branch_name
-Use when: updating your branch with latest commits while keeping history linear.
+git fetch  
+Used to get updates without merging.
 
-git log
-Use when: viewing detailed commit history.
+git merge branch_name  
+Used to merge another branch.
 
-git log --oneline
-Use when: seeing a short version of commit history.
+git rebase branch_name  
+Used to update branch and keep history clean.
 
-git diff
-Use when: checking changes in files before committing.
+git log  
+Used to see commit history.
 
-git restore file_name
-Use when: discarding changes in a file.
+git log --oneline  
+Used to see short history.
 
-git restore --staged file_name
-Use when: removing a file from staging area.
+git diff  
+Used to check changes before commit.
 
-git revert commit_id
-Use when: undoing a commit safely while keeping history.
+git restore file_name  
+Used to discard changes in a file.
 
-git reset --soft HEAD~1
-Use when: removing last commit but keeping the changes.
+git restore --staged file_name  
+Used to remove file from staging.
 
-git reset --hard HEAD~1
-Use when: removing last commit and deleting changes completely.
+git revert commit_id  
+Used to undo a commit safely.
 
-git remote -v
-Use when: checking the remote repository connected to local repo.
+git reset --soft HEAD~1  
+Used to remove last commit but keep changes.
+
+git reset --hard HEAD~1  
+Used to remove last commit and delete changes.
+
+git remote -v  
+Used to check remote repo link.
