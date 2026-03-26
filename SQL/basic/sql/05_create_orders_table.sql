@@ -67,6 +67,21 @@ modify description text;
 describe Products;
 
 
+-- creating order table to keep track of customer orders this will link customers and products together
+CREATE TABLE `Order` (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    order_date DATE NOT NULL,
+    status ENUM('Pending', 'Success', 'Cancel') DEFAULT 'Pending',
+    payment_method ENUM('Credit', 'Debit', 'UPI') NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+SHOW TABLES;
 
 
 
