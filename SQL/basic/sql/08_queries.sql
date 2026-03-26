@@ -179,29 +179,106 @@ INSERT INTO Orders (customer_id, product_id, quantity, order_date, status, payme
 (20, 20, 1, '2026-03-20', 'Pending', 'Debit', 1200.00);
 SELECT * FROM Orders;
 
+-- Query 1: To find how many products are there in each category
+SELECT 
+    category, 
+    COUNT(*) AS product_count
+FROM 
+    Products
+GROUP BY 
+    category;
 
 
+-- Query 2: To get all Electronics products that cost between 50 and 500 and have 'a' in their name
+SELECT 
+    *
+FROM 
+    Products
+WHERE 
+    category = 'Electronics'
+    AND price BETWEEN 50 AND 500
+    AND name LIKE '%a%';
+
+-- Query 3: To Show top 5 expensive Electronics products, skip the first 2
+-- To Show Electronics products sorted by price from highest to lowest
+SELECT 
+	*
+FROM 
+	Products
+WHERE 
+	category = 'Electronics'
+ORDER BY 
+	price DESC;
+
+-- To Show top 5 expensive Electronics products, skip the first 2
+SELECT 
+	*
+FROM 
+	Products
+WHERE 
+	category = 'Electronics'
+ORDER BY 
+	price DESC
+LIMIT 5 OFFSET 2;
+
+-- Query 4: To show Customers who have not placed any orders
+
+-- Insert a new customer who has not placed any orders
+INSERT INTO Customers(name, email, mobile, age)
+VALUES ('Test Student', 'teststudent@email.com', '9999999999', 22);
+
+-- Using LEFT JOIN to efficiently get customers without any matching orders
+SELECT c.*
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+WHERE o.customer_id IS NULL;
+
+-- Query 5: To show Average total amount spent by each customer
+SELECT 
+    c.customer_id,
+    c.name,
+    ROUND(AVG(o.total_amount),2) AS average_amount_spent
+FROM Customers c
+JOIN Orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.name;
+
+-- Query 6: To show Products with price less than the average price
+SELECT *
+FROM Products
+WHERE price < (SELECT AVG(price) FROM Products);
 
 
+-- Query 7: Total quantity of products ordered by each customer
+SELECT 
+    c.customer_id,
+    c.name,
+    SUM(o.quantity) AS total_quantity_ordered
+FROM Customers c
+JOIN Orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.name;
 
 
+-- Query 8: To List all orders with customer and product names
+SELECT 
+    o.order_id,
+    c.name AS customer_name,
+    p.name AS product_name,
+    o.quantity,
+    o.total_amount,
+    o.status,
+    o.order_date
+FROM Orders o
+LEFT JOIN Customers c ON o.customer_id = c.customer_id
+LEFT JOIN Products p ON o.product_id = p.product_id;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-- Query 9 : To Find products that have never been ordered.
+-- Insert a product that has never been ordered
+INSERT INTO Products(name, description, price, category)
+VALUES ('Test Product', 'Sample product for assignment', 99.99, 'Test Category');
+SELECT p.product_id, p.name, p.category, p.price
+FROM Products p
+LEFT JOIN Orders o ON p.product_id = o.product_id
+WHERE o.product_id IS NULL;
 
 
 

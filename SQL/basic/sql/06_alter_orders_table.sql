@@ -1,72 +1,69 @@
-show databases;
+SHOW DATABASES;
 
--- creating a new database for this assignment this will store all the tables like customers, products and orders
-create database e_commerce;
-show databases;
+-- creating a new database for this assignment, will store tables like customers, products and orders
+CREATE DATABASE e_commerce;
+SHOW DATABASES;
 
-use e_commerce;
+USE e_commerce;
+
 -- creating customers table to store basic customer details
-create table Customers(
-    customer_id INT auto_increment primary key,
-    name varchar(50),
-    email varchar(50),
-    mobile varchar(15)
+CREATE TABLE Customers(
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    email VARCHAR(50),
+    mobile VARCHAR(15)
 );
 
--- creating products table to store product related information
-create table Products(
+-- creating products table to store product information
+CREATE TABLE Products(
     id INT,
-    name varchar(50) not null,
-    description varchar(200),
-    price decimal(10,2) not null,
-    category varchar(50)
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(200),
+    price DECIMAL(10,2) NOT NULL,
+    category VARCHAR(50)
 );
 
--- show all tables
-show tables;
+-- checking all tables
+SHOW TABLES;
 
 -- making name and email not null so empty values are not allowed
-alter table Customers
-modify name varchar(50) not null;
+ALTER TABLE Customers
+MODIFY name VARCHAR(50) NOT NULL;
 
-alter table Customers
-modify email varchar(50) not null;
+ALTER TABLE Customers
+MODIFY email VARCHAR(50) NOT NULL;
 
-describe Customers;
+DESCRIBE Customers;
 
--- adding unique constraint on email to avoid duplicate entries
-alter table Customers
-add constraint unique_email unique(email);
+-- adding unique constraint on email to avoid duplicate emails
+ALTER TABLE Customers
+ADD CONSTRAINT unique_email UNIQUE(email);
 
-describe Customers;
+DESCRIBE Customers;
 
--- adding age column
-alter table Customers
-add age INT;
+-- adding age column for customers
+ALTER TABLE Customers
+ADD age INT;
 
-describe Customers;
+DESCRIBE Customers;
 
+-- renaming id to product_id to make it clear
+ALTER TABLE Products
+CHANGE id product_id INT;
 
--- renaming id to product_id for better understanding
-alter table Products
-change id product_id INT;
+DESCRIBE Products;
 
-describe Products;
+-- making product_id primary key and auto increment
+ALTER TABLE Products
+MODIFY product_id INT AUTO_INCREMENT PRIMARY KEY;
 
--- setting product_id as primary key and enabling auto increment
-alter table Products
-modify product_id INT auto_increment primary key;
+DESCRIBE Products;
 
-describe Products;
+-- changing description column to text so we can write longer description
+ALTER TABLE Products
+MODIFY description TEXT;
 
-
--- changing description datatype to text to allow longer content
-alter table Products
-modify description text;
-
-describe Products;
-
-
+DESCRIBE Products;
 -- creating order table to keep track of customer orders this will link customers and products together
 CREATE TABLE `Order` (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
