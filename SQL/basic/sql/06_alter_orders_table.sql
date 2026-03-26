@@ -1,0 +1,154 @@
+show databases;
+
+-- creating a new database for this assignment this will store all the tables like customers, products and orders
+create database e_commerce;
+show databases;
+
+use e_commerce;
+-- creating customers table to store basic customer details
+create table Customers(
+    customer_id INT auto_increment primary key,
+    name varchar(50),
+    email varchar(50),
+    mobile varchar(15)
+);
+
+-- creating products table to store product related information
+create table Products(
+    id INT,
+    name varchar(50) not null,
+    description varchar(200),
+    price decimal(10,2) not null,
+    category varchar(50)
+);
+
+-- show all tables
+show tables;
+
+-- making name and email not null so empty values are not allowed
+alter table Customers
+modify name varchar(50) not null;
+
+alter table Customers
+modify email varchar(50) not null;
+
+describe Customers;
+
+-- adding unique constraint on email to avoid duplicate entries
+alter table Customers
+add constraint unique_email unique(email);
+
+describe Customers;
+
+-- adding age column
+alter table Customers
+add age INT;
+
+describe Customers;
+
+
+-- renaming id to product_id for better understanding
+alter table Products
+change id product_id INT;
+
+describe Products;
+
+-- setting product_id as primary key and enabling auto increment
+alter table Products
+modify product_id INT auto_increment primary key;
+
+describe Products;
+
+
+-- changing description datatype to text to allow longer content
+alter table Products
+modify description text;
+
+describe Products;
+
+
+-- creating order table to keep track of customer orders this will link customers and products together
+CREATE TABLE `Order` (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    order_date DATE NOT NULL,
+    status ENUM('Pending', 'Success', 'Cancel') DEFAULT 'Pending',
+    payment_method ENUM('Credit', 'Debit', 'UPI') NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL,
+
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+);
+
+SHOW TABLES;
+
+-- renaming table from Order to Orders
+ALTER TABLE `Order`
+RENAME TO Orders;
+
+SHOW TABLES;
+
+-- setting default value of status as pending
+ALTER TABLE Orders
+MODIFY status ENUM('Pending', 'Success', 'Cancel') DEFAULT 'Pending';
+
+describe Orders;
+
+-- adding new payment option COD in payment_method
+ALTER TABLE Orders
+MODIFY payment_method ENUM('Credit', 'Debit', 'UPI', 'COD');
+
+DESCRIBE Orders;
+
+-- adding foreign key for product_id to maintain relation with products table
+ALTER TABLE Orders
+ADD CONSTRAINT foreign_key_product
+FOREIGN KEY (product_id) REFERENCES Products(product_id);
+
+DESCRIBE Orders;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
