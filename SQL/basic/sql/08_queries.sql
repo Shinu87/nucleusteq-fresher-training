@@ -181,7 +181,7 @@ SELECT * FROM Orders;
 
 -- Query 1: To find how many products are there in each category
 SELECT 
-    category, 
+    IFNULL(category, 'Unknown') AS category, 
     COUNT(*) AS product_count
 FROM 
     Products
@@ -223,7 +223,7 @@ LIMIT 5 OFFSET 2;
 
 -- Query 4: To show Customers who have not placed any orders
 
--- Insert a new customer who has not placed any orders
+-- Inserting a new customer who has not placed any orders
 INSERT INTO Customers(name, email, mobile, age)
 VALUES ('Test Student', 'teststudent@email.com', '9999999999', 22);
 
@@ -237,9 +237,9 @@ WHERE o.customer_id IS NULL;
 SELECT 
     c.customer_id,
     c.name,
-    ROUND(AVG(o.total_amount),2) AS average_amount_spent
+    IFNULL(ROUND(AVG(o.total_amount),2), 0) AS average_amount_spent
 FROM Customers c
-JOIN Orders o ON c.customer_id = o.customer_id
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
 GROUP BY c.customer_id, c.name;
 
 -- Query 6: To show Products with price less than the average price
@@ -252,9 +252,9 @@ WHERE price < (SELECT AVG(price) FROM Products);
 SELECT 
     c.customer_id,
     c.name,
-    SUM(o.quantity) AS total_quantity_ordered
+    IFNULL(SUM(o.quantity), 0) AS total_quantity_ordered
 FROM Customers c
-JOIN Orders o ON c.customer_id = o.customer_id
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
 GROUP BY c.customer_id, c.name;
 
 
@@ -268,11 +268,11 @@ SELECT
     o.status,
     o.order_date
 FROM Orders o
-LEFT JOIN Customers c ON o.customer_id = c.customer_id
-LEFT JOIN Products p ON o.product_id = p.product_id;
+JOIN Customers c ON o.customer_id = c.customer_id
+JOIN Products p ON o.product_id = p.product_id;
 
 -- Query 9 : To Find products that have never been ordered.
--- Insert a product that has never been ordered
+-- Inserting a product that has never been ordered
 INSERT INTO Products(name, description, price, category)
 VALUES ('Test Product', 'Sample product for assignment', 99.99, 'Test Category');
 SELECT p.product_id, p.name, p.category, p.price
