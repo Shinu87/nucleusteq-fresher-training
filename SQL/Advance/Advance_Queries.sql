@@ -1,6 +1,6 @@
-CREATE DATABASE retail_db;
+CREATE DATABASE sportswear_db ;
 
-USE retail_db;
+USE sportswear_db ;
 
 -- COLOR TABLE
 CREATE TABLE color (
@@ -47,7 +47,7 @@ CREATE TABLE store (
 );
 
 -- ORDERS TABLE
-CREATE TABLE orders (
+CREATE TABLE `order` (
     id INT PRIMARY KEY,
     customer_id INT,
     item_id INT,
@@ -170,7 +170,7 @@ INSERT INTO item VALUES
 (19,'Vintage Jeans','M',2100,300,15,4),
 (20,'Modern Jeans','L',2400,400,16,4);
 
-INSERT INTO orders VALUES
+INSERT INTO `order` VALUES
 (1,1,1,2,1,'Store','2024-01-10'),
 (2,2,2,1,2,'Online','2024-01-11'),
 (3,3,3,3,3,'Store','2024-01-12'),
@@ -193,31 +193,71 @@ INSERT INTO orders VALUES
 (20,20,20,1,14,'Online','2024-01-29');
 
 -- Exercise 1
-SELECT i.name, co.name, cu.first_name, cu.last_name
+-- Clean and maintainable version
+SELECT 
+    i.name AS item_name,
+    co.name AS color_name,
+    cu.first_name,
+    cu.last_name
 FROM customer cu
-JOIN orders o ON cu.id = o.customer_id
+JOIN `order` o ON cu.id = o.customer_id
+JOIN store s ON o.store_id = s.id
+JOIN item i ON o.item_id = i.id
+JOIN category ca ON i.category_id = ca.id
+JOIN color co ON i.color_id = co.id
+WHERE 
+    s.city = 'Mumbai'
+    AND o.order_channel = 'Store'
+    AND ca.name = 'mens_jeans'
+    AND cu.favorite_color_id = i.color_id
+ORDER BY co.name ASC;
+
+-- Same logic but filtering inside JOIN clauses
+SELECT 
+    i.name,
+    co.name,
+    cu.first_name,
+    cu.last_name
+FROM customer cu
+JOIN `order` o ON cu.id = o.customer_id
 JOIN store s ON o.store_id = s.id AND s.city = 'Mumbai'
 JOIN item i ON o.item_id = i.id AND cu.favorite_color_id = i.color_id
 JOIN category ca ON i.category_id = ca.id AND ca.name = 'mens_jeans'
 JOIN color co ON i.color_id = co.id
 WHERE o.order_channel = 'Store'
-ORDER BY co.name;
+ORDER BY co.name ASC;
 
--- Test customer for Exercise 2
+-- Inserting Test customer sample with no purchases
 INSERT INTO customer (id, first_name, last_name, favorite_color_id, city)
 VALUES (999, 'Test', 'NoOrder', 3, 'Mumbai');
 
 -- Exercise 2
-SELECT cu.first_name, cu.last_name, co.name
+-- Customers with no purchases
+SELECT 
+    cu.first_name,
+    cu.last_name,
+    co.name AS favorite_color
 FROM customer cu
-LEFT JOIN orders o ON cu.id = o.customer_id
+LEFT JOIN `order` o ON cu.id = o.customer_id
 JOIN color co ON cu.favorite_color_id = co.id
-GROUP BY cu.id, cu.first_name, cu.last_name, co.name
-HAVING COUNT(o.id) = 0;
+WHERE o.id IS NULL;
 
 -- Exercise 3
-SELECT main_cat.name, sub_cat.name
+SELECT 
+    main_cat.name AS category,
+    sub_cat.name AS subcategory
 FROM category main_cat
 LEFT JOIN category sub_cat ON sub_cat.parent_id = main_cat.id
 WHERE main_cat.parent_id IS NULL;
+
+SELECT * FROM customer;
+SELECT * FROM `order`;
+SELECT * FROM item;
+SELECT * FROM category;
+SELECT * FROM color;
+SELECT * FROM store;
+
+
+
+
 
