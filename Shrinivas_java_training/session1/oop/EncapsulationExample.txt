@@ -1,0 +1,30 @@
+Encapsulation means wrapping data (variables) and methods into a single unit (class).
+It is used to protect data and control how it is accessed.
+
+In Java we use:
+- private variables (to restrict direct access)
+- public getter and setter methods (to access and update values)
+
+Example:
+
+class Student {
+    private String name;   // private variable
+
+    // setter method
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // getter method
+    public String getName() {
+        return name;
+    }
+}
+
+- name is private so it cannot be accessed directly from outside
+- we use setName() to assign value
+- we use getName() to access value
+
+So data is controlled and protected.
+
+Encapsulation = data hiding + controlled access

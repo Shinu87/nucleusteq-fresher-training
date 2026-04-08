@@ -1,0 +1,24 @@
+1. Primitive Data Types:
+   - They store simple values directly in memory.
+   - Examples: int, float, double, char, boolean, byte, short, long.
+   - They are fast and take less memory.
+   - When you copy a primitive variable to another it copies the value.
+
+   Example:
+       int a = 5;
+       int b = a;  // b now has 5 
+       a = 10;     // b is still 5
+
+2. Reference Data Types:
+   - These store the address of an object in memory not the actual value.
+   - Examples: String, arrays, classes, interfaces.
+   - When you copy a reference variable to another both refer to the same object.
+
+   Example:
+       String s1 = "Hello";
+       String s2 = s1; // s2 points to the same object as s1
+       s1 = "Hi";      // s2 still points to "Hello"
+
+Key Differences:
+- Primitive stores actual value, reference stores address.
+- Primitive is faster, reference can store bigger objects.
