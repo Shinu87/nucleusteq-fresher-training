@@ -23,8 +23,15 @@ public class EvenOddChecker {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter a number to check even or odd:");
+        if (!scanner.hasNextInt()) {
+            System.out.println("Please enter an integer.");
+            scanner.close();
+            return;
+        }
         int number = scanner.nextInt();
-
+        if (number == 0) {
+            System.out.println("0 is an even number");
+        }
         // Using simple modulo method
         boolean isEven = checkEvenOrOdd(number);
         if (isEven) {

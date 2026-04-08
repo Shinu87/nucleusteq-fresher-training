@@ -30,11 +30,21 @@ public class PatternPrinter {
 
         System.out.print("Enter number of rows for triangle: ");
         int triangleRows = scanner.nextInt();
+        if (triangleRows <= 0) {
+            System.out.println("Number of rows must be positive.");
+            scanner.close();
+            return;
+        }
         System.out.println("Triangle Pattern:");
         printTriangle(triangleRows);
 
         System.out.print("\nEnter size of square: ");
         int squareSize = scanner.nextInt();
+        if (squareSize <= 0) {
+            System.out.println("Size must be positive.");
+            scanner.close();
+            return;
+        }
         System.out.println("Square Pattern:");
         printSquare(squareSize);
 

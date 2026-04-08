@@ -1,0 +1,6 @@
+Name: Shrinivas
+Roll Number: 101
+Department: CSE
+College: NIT AP
+
+This file is used to test file reading in Java.

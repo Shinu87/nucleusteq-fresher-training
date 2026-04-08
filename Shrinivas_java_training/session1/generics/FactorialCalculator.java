@@ -9,7 +9,7 @@ public class FactorialCalculator {
         if (number == 1) {
             return 1; // base case
         }
-        return number * FactorialCalculator.getFactorial(number - 1); // recursive call
+        return number * getFactorial(number - 1); // recursive call
     }
 
     // Iterative method to calculate factorial using loop
@@ -26,7 +26,11 @@ public class FactorialCalculator {
 
         System.out.println("Enter a number to calculate factorial:");
         int number = scanner.nextInt();
-
+        if (number < 0) {
+            System.out.println("Factorial is not defined for negative numbers.");
+            scanner.close();
+            return;
+        }
         // Using recursive method
         int factorial = getFactorial(number);
         System.out.println("Factorial (recursive): " + factorial);

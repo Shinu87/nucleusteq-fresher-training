@@ -23,6 +23,13 @@ public class PrimeChecker {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter a number to check: ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("Please enter an integer.");
+            scanner.close();
+            return;
+        }
+
         int num = scanner.nextInt();
 
         boolean isPrime = checkPrime(num);

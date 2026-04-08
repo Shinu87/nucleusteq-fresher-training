@@ -30,7 +30,11 @@ public class FibonacciGenerator {
 
         System.out.print("Enter how many Fibonacci numbers to generate: ");
         int limit = scanner.nextInt();
-
+        if (limit < 0) {
+            System.out.println("Fibonacci is not defined for negative numbers.");
+            scanner.close();
+            return;
+        }
         // Using recursive method
         System.out.println("Fibonacci (recursive) up to " + limit + "th number: "
                 + calculateFibonacci(limit, 0, 1));

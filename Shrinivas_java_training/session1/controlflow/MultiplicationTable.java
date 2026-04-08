@@ -15,7 +15,18 @@ public class MultiplicationTable {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter a number: ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("Please enter an integer.");
+            scanner.close();
+            return;
+        }
+
         int num = scanner.nextInt();
+
+        if (num == 0) {
+            System.out.println("Multiplication table of 0 will always be 0");
+        }
 
         getMultiplication(num);
 

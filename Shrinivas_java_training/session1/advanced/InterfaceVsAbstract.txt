@@ -1,0 +1,40 @@
+Interface vs Abstract Class
+
+Both interface and abstract class are used to achieve abstraction in Java.
+They help in hiding implementation details and showing only necessary parts.
+
+Abstract Class:
+- Can have both abstract methods and normal methods
+- Can have variables (instance variables)
+- Uses "extends" keyword
+- Can have constructors
+
+Example:
+abstract class Payment {
+    abstract void makePayment();
+    
+    void showMessage() {
+        System.out.println("Processing payment");
+    }
+}
+
+Interface:
+- Contains only abstract methods (by default)
+- Uses "implements" keyword
+- Cannot have constructors
+- Used when different classes need same functionality
+
+Example:
+interface PaymentMethod {
+    void pay();
+}
+
+class UPI implements PaymentMethod {
+    public void pay() {
+        System.out.println("Payment using UPI");
+    }
+}
+
+Key Difference:
+- Abstract class → partial abstraction (can have both types of methods)
+- Interface → full abstraction (only method declaration)
