@@ -28,11 +28,11 @@ public class FactorialCalculator {
         int number = scanner.nextInt();
 
         // Using recursive method
-        int factorial = FactorialCalculator.getFactorial(number);
+        int factorial = getFactorial(number);
         System.out.println("Factorial (recursive): " + factorial);
 
         // Using iterative method
-        int factorialLoop = FactorialCalculator.getFactorialUsingLoop(number);
+        int factorialLoop = getFactorialUsingLoop(number);
         System.out.println("Factorial (loop): " + factorialLoop);
 
         scanner.close();
