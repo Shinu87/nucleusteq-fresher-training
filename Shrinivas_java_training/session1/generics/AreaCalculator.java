@@ -22,7 +22,6 @@ public class AreaCalculator {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in); // create scanner for input
 
-        // Ask user which shape they want
         System.out.println("Enter shape (circle, rectangle, or triangle):");
         String shape = scanner.nextLine();
 

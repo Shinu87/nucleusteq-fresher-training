@@ -20,10 +20,10 @@ public class EvenOddChecker {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in); // create scanner for input
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter a number to check even or odd:");
-        int number = scanner.nextInt(); // read user input
+        int number = scanner.nextInt();
 
         // Using simple modulo method
         boolean isEven = checkEvenOrOdd(number);
@@ -41,6 +41,6 @@ public class EvenOddChecker {
             System.out.println(number + " is odd (checked using bit manipulation)");
         }
 
-        scanner.close(); // close scanner
+        scanner.close();
     }
 }
