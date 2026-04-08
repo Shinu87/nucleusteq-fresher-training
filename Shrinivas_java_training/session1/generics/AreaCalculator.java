@@ -20,13 +20,12 @@ public class AreaCalculator {
     }
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in); // create scanner for input
+        Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter shape (circle, rectangle, or triangle):");
         String shape = scanner.nextLine();
 
         if (shape.equalsIgnoreCase("circle")) {
-            // Input radius and calculate area
             System.out.println("Enter radius of the circle:");
             float radius = scanner.nextFloat();
             float pi = 3.141516f;
@@ -34,7 +33,6 @@ public class AreaCalculator {
             System.out.println("Area of the circle is " + area);
 
         } else if (shape.equalsIgnoreCase("rectangle")) {
-            // Input height and width and calculate area
             System.out.println("Enter height of the rectangle:");
             float height = scanner.nextFloat();
             System.out.println("Enter width of the rectangle:");
@@ -43,7 +41,6 @@ public class AreaCalculator {
             System.out.println("Area of the rectangle is " + area);
 
         } else if (shape.equalsIgnoreCase("triangle")) {
-            // Input base and height and calculate area
             System.out.println("Enter base of the triangle:");
             float base = scanner.nextFloat();
             System.out.println("Enter height of the triangle:");
@@ -52,9 +49,8 @@ public class AreaCalculator {
             System.out.println("Area of the triangle is " + area);
 
         } else {
-            // If user enters something else
             System.out.println("Shape not found! Enter either circle, rectangle, or triangle.");
         }
-        scanner.close(); // close the scanner
+        scanner.close();
     }
 }

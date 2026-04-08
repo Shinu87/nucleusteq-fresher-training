@@ -7,9 +7,9 @@ public class EvenOddChecker {
     // Method to check if a number is even using modulo
     public static boolean checkEvenOrOdd(int number) {
         if (number % 2 == 0) {
-            return true; // even
+            return true;
         } else {
-            return false; // odd
+            return false;
         }
     }
 
