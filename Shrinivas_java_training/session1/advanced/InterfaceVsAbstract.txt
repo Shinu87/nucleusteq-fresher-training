@@ -38,3 +38,7 @@ class UPI implements PaymentMethod {
 Key Difference:
 - Abstract class → partial abstraction (can have both types of methods)
 - Interface → full abstraction (only method declaration)
+
+Implementation:
+Abstract class example → Shrinivas_java_training\session1\advanced\AbstractClassExample.java
+Interface example → Shrinivas_java_training\session1\advanced\InterfaceExample.java
