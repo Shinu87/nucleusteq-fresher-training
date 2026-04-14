@@ -9,10 +9,13 @@ import com.shinu.smartrailwayops.service.PassengerService;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/users")
 public class PassengerController {
+
     private final PassengerService passengerService;
 
     public PassengerController(PassengerService passengerService) {
@@ -22,6 +25,12 @@ public class PassengerController {
     @GetMapping
     public List<Passenger> getALL() {
         return passengerService.getAllPassengers();
+    }
+
+    @PostMapping
+    public String addPassenger(@RequestBody Passenger passenger) {
+        passengerService.addPassenger(passenger);
+        return "Passenger Added Successfully";
     }
 
 }

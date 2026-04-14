@@ -1,4 +1,4 @@
-package com.shinu.java_training;
+package com.shinu.smartrailwayops;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
