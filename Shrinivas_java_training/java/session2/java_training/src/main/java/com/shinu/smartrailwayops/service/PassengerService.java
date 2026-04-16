@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.shinu.smartrailwayops.exception.PassengerNotFoundException;
 import com.shinu.smartrailwayops.model.Passenger;
 import com.shinu.smartrailwayops.repository.PassengerRepository;
 
@@ -22,7 +23,14 @@ public class PassengerService {
     }
 
     public Passenger getPassengerById(int id) {
-        return passengerRepository.getById(id);
+
+        Passenger passenger = passengerRepository.getById(id);
+
+        if (passenger == null) {
+            throw new PassengerNotFoundException("Passenger not found with id: " + id);
+        }
+
+        return passenger;
     }
 
     public void addPassenger(Passenger passenger) {
