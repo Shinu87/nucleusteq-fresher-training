@@ -1,9 +1,11 @@
 package com.shinu.smart_user_service.exception;
 
-public class UserNotFoundException extends Exception {
+// Custom exception for user not found cases
+public class UserNotFoundException extends RuntimeException {
 
+    // Constructor to pass custom error message
     public UserNotFoundException(String message) {
-        super(message);
+        super(message); // calling parent class constructor
     }
 
 }
