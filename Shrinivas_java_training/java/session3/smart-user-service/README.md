@@ -18,61 +18,61 @@ This project is a simple **User Management REST API** built using Spring Boot.
 
 ### 🔹 Get All Users
 
-![Get All Users](screenshots/get_all_users.png)
+![Get All Users](./screenshots/get_all_users.png)
 
 ---
 
 ### 🔹 Search by Name
 
-![Search by Name](screenshots/search_by_name.png)
+![Search by Name](./screenshots/search_by_name.png)
 
 ---
 
 ### 🔹 Search by Age
 
-![Search by Age](screenshots/search_by_age.png)
+![Search by Age](./screenshots/search_by_age.png)
 
 ---
 
 ### 🔹 Search by Role
 
-![Search by Role](screenshots/search_by_role.png)
+![Search by Role](./screenshots/search_by_role.png)
 
 ---
 
 ### 🔹 Search with Multiple Filters
 
-![Search Multiple](screenshots/search_multiple_filters.png)
+![Search Multiple](./screenshots/search_multiple_filters.png)
 
 ---
 
 ### 🔹 Add User (POST Success)
 
-![Post User](screenshots/post_user_success.png)
+![Post User](./screenshots/post_user_success.png)
 
 ---
 
 ### 🔹 Add User (Invalid Input)
 
-![Post Invalid](screenshots/post_user_invalid.png)
+![Post Invalid](./screenshots/post_user_invalid.png)
 
 ---
 
 ### 🔹 Delete User (Success)
 
-![Delete Success](screenshots/delete_user_success.png)
+![Delete Success](./screenshots/delete_user_success.png)
 
 ---
 
 ### 🔹 Delete without Confirmation
 
-![Delete No Confirm](screenshots/delete_without_confirm.png)
+![Delete No Confirm](./screenshots/delete_without_confirm.png)
 
 ---
 
 ### 🔹 Delete User Not Found
 
-![Delete Not Found](screenshots/delete_user_not_found.png)
+![Delete Not Found](./screenshots/delete_user_not_found.png)
 
 ---
 
