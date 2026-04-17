@@ -1,107 +1,98 @@
-# 🚆 Smart Railway Ops System
+# 🚀 Smart User Service (Spring Boot)
 
-## 📌 Overview
-
-This is a Spring Boot backend application that simulates a railway system.
-
-It includes:
-
-- Passenger Management APIs
-- Notification System
-- Dynamic Message Formatter
+This project is a simple **User Management REST API** built using Spring Boot.
 
 ---
 
-## 🧠 Concepts Used
+## 📂 Features
 
-- IoC (Inversion of Control)
-- Dependency Injection (Constructor-based)
-- Component Scanning
-- Layered Architecture (Controller → Service → Repository)
-- Exception Handling
-
----
-
-# 🚀 APIs
+- Search users using filters (name, age, role)
+- Add new users
+- Delete users with confirmation
+- Exception handling with proper HTTP status codes
+- Clean layered architecture (Controller → Service → Repository)
 
 ---
 
-## 👤 Passenger Management
+## 📸 API Screenshots
 
-### 🔹 Get All Passengers
+### 🔹 Get All Users
 
-**GET /users**
-
-![Get All Passengers](screenshots/get-all-passengers.jpg)
+![Get All Users](screenshots/get_all_users.jpg)
 
 ---
 
-### 🔹 Get Passenger by ID
+### 🔹 Search by Name
 
-**GET /users/{id}**
-
-![Get Passenger By ID](screenshots/get-passenger-by-id.jpg)
+![Search by Name](screenshots/search_by_name.jpg)
 
 ---
 
-### 🔹 Passenger Not Found
+### 🔹 Search by Age
 
-![Passenger Not Found](screenshots/get-passenger-not-found.jpg)
-
----
-
-### 🔹 Create Passenger
-
-**POST /users**
-
-![Create Passenger Request](screenshots/create-passenger-request.jpg)
+![Search by Age](screenshots/search_by_age.jpg)
 
 ---
 
-### 🔹 Duplicate Passenger Error
+### 🔹 Search by Role
 
-![Duplicate Passenger](screenshots/duplicate-passenger-error.jpg)
-
----
-
-## 🔔 Notification System
-
-### 🔹 Booking Notification
-
-**POST /notify?eventType=BOOKING**
-
-![Booking Notification](screenshots/notification-booking.jpg)
+![Search by Role](screenshots/search_by_role.jpg)
 
 ---
 
-### 🔹 Cancellation Notification
+### 🔹 Search with Multiple Filters
 
-![Cancellation Notification](screenshots/notification-cancellation.jpg)
-
----
-
-### 🔹 Default Notification
-
-![Default Notification](screenshots/notification-default.jpg)
+![Search Multiple](screenshots/search_multiple_filters.jpg)
 
 ---
 
-## 💬 Message Formatter
+### 🔹 Add User (POST Success)
 
-### 🔹 Short Message
-
-**GET /message?type=SHORT**
-
-![Short Message](screenshots/message-short.jpg)
+![Post User](screenshots/post_user_success.jpg)
 
 ---
 
-### 🔹 Long Message
+### 🔹 Add User (Invalid Input)
 
-![Long Message](screenshots/message-long.jpg)
+![Post Invalid](screenshots/post_user_invalid.jpg)
 
 ---
 
-### 🔹 Invalid Type
+### 🔹 Delete User (Success)
 
-![Invalid Message](screenshots/message-invalid.jpg)
+![Delete Success](screenshots/delete_user_success.jpg)
+
+---
+
+### 🔹 Delete without Confirmation
+
+![Delete No Confirm](screenshots/delete_without_confirm.jpg)
+
+---
+
+### 🔹 Delete User Not Found
+
+![Delete Not Found](screenshots/delete_user_not_found.jpg)
+
+---
+
+## ⚙️ Tech Stack
+
+- Java 17
+- Spring Boot
+- Maven
+- REST APIs
+
+---
+
+## 📌 Notes
+
+- Uses in-memory data (no database)
+- Tested using Postman
+- Follows clean code practices
+
+---
+
+## 👨‍💻 Developed By
+
+Shrinivas
