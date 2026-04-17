@@ -1,98 +1,107 @@
-# 🚀 Smart User Service (Spring Boot)
+# 🚆 Smart Railway Ops System
 
-This project is a simple **User Management REST API** built using Spring Boot.
+## 📌 Overview
 
----
+This is a Spring Boot backend application that simulates a railway system.
 
-## 📂 Features
+It includes:
 
-- Search users using filters (name, age, role)
-- Add new users
-- Delete users with confirmation
-- Exception handling with proper HTTP status codes
-- Clean layered architecture (Controller → Service → Repository)
+- Passenger Management APIs
+- Notification System
+- Dynamic Message Formatter
 
 ---
 
-## 📸 API Screenshots
+## 🧠 Concepts Used
 
-### 🔹 Get All Users
-
-![Get All Users](./screenshots/get_all_users.png)
-
----
-
-### 🔹 Search by Name
-
-![Search by Name](./screenshots/search_by_name.png)
+- IoC (Inversion of Control)
+- Dependency Injection (Constructor-based)
+- Component Scanning
+- Layered Architecture (Controller → Service → Repository)
+- Exception Handling
 
 ---
 
-### 🔹 Search by Age
-
-![Search by Age](./screenshots/search_by_age.png)
+# 🚀 APIs
 
 ---
 
-### 🔹 Search by Role
+## 👤 Passenger Management
 
-![Search by Role](./screenshots/search_by_role.png)
+### 🔹 Get All Passengers
 
----
+**GET /users**
 
-### 🔹 Search with Multiple Filters
-
-![Search Multiple](./screenshots/search_multiple_filters.png)
+![Get All Passengers](screenshots/get-all-passengers.jpg)
 
 ---
 
-### 🔹 Add User (POST Success)
+### 🔹 Get Passenger by ID
 
-![Post User](./screenshots/post_user_success.png)
+**GET /users/{id}**
 
----
-
-### 🔹 Add User (Invalid Input)
-
-![Post Invalid](./screenshots/post_user_invalid.png)
+![Get Passenger By ID](screenshots/get-passenger-by-id.jpg)
 
 ---
 
-### 🔹 Delete User (Success)
+### 🔹 Passenger Not Found
 
-![Delete Success](./screenshots/delete_user_success.png)
-
----
-
-### 🔹 Delete without Confirmation
-
-![Delete No Confirm](./screenshots/delete_without_confirm.png)
+![Passenger Not Found](screenshots/get-passenger-not-found.jpg)
 
 ---
 
-### 🔹 Delete User Not Found
+### 🔹 Create Passenger
 
-![Delete Not Found](./screenshots/delete_user_not_found.png)
+**POST /users**
 
----
-
-## ⚙️ Tech Stack
-
-- Java 17
-- Spring Boot
-- Maven
-- REST APIs
+![Create Passenger Request](screenshots/create-passenger-request.jpg)
 
 ---
 
-## 📌 Notes
+### 🔹 Duplicate Passenger Error
 
-- Uses in-memory data (no database)
-- Tested using Postman
-- Follows clean code practices
+![Duplicate Passenger](screenshots/duplicate-passenger-error.jpg)
 
 ---
 
-## 👨‍💻 Developed By
+## 🔔 Notification System
 
-Shrinivas
+### 🔹 Booking Notification
+
+**POST /notify?eventType=BOOKING**
+
+![Booking Notification](screenshots/notification-booking.jpg)
+
+---
+
+### 🔹 Cancellation Notification
+
+![Cancellation Notification](screenshots/notification-cancellation.jpg)
+
+---
+
+### 🔹 Default Notification
+
+![Default Notification](screenshots/notification-default.jpg)
+
+---
+
+## 💬 Message Formatter
+
+### 🔹 Short Message
+
+**GET /message?type=SHORT**
+
+![Short Message](screenshots/message-short.jpg)
+
+---
+
+### 🔹 Long Message
+
+![Long Message](screenshots/message-long.jpg)
+
+---
+
+### 🔹 Invalid Type
+
+![Invalid Message](screenshots/message-invalid.jpg)
