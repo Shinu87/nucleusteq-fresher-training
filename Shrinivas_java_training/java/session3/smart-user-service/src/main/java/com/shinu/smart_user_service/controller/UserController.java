@@ -7,8 +7,12 @@ import com.shinu.smart_user_service.service.UserService;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/users")
@@ -26,6 +30,34 @@ public class UserController {
             @RequestParam(required = false) Integer age,
             @RequestParam(required = false) String role) {
         return userService.searchUsers(name, age, role);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<String> submitUser(@RequestBody User user) {
+
+        if (user.getName() == null || user.getName().isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid input - name is required");
+        }
+
+        if (user.getAge() <= 0) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid input - age must be greater than 0");
+        }
+
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid input - role is required");
+        }
+
+        userService.addUser(user);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("User submitted successfully");
     }
 
 }

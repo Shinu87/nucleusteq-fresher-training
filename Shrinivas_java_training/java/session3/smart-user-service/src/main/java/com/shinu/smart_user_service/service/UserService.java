@@ -41,4 +41,13 @@ public class UserService {
         userRepository.deleteUser(id);
         return true;
     }
+
+    public void addUser(User user) {
+
+        if (user.getName() == null || user.getName().isEmpty()) {
+            throw new RuntimeException("Name cannot be empty");
+        }
+
+        userRepository.addUser(user);
+    }
 }

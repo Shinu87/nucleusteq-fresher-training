@@ -26,4 +26,8 @@ public class UserRepository {
     public void deleteUser(int id) {
         users.removeIf(user -> user.getId() == id);
     }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
 }
