@@ -37,24 +37,6 @@ public class UserController {
     @PostMapping("/submit")
     public ResponseEntity<String> submitUser(@RequestBody User user) {
 
-        if (user.getName() == null || user.getName().isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid input - name is required");
-        }
-
-        if (user.getAge() <= 0) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid input - age must be greater than 0");
-        }
-
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid input - role is required");
-        }
-
         userService.addUser(user);
 
         return ResponseEntity
@@ -66,19 +48,8 @@ public class UserController {
     public ResponseEntity<String> deleteUser(
             @PathVariable int id,
             @RequestParam(required = false) Boolean confirm) {
-        if (confirm == null || !confirm) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("Confirmation required");
-        }
 
-        boolean deleted = userService.deleteUser(id, true);
-
-        if (!deleted) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User not found or not deleted");
-        }
+        userService.deleteUser(id, confirm != null && confirm);
 
         return ResponseEntity.ok("User deleted successfully");
     }
