@@ -42,4 +42,12 @@ public class TodoServiceImpl implements TodoService {
         return todos.stream().map(TodoMapper::mapToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public TodoDTO getTodoById(Long id) {
+        Todo todo = todoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
+
+        return TodoMapper.mapToDTO(todo);
+    }
+
 }
