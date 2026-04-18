@@ -8,10 +8,14 @@ import com.shinu.todo_app.service.TodoService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/todos")
@@ -27,6 +31,11 @@ public class TodoController {
     public ResponseEntity<TodoDTO> createTodo(@Valid @RequestBody TodoDTO dto) {
         TodoDTO createdTodo = todoService.createTodo(dto);
         return new ResponseEntity<>(createdTodo, HttpStatus.CREATED);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<TodoDTO>> getAllTodos() {
+        return ResponseEntity.ok(todoService.getAllTodos());
     }
 
 }

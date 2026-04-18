@@ -1,6 +1,8 @@
 package com.shinu.todo_app.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,13 @@ public class TodoServiceImpl implements TodoService {
         Todo saved = todoRepository.save(todo);
 
         return TodoMapper.mapToDTO(saved);
+    }
+
+    @Override
+    public List<TodoDTO> getAllTodos() {
+        List<Todo> todos = todoRepository.findAll();
+
+        return todos.stream().map(TodoMapper::mapToDTO).collect(Collectors.toList());
     }
 
 }
