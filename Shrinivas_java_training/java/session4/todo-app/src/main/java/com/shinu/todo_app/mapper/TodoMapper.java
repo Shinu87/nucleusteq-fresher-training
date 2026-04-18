@@ -1,4 +1,4 @@
-package com.shinu.todo_app.service;
+package com.shinu.todo_app.mapper;
 
 import com.shinu.todo_app.dto.TodoDTO;
 import com.shinu.todo_app.entity.Todo;
