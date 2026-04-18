@@ -51,4 +51,32 @@ public class TodoServiceImpl implements TodoService {
         return TodoMapper.mapToDTO(todo);
     }
 
+    @Override
+    public TodoDTO updateTodo(Long id, TodoDTO dto) {
+
+        Todo existingTodo = todoRepository.findById(id)
+                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
+
+        existingTodo.setTitle(dto.getTitle());
+        existingTodo.setDescription(dto.getDescription());
+
+        TodoStatus currentStatus = existingTodo.getStatus();
+        TodoStatus newStatus = dto.getStatus();
+
+        if (newStatus != null && currentStatus != newStatus) {
+
+            if (currentStatus == TodoStatus.COMPLETED && newStatus == TodoStatus.PENDING) {
+                existingTodo.setStatus(newStatus);
+            } else if (currentStatus == TodoStatus.PENDING && newStatus == TodoStatus.COMPLETED) {
+                existingTodo.setStatus(newStatus);
+            } else {
+                throw new RuntimeException("Invalid status transition from "
+                        + currentStatus + " to " + newStatus);
+            }
+        }
+
+        Todo updated = todoRepository.save(existingTodo);
+
+        return TodoMapper.mapToDTO(updated);
+    }
 }
