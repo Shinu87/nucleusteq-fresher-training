@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.shinu.todo_app.dto.TodoDTO;
 import com.shinu.todo_app.entity.Todo;
 import com.shinu.todo_app.entity.TodoStatus;
+import com.shinu.todo_app.exception.TodoNotFoundException;
 import com.shinu.todo_app.mapper.TodoMapper;
 import com.shinu.todo_app.repository.TodoRepository;
 
@@ -45,7 +46,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public TodoDTO getTodoById(Long id) {
         Todo todo = todoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
+                .orElseThrow(() -> new TodoNotFoundException("Todo not found with id: " + id));
 
         return TodoMapper.mapToDTO(todo);
     }
