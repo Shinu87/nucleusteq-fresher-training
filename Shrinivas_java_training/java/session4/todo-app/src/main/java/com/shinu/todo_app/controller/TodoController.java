@@ -23,33 +23,40 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/todos")
 public class TodoController {
 
+    // service layer object - business logic is written here
     private final TodoService todoService;
 
+    // constructor injection - Spring will automatically inject service object
     public TodoController(TodoService todoService) {
         this.todoService = todoService;
     }
 
+    // create new todo
     @PostMapping()
     public ResponseEntity<TodoDTO> createTodo(@Valid @RequestBody TodoDTO dto) {
         TodoDTO createdTodo = todoService.createTodo(dto);
         return new ResponseEntity<>(createdTodo, HttpStatus.CREATED);
     }
 
+    // get all todos list
     @GetMapping()
     public ResponseEntity<List<TodoDTO>> getAllTodos() {
         return ResponseEntity.ok(todoService.getAllTodos());
     }
 
+    // get todo by id
     @GetMapping("/{id}")
     public ResponseEntity<TodoDTO> getTodoById(@PathVariable Long id) {
         return ResponseEntity.ok(todoService.getTodoById(id));
     }
 
+    // update todo by id
     @PutMapping("/{id}")
-    public ResponseEntity<TodoDTO> updateTodo(@PathVariable Long id, @Valid @RequestBody TodoDTO dto) {
+    public ResponseEntity<TodoDTO> updateTodo(@PathVariable Long id, @RequestBody TodoDTO dto) {
         return ResponseEntity.ok(todoService.updateTodo(id, dto));
     }
 
+    // delete todo by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTodo(@PathVariable Long id) {
         todoService.deleteTodo(id);
