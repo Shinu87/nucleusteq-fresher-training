@@ -32,7 +32,7 @@ It includes:
 
 **GET /users**
 
-![Get All Passengers](screenshots/get-all-passengers.jpg)
+![Get All Passengers](./screenshots/get-all-passengers.jpg)
 
 ---
 
@@ -40,7 +40,7 @@ It includes:
 
 **GET /users/{id}**
 
-![Get Passenger By ID](screenshots/get-passenger-by-id.jpg)
+![Get Passenger By ID](./screenshots/get-passenger-by-id.jpg)
 
 ---
 
