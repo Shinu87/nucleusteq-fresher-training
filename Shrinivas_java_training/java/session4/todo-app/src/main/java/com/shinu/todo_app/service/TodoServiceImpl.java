@@ -25,9 +25,13 @@ public class TodoServiceImpl implements TodoService {
     // repository object to interact with database
     private final TodoRepository todoRepository;
 
+    private final NotificationServiceClient notificationServiceClient;
+
     // constructor injection (Spring will inject repository automatically)
-    public TodoServiceImpl(TodoRepository todoRepository) {
+    public TodoServiceImpl(TodoRepository todoRepository,
+            NotificationServiceClient notificationServiceClient) {
         this.todoRepository = todoRepository;
+        this.notificationServiceClient = notificationServiceClient;
     }
 
     // create new todo and save into database
@@ -49,6 +53,8 @@ public class TodoServiceImpl implements TodoService {
         // save entity in database
         Todo saved = todoRepository.save(todo);
 
+        // calling notification service here
+        notificationServiceClient.sendTodoCreatedNotification(saved.getTitle());
         logger.info("Service: Todo created successfully with id: {}", saved.getId());
 
         // convert entity back to DTO and return
