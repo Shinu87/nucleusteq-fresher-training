@@ -55,6 +55,7 @@ public class TodoServiceImpl implements TodoService {
 
         // calling notification service here
         notificationServiceClient.sendTodoCreatedNotification(saved.getTitle());
+
         logger.info("Service: Todo created successfully with id: {}", saved.getId());
 
         // convert entity back to DTO and return
