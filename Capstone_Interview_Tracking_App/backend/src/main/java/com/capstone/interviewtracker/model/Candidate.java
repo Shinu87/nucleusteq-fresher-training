@@ -5,216 +5,346 @@ import java.time.LocalDateTime;
 import com.capstone.interviewtracker.enums.CandidateStatus;
 import com.capstone.interviewtracker.enums.Stage;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
+/**
+ * Represents a candidate in the interview tracking system.
+ */
 @Entity
 @Table(name = "candidates")
 public class Candidate {
-    // primary key for candidate table
+
+    /**
+     * Primary key for candidate table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // candidate full name
-    @NotBlank
+    /**
+     * Candidate full name.
+     */
     @Column(nullable = false)
     private String name;
 
-    // mapping candidate with user account
+    /**
+     * Mapping candidate with user account.
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    // email should be unique and valid format
-    @Email
-    @NotBlank
+    /**
+     * Email of the candidate should be unique.
+     */
     @Column(nullable = false, unique = true)
     private String email;
 
-    // phone number of candidate
-    @NotBlank
+    /**
+     * Phone number of candidate.
+     */
     @Column(nullable = false, unique = true)
     private String phone;
 
-    // resume link stored as URL
+    /**
+     * Resume link stored as URL.
+     */
     private String resumeUrl;
 
-    // current company where candidate is working
+    /**
+     * Current company where candidate is working.
+     */
     private String currentOrganization;
 
-    // total years of experience
-    @NotNull
+    /**
+     * Total years of experience.
+     */
     @Column(nullable = false)
     private Integer totalExperience;
 
-    // relevant experience for job role
+    /**
+     * Relevant experience for job role.
+     */
     private Integer relevantExperience;
 
-    // current salary of candidate
+    /**
+     * Current salary of candidate.
+     */
     private Double currentCTC;
 
-    // expected salary of candidate
+    /**
+     * Expected salary of candidate.
+     */
     private Double expectedCTC;
 
-    // notice period of candidate
+    /**
+     * Notice period of candidate.
+     */
     private String noticePeriod;
 
-    // preferred job location
+    /**
+     * Preferred job location.
+     */
     private String preferredLocation;
 
-    // source from where candidate came like linkedin, referral.
+    /**
+     * Source from where candidate came like LinkedIn, referral.
+     */
     private String source;
 
-    // current stage in interview process
-    @NotNull
+    /**
+     * Current stage in interview process.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Stage currentStage;
 
-    // current status
+    /**
+     * Current status of the candidate.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CandidateStatus status;
 
-    // mapping candidate to job description - many candidates can apply to one job
+    /**
+     * Mapping candidate to job description.
+     * Many candidates can apply to one job.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id", nullable = false)
     private JobDescription jobDescription;
 
-    // last updated timestamp for candidate record
+    /**
+     * Last updated timestamp for candidate record.
+     */
     private LocalDateTime lastUpdatedAt;
 
-    // getters and setters for all fields below
+    /**
+     * Gets candidate ID.
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Sets candidate ID.
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Gets candidate name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets candidate name.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets candidate email.
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets candidate email.
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Gets candidate phone number.
+     */
     public String getPhone() {
         return phone;
     }
 
+    /**
+     * Sets candidate phone number.
+     */
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
+    /**
+     * Gets resume URL.
+     */
     public String getResumeUrl() {
         return resumeUrl;
     }
 
+    /**
+     * Sets resume URL.
+     */
     public void setResumeUrl(String resumeUrl) {
         this.resumeUrl = resumeUrl;
     }
 
+    /**
+     * Gets current organization.
+     */
     public String getCurrentOrganization() {
         return currentOrganization;
     }
 
+    /**
+     * Sets current organization.
+     */
     public void setCurrentOrganization(String currentOrganization) {
         this.currentOrganization = currentOrganization;
     }
 
+    /**
+     * Gets total experience.
+     */
     public Integer getTotalExperience() {
         return totalExperience;
     }
 
+    /**
+     * Sets total experience.
+     */
     public void setTotalExperience(Integer totalExperience) {
         this.totalExperience = totalExperience;
     }
 
+    /**
+     * Gets relevant experience.
+     */
     public Integer getRelevantExperience() {
         return relevantExperience;
     }
 
+    /**
+     * Sets relevant experience.
+     */
     public void setRelevantExperience(Integer relevantExperience) {
         this.relevantExperience = relevantExperience;
     }
 
+    /**
+     * Gets current CTC.
+     */
     public Double getCurrentCTC() {
         return currentCTC;
     }
 
+    /**
+     * Sets current CTC.
+     */
     public void setCurrentCTC(Double currentCTC) {
         this.currentCTC = currentCTC;
     }
 
+    /**
+     * Gets expected CTC.
+     */
     public Double getExpectedCTC() {
         return expectedCTC;
     }
 
+    /**
+     * Sets expected CTC.
+     */
     public void setExpectedCTC(Double expectedCTC) {
         this.expectedCTC = expectedCTC;
     }
 
+    /**
+     * Gets notice period.
+     */
     public String getNoticePeriod() {
         return noticePeriod;
     }
 
+    /**
+     * Sets notice period.
+     */
     public void setNoticePeriod(String noticePeriod) {
         this.noticePeriod = noticePeriod;
     }
 
+    /**
+     * Gets preferred location.
+     */
     public String getPreferredLocation() {
         return preferredLocation;
     }
 
+    /**
+     * Sets preferred location.
+     */
     public void setPreferredLocation(String preferredLocation) {
         this.preferredLocation = preferredLocation;
     }
 
+    /**
+     * Gets source of candidate.
+     */
     public String getSource() {
         return source;
     }
 
+    /**
+     * Sets source of candidate.
+     */
     public void setSource(String source) {
         this.source = source;
     }
 
+    /**
+     * Gets current stage.
+     */
     public Stage getCurrentStage() {
         return currentStage;
     }
 
+    /**
+     * Sets current stage.
+     */
     public void setCurrentStage(Stage currentStage) {
         this.currentStage = currentStage;
     }
 
+    /**
+     * Gets candidate status.
+     */
     public CandidateStatus getStatus() {
         return status;
     }
 
+    /**
+     * Sets candidate status.
+     */
     public void setStatus(CandidateStatus status) {
         this.status = status;
     }
 
+    /**
+     * Gets job description.
+     */
     public JobDescription getJobDescription() {
         return jobDescription;
     }
 
+    /**
+     * Sets job description.
+     */
     public void setJobDescription(JobDescription jobDescription) {
         this.jobDescription = jobDescription;
     }
 
+    /**
+     * Updates timestamp before insert and update operations.
+     */
     @PrePersist
     @PreUpdate
     public void updateTimestamp() {

@@ -1,26 +1,36 @@
 package com.capstone.interviewtracker.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
+/**
+ * Represents a technical skill used in Job Descriptions.
+ */
 @Entity
 @Table(name = "skills")
 public class Skill {
 
-    // primary key for skills table
+    /**
+     * Primary key for skills table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // skill name.
-    @NotBlank
+    /**
+     * Name of the skill.
+     */
     @Column(nullable = false, unique = true)
     private String name;
 
-    // mapping back to job descriptions
+    /**
+     * Jobs associated with this skill.
+     * Bidirectional mapping with JobDescription.
+     */
     @ManyToMany(mappedBy = "skills")
     private List<JobDescription> jobDescriptions;
+
+    // Constructors
 
     public Skill() {
     }
@@ -29,12 +39,12 @@ public class Skill {
         this.name = name;
     }
 
-    // getter for id
+    // Getters and Setters
+
     public Long getId() {
         return id;
     }
 
-    // getter and setter for skill name
     public String getName() {
         return name;
     }
@@ -43,7 +53,6 @@ public class Skill {
         this.name = name;
     }
 
-    // getter and setter for related job descriptions
     public List<JobDescription> getJobDescriptions() {
         return jobDescriptions;
     }

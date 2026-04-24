@@ -3,53 +3,67 @@ package com.capstone.interviewtracker.model;
 import com.capstone.interviewtracker.enums.InterviewStatus;
 import com.capstone.interviewtracker.enums.Stage;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-// This class represents an Interview scheduled for a candidate
+/**
+ * Represents an Interview scheduled for a candidate.
+ */
 @Entity
 @Table(name = "interviews")
 public class Interview {
 
-    // Primary key of interview table
+    /**
+     * Primary key of interview table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Stage of interview like L1, L2, HR
-    @NotNull
+    /**
+     * Stage of interview like L1, L2, HR.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Stage stage;
 
-    // Date and time when interview is scheduled
-    @NotNull
+    /**
+     * Date and time when interview is scheduled.
+     */
     @Column(nullable = false)
     private LocalDateTime scheduledAt;
 
-    // Focus area of interview like DSA, Java, System Design
+    /**
+     * Focus area of interview like DSA, Java, System Design.
+     */
     @Column(columnDefinition = "TEXT")
     private String focusArea;
 
-    // Many interviews belong to one candidate
+    /**
+     * Many interviews belong to one candidate.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    // Many panels can take one interview and one panel can attend multiple
-    // interviews
+    /**
+     * Many panels can take one interview and one panel can attend multiple
+     * interviews.
+     * Minimum 1 and maximum 2 panels allowed.
+     */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "interview_panels", joinColumns = @JoinColumn(name = "interview_id"), inverseJoinColumns = @JoinColumn(name = "panel_id"))
-    @Size(min = 1, max = 2)
     private List<Panel> panels;
 
+    /**
+     * Status of the interview.
+     */
     @Enumerated(EnumType.STRING)
     private InterviewStatus status;
 
-    // Getter and Setter methods
+    // Getters and Setters
+
     public Long getId() {
         return id;
     }

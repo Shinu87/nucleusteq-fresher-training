@@ -1,71 +1,67 @@
 package com.capstone.interviewtracker.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
-// This class represents panel members in the system
+/**
+ * Represents panel members who conduct interviews in the system.
+ */
 @Entity
 @Table(name = "panels")
 public class Panel {
 
-    // Primary key for panel table
+    /**
+     * Primary key for panel table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Name of the panel member
-    @NotBlank
+    /**
+     * Name of the panel member.
+     */
     @Column(nullable = false)
     private String name;
 
-    // Email should be valid and unique
-    @Email
-    @NotBlank
+    /**
+     * Email of panel member.
+     */
     @Column(nullable = false, unique = true)
     private String email;
 
-    // Mobile number should be unique
-    @NotBlank
+    /**
+     * Mobile number of panel member.
+     */
     @Column(nullable = false, unique = true)
     private String mobile;
 
-    // Organization where panel member works
-    @NotBlank
+    /**
+     * Organization of panel member.
+     */
     @Column(nullable = false)
     private String organization;
 
-    // Designation of the panel member
-    @NotBlank
+    /**
+     * Designation of panel member.
+     */
     @Column(nullable = false)
     private String designation;
 
-    // To check if panel is active or not
+    /**
+     * Indicates whether panel is active or not.
+     */
     @Column(nullable = false)
     private boolean active = false;
 
-    // Link panel to user account for login
+    /**
+     * Linked user account for login.
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    // default constructor
-    public Panel() {
-    }
-
-    // constructor
-    public Panel(String name, String email, String mobile,
-            String organization, String designation,
-            boolean active) {
-        this.name = name;
-        this.email = email;
-        this.mobile = mobile;
-        this.organization = organization;
-        this.designation = designation;
-        this.active = active;
-    }
-
-    // getters and setters
+    /**
+     * Getters and Setters
+     */
 
     public Long getId() {
         return id;

@@ -2,89 +2,82 @@ package com.capstone.interviewtracker.model;
 
 import com.capstone.interviewtracker.enums.JobType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
+/**
+ * Represents a Job Description created by HR.
+ */
 @Entity
 @Table(name = "job_descriptions")
 public class JobDescription {
 
-    // primary key for job description table
+    /**
+     * Primary key for job description table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // job title
-    @NotBlank
+    /**
+     * Job title.
+     */
     @Column(nullable = false)
     private String title;
 
-    // full job description details
-    @NotBlank
+    /**
+     * Full job description details.
+     */
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    /*
-     * mapping many skills to one job using join table
-     * this will create a separate table job_skills (job_id, skill_id)
+    /**
+     * Mapping many skills to one job using join table.
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "job_skills", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     private List<Skill> skills;
 
-    // minimum experience required
-    @NotNull
+    /**
+     * Minimum experience required.
+     */
     @Column(nullable = false)
     private Integer minExperience;
 
-    // maximum experience allowed
-    @NotNull
+    /**
+     * Maximum experience allowed.
+     */
     @Column(nullable = false)
     private Integer maxExperience;
 
-    // minimum salary range
-    @NotNull
+    /**
+     * Minimum salary range.
+     */
     @Column(nullable = false)
     private Double minSalary;
 
-    // maximum salary range
-    @NotNull
+    /**
+     * Maximum salary range.
+     */
     @Column(nullable = false)
     private Double maxSalary;
 
-    // job location
-    @NotBlank
+    /**
+     * Job location.
+     */
     @Column(nullable = false)
     private String location;
 
-    // job type like FULL_TIME, CONTRACT, REMOTE
-    @NotNull
+    /**
+     * Job type like FULL_TIME, CONTRACT, REMOTE.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JobType jobType;
 
-    // default constructor
-    public JobDescription() {
-    }
-
-    public JobDescription(String title, String description,
-            List<Skill> skills,
-            Integer minExperience, Integer maxExperience,
-            Double minSalary, Double maxSalary,
-            String location, JobType jobType) {
-        this.title = title;
-        this.description = description;
-        this.skills = skills;
-        this.minExperience = minExperience;
-        this.maxExperience = maxExperience;
-        this.minSalary = minSalary;
-        this.maxSalary = maxSalary;
-        this.location = location;
-        this.jobType = jobType;
-    }
-
-    // getters and setters for all fields below
+    /**
+     * Getters and Setters
+     */
 
     public Long getId() {
         return id;

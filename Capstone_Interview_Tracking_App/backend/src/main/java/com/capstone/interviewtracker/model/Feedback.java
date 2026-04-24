@@ -1,66 +1,79 @@
 package com.capstone.interviewtracker.model;
 
 import com.capstone.interviewtracker.enums.FeedbackStatus;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
-// This class represents the feedback given by panel after interview
+/**
+ * Represents feedback given by a panel member after an interview.
+ */
 @Entity
 @Table(name = "feedbacks", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "interview_id", "panel_id" })
 })
 public class Feedback {
 
-    // Primary key of feedback table
+    /**
+     * Primary key of feedback table.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Mandatory comments given by panel
-    @NotBlank
+    /**
+     * Mandatory comments given by panel.
+     */
     @Column(nullable = false, columnDefinition = "TEXT")
     private String comments;
 
-    // Strengths observed in candidate
+    /**
+     * Strengths observed in candidate.
+     */
     @Column(columnDefinition = "TEXT")
     private String strengths;
 
-    // Weaknesses observed in candidate
+    /**
+     * Weaknesses observed in candidate.
+     */
     @Column(columnDefinition = "TEXT")
     private String weaknesses;
 
-    // Topics or areas covered in interview
+    /**
+     * Topics or areas covered in interview.
+     */
     @Column(columnDefinition = "TEXT")
     private String areasCovered;
 
-    // Rating given by panel (1 to 5)
-    @NotNull
-    @Min(1)
-    @Max(5)
+    /**
+     * Rating given by panel (1 to 5).
+     */
     @Column(nullable = false)
     private Integer rating;
 
-    // Status of feedback like SELECTED, REJECTED
-    @NotNull
+    /**
+     * Status of feedback like SELECTED or REJECTED.
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FeedbackStatus status;
 
-    // Many feedbacks can belong to one interview
+    /**
+     * Many feedbacks belong to one interview.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interview_id", nullable = false)
     private Interview interview;
 
-    // Many feedbacks can be given by one panel member
+    /**
+     * Many feedbacks can be given by one panel member.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "panel_id", nullable = false)
     private Panel panel;
 
-    // Getter and Setter methods
+    /**
+     * Getters and Setters
+     */
+
     public Long getId() {
         return id;
     }
