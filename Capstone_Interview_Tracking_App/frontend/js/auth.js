@@ -30,12 +30,17 @@ if (signupForm) {
         return response.json();
       })
       .then((result) => {
-        document.getElementById("message").innerText = "Signup successful!";
+        const message = document.getElementById("message");
+        message.innerText = "Signup successful!";
+        message.classList.remove("error");
+        message.classList.add("success");
         console.log(result);
       })
       .catch((error) => {
-        document.getElementById("message").innerText =
-          error.message || "Signup failed!";
+        const message = document.getElementById("message");
+        message.innerText = error.message || "Error during signup!";
+        message.classList.remove("success");
+        message.classList.add("error");
         console.error(error);
       });
   });
