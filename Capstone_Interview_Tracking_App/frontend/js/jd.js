@@ -55,3 +55,5 @@ function createJD() {
       loadJobs();
     });
 }
+
+window.onload = loadJobs;
