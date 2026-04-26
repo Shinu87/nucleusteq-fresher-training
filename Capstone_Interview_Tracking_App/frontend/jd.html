@@ -17,11 +17,15 @@
       <input type="text" id="title" placeholder="Job Title" />
       <textarea id="description" placeholder="Job Description"></textarea>
 
-      <input type="number" id="minExp" placeholder="Min Experience" />
-      <input type="number" id="maxExp" placeholder="Max Experience" />
+      <div class="row">
+        <input type="number" id="minExp" placeholder="Min Exp" />
+        <input type="number" id="maxExp" placeholder="Max Exp" />
+      </div>
 
-      <input type="number" id="minSalary" placeholder="Min Salary" />
-      <input type="number" id="maxSalary" placeholder="Max Salary" />
+      <div class="row">
+        <input type="number" id="minSalary" placeholder="Min Salary" />
+        <input type="number" id="maxSalary" placeholder="Max Salary" />
+      </div>
 
       <input type="text" id="location" placeholder="Location" />
 
@@ -40,6 +44,14 @@
 
     <script>
       window.onload = loadJobs;
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) {
+        alert("Please login first");
+        window.location.href = "login.html";
+      }
+      if (user.role !== "HR") {
+        document.getElementById("jd-form").style.display = "none";
+      }
     </script>
   </body>
 </html>
