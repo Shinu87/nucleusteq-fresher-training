@@ -10,6 +10,10 @@ import com.capstone.interviewtracker.model.JobDescription;
 import com.capstone.interviewtracker.repository.JobDescriptionRepository;
 import com.capstone.interviewtracker.service.JobService;
 
+import com.capstone.interviewtracker.model.Skill;
+import com.capstone.interviewtracker.repository.SkillRepository;
+import java.util.stream.Collectors;
+
 /**
  * Service implementation for Job related operations.
  * Handles business logic between controller and repository.
@@ -18,14 +22,13 @@ import com.capstone.interviewtracker.service.JobService;
 public class JobServiceImpl implements JobService {
 
     private final JobDescriptionRepository jobRepo;
+    private final SkillRepository skillRepository;
 
-    public JobServiceImpl(JobDescriptionRepository jobRepo) {
+    public JobServiceImpl(JobDescriptionRepository jobRepo, SkillRepository skillRepository) {
         this.jobRepo = jobRepo;
+        this.skillRepository = skillRepository;
     }
 
-    /**
-     * Creates a new job and saves it into database.
-     */
     @Override
     public JobResponseDTO createJob(JobRequestDTO request) {
 
@@ -40,9 +43,20 @@ public class JobServiceImpl implements JobService {
         job.setLocation(request.getLocation());
         job.setJobType(request.getJobType());
 
+        // converting skill IDs to Skill objects
+        List<Skill> skillList = request.getSkillIds()
+                .stream()
+                .map(id -> {
+                    return skillRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("Skill not found: " + id));
+                })
+                .collect(Collectors.toList());
+        job.setSkills(skillList);
+
         JobDescription saved = jobRepo.save(job);
 
         JobResponseDTO response = new JobResponseDTO();
+
         response.setId(saved.getId());
         response.setTitle(saved.getTitle());
         response.setDescription(saved.getDescription());
@@ -53,16 +67,23 @@ public class JobServiceImpl implements JobService {
         response.setLocation(saved.getLocation());
         response.setJobType(saved.getJobType());
 
+        // extracting skill names for response
+        List<String> skillNames = saved.getSkills()
+                .stream()
+                .map(Skill::getName)
+                .toList();
+
+        response.setSkills(skillNames);
         return response;
     }
 
     /**
-     * Returns all jobs from database.
+     * Fetches all jobs along with their skills.
+     * Uses JOIN FETCH to avoid lazy loading issues.
      */
     @Override
     public List<JobResponseDTO> getAllJobs() {
-        return jobRepo.findAll().stream().map(job -> {
-
+        return jobRepo.findAllWithSkills().stream().map(job -> {
             JobResponseDTO dto = new JobResponseDTO();
             dto.setId(job.getId());
             dto.setTitle(job.getTitle());
@@ -73,6 +94,13 @@ public class JobServiceImpl implements JobService {
             dto.setMaxSalary(job.getMaxSalary());
             dto.setLocation(job.getLocation());
             dto.setJobType(job.getJobType());
+
+            List<String> skillNames = job.getSkills()
+                    .stream()
+                    .map(Skill::getName)
+                    .toList();
+
+            dto.setSkills(skillNames);
 
             return dto;
         }).toList();
