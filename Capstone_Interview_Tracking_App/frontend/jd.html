@@ -15,7 +15,12 @@
       <h2>Create Job Description</h2>
 
       <input type="text" id="title" placeholder="Job Title" />
+      <br />
       <textarea id="description" placeholder="Job Description"></textarea>
+      <br />
+
+      <label>Select Skills:</label>
+      <div id="skills-container"></div>
 
       <div class="row">
         <input type="number" id="minExp" placeholder="Min Exp" />
@@ -43,7 +48,10 @@
     <script src="js/jd.js"></script>
 
     <script>
-      window.onload = loadJobs;
+      window.onload = function () {
+        loadSkills();
+        loadJobs();
+      };
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user) {
         alert("Please login first");
