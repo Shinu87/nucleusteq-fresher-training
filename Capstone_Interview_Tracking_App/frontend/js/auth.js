@@ -35,6 +35,7 @@ if (signupForm) {
         message.classList.remove("error");
         message.classList.add("success");
         console.log(result);
+        window.location.href = "login.html";
       })
       .catch((error) => {
         const message = document.getElementById("message");
@@ -76,8 +77,10 @@ if (loginForm) {
         return response.json();
       })
       .then((result) => {
+        localStorage.setItem("user", JSON.stringify(result));
         alert("Login Successful!");
         console.log("Login success for:", result.email);
+        window.location.href = "jd.html";
       })
       .catch((error) => {
         alert(error.message || "Login failed!");
