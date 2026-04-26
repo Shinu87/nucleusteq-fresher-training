@@ -1,126 +1,189 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    /* gradient background */
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* center content */
+
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    color: #fff;
 }
 
-/* heading style */
+/* Heading */
 h2 {
     color: white;
-    margin-top: 60px;
+    margin-top: 50px;
     margin-bottom: 20px;
     letter-spacing: 1px;
+    font-weight: 600;
 }
 
-/* form container with glass effect */
+/* Glass form */
 form {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    /* blur for glass look */
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
     padding: 30px;
-    border-radius: 12px;
-    width: 320px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    width: 340px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    transition: transform 0.3s ease;
 }
 
-/* input fields */
+form:hover {
+    transform: translateY(-2px);
+}
+
+/* Inputs */
 input {
     width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: none;
-    border-radius: 6px;
+    padding: 11px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
     outline: none;
+
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
 }
 
-/* button styling */
+/* Button */
 button {
     width: 100%;
-    padding: 10px;
+    padding: 11px;
+
     background: #ffffff;
     color: #333;
     border: none;
-    border-radius: 6px;
-    font-weight: bold;
+    border-radius: 8px;
+
+    font-weight: 600;
     cursor: pointer;
-    transition: 0.3s;
-    /* smooth hover */
+    transition: all 0.25s ease;
 }
 
-/* hover effect */
 button:hover {
-    background: #ddd;
+    background: #f1f1f1;
+    transform: scale(1.02);
 }
 
-/* message box for success/error */
+/* Message */
 #message {
     margin-top: 15px;
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
     text-align: center;
     font-size: 14px;
     font-weight: 500;
-    animation: fadeIn 0.4s ease-in-out;
-    /* fade animation */
+    animation: fadeIn 0.3s ease-in-out;
 }
 
-/* success style */
 #message.success {
-    background-color: rgba(40, 167, 69, 0.2);
+    background-color: rgba(46, 204, 113, 0.15);
     color: #2ecc71;
     border: 1px solid #2ecc71;
 }
 
-/* error style */
 #message.error {
-    background-color: rgba(220, 53, 69, 0.2);
-    color: black;
-    /* text color for error */
+    background-color: rgba(255, 77, 79, 0.15);
+    color: #ff4d4f;
     border: 1px solid #ff4d4f;
 }
 
+/* Job Card */
 .jd-card {
-    background: #ffffff;
-    color: #000;
-    padding: 16px;
-    margin: 12px 0;
-    border-radius: 12px;
-    border: 1px solid #e6e6e6;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
-    font-family: Arial, sans-serif;
+    background: #fff;
+    color: #111;
+    padding: 18px;
+    margin: 14px 0;
+    border-radius: 14px;
+
+    border: 1px solid #eaeaea;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+    transition: all 0.25s ease;
 }
 
-/* hover effect */
 .jd-card:hover {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Job title */
+/* Title */
 .jd-card h3 {
     font-size: 18px;
-    margin: 0 0 6px 0;
-    color: #0a66c2;
-    cursor: pointer;
+    margin-bottom: 6px;
+    color: #4f46e5;
 }
 
-/* description */
+/* Text */
 .jd-card p {
     margin: 4px 0;
     font-size: 14px;
-    color: #333;
-    line-height: 1.4;
+    color: #444;
+    line-height: 1.5;
 }
 
-/* highlight labels */
-.jd-card b {
-    color: #000;
+/* Skills input */
+#skills {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 14px;
+
+    transition: all 0.25s ease;
+}
+
+#skills:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.35);
+}
+
+/* Skill container */
+#skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.skill-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 12px;
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, #6c63ff, #3f3d56);
+    color: #fff;
+
+    font-size: 13px;
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.skill-item:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* checkbox */
+.skill-item input {
+    accent-color: white;
+    transform: scale(1.1);
 }
