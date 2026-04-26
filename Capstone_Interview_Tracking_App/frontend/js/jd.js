@@ -29,6 +29,20 @@ function loadJobs() {
     });
 }
 
+function getSelectedSkills() {
+  const checkboxes = document.querySelectorAll(
+    "#skills-container input:checked",
+  );
+
+  const selected = [];
+
+  checkboxes.forEach((cb) => {
+    selected.push(parseInt(cb.value));
+  });
+
+  return selected;
+}
+
 function createJD() {
   const data = {
     title: document.getElementById("title").value,
@@ -39,7 +53,7 @@ function createJD() {
     maxSalary: document.getElementById("maxSalary").value,
     location: document.getElementById("location").value,
     jobType: "FULL_TIME",
-    skillIds: [1, 2], // temporary hardcoded
+    skillIds: getSelectedSkills(),
   };
 
   fetch(API_URL, {
@@ -56,4 +70,20 @@ function createJD() {
     });
 }
 
-window.onload = loadJobs;
+function loadSkills() {
+  fetch("http://localhost:8080/api/skills")
+    .then((res) => res.json())
+    .then((data) => {
+      const container = document.getElementById("skills-container");
+      container.innerHTML = "";
+
+      data.forEach((skill) => {
+        container.innerHTML += `
+                    <label class="skill-item">
+                        <input type="checkbox" value="${skill.id}" />
+                        ${skill.name}
+                    </label>
+                `;
+      });
+    });
+}
