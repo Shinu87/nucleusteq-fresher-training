@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Job Descriptions</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <h1>Job Descriptions</h1>
+
+    <!-- HR FORM (visible only for HR, i will hide later for candidates) -->
+    <div id="jd-form">
+      <h2>Create Job Description</h2>
+
+      <input type="text" id="title" placeholder="Job Title" />
+      <textarea id="description" placeholder="Job Description"></textarea>
+
+      <input type="number" id="minExp" placeholder="Min Experience" />
+      <input type="number" id="maxExp" placeholder="Max Experience" />
+
+      <input type="number" id="minSalary" placeholder="Min Salary" />
+      <input type="number" id="maxSalary" placeholder="Max Salary" />
+
+      <input type="text" id="location" placeholder="Location" />
+
+      <button onclick="createJD()">Create JD</button>
+    </div>
+
+    <hr />
+
+    <!-- JD LIST -->
+    <div id="jd-list">
+      <h2>Available Jobs</h2>
+    </div>
+
+    <!-- JS FILE -->
+    <script src="js/jd.js"></script>
+
+    <script>
+      window.onload = loadJobs;
+    </script>
+  </body>
+</html>
