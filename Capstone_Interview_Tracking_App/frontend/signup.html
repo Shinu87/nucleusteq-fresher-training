@@ -3,26 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SignUp</title>
+    <title>Sign Up – Interview Tracker</title>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <h2>Candidate Signup</h2>
+    <div class="auth-page">
+      <div class="auth-card">
+        <h2>🚀 Create Account</h2>
+        <p class="subtitle">Register as a candidate</p>
 
-    <form id="signupForm">
-      <label>Name:</label><br />
-      <input type="text" id="name" required /><br /><br />
+        <form id="signupForm">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="John Doe" required />
 
-      <label>Email:</label><br />
-      <input type="email" id="email" required /><br /><br />
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="your@email.com"
+            required
+          />
 
-      <label>Password:</label><br />
-      <input type="password" id="password" required /><br /><br />
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Create a strong password"
+            required
+          />
 
-      <button type="submit">Signup</button>
-    </form>
+          <button type="submit" class="btn-primary">Sign Up</button>
+        </form>
 
-    <p id="message"></p>
+        <div id="message"></div>
+
+        <p class="link-text">
+          Already have an account? <a href="login.html">Login</a>
+        </p>
+      </div>
+    </div>
 
     <script src="js/auth.js"></script>
   </body>
