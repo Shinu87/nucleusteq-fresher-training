@@ -3,6 +3,8 @@ package com.capstone.interviewtracker.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Represents a technical skill used in Job Descriptions.
  */
@@ -27,7 +29,9 @@ public class Skill {
      * Jobs associated with this skill.
      * Bidirectional mapping with JobDescription.
      */
+
     @ManyToMany(mappedBy = "skills")
+    @JsonIgnore
     private List<JobDescription> jobDescriptions;
 
     // Constructors
