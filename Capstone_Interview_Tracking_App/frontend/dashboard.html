@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Dashboard – Interview Tracker</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+        <!-- JOB DESCRIPTIONS -->
+        <section id="section-jobs" class="page-section">
+          <div class="page-header">
+            <h2>Job Descriptions</h2>
+            <p>Create and manage all job openings.</p>
+          </div>
+
+          <!-- Create JD Form -->
+          <div class="card">
+            <div class="card-title">➕ Create New Job Description</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Job Title *</label>
+                <input
+                  type="text"
+                  id="jdTitle"
+                  placeholder="e.g. Senior Java Developer"
+                />
+              </div>
+              <div class="form-group">
+                <label>Location *</label>
+                <input
+                  type="text"
+                  id="jdLocation"
+                  placeholder="e.g. Bengaluru"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Job Description *</label>
+              <textarea
+                id="jdDesc"
+                placeholder="Describe the role, responsibilities…"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Min Experience (yrs) *</label>
+                <input type="number" id="jdMinExp" placeholder="2" />
+              </div>
+              <div class="form-group">
+                <label>Max Experience (yrs) *</label>
+                <input type="number" id="jdMaxExp" placeholder="6" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Min Salary (LPA) *</label>
+                <input type="number" id="jdMinSal" placeholder="8" />
+              </div>
+              <div class="form-group">
+                <label>Max Salary (LPA) *</label>
+                <input type="number" id="jdMaxSal" placeholder="18" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Job Type *</label>
+              <select id="jdJobType">
+                <option value="FULL_TIME">Full Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="REMOTE">Remote</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Skills Required</label>
+              <div class="skills-grid" id="jdSkillsContainer"></div>
+            </div>
+            <button class="btn btn-submit" onclick="createJD()">
+              Create Job Description
+            </button>
+            <div
+              id="jdMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <!-- JD List -->
+          <div class="card">
+            <div class="card-title">📋 All Job Descriptions</div>
+            <div class="jd-cards-grid" id="jdList">
+              <div class="empty-state">
+                <div class="empty-icon">💼</div>
+                <p>No jobs yet.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+    <div id="toast-container"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>
