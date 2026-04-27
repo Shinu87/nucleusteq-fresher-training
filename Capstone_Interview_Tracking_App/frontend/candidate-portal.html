@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate Portal – Interview Tracker</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h1>Interview<br />Tracker</h1>
+          <span>Candidate Portal</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-item active" onclick="showSection('jobs', this)">
+            <span class="icon">💼</span> Browse Jobs
+          </a>
+          <a class="nav-item" onclick="showSection('apply', this)">
+            <span class="icon">📋</span> My Profile
+          </a>
+          <a class="nav-item" onclick="showSection('progress', this)">
+            <span class="icon">📊</span> My Progress
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <strong id="sidebarName">Candidate</strong>
+            <span id="sidebarEmail"></span>
+          </div>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- BROWSE JOBS -->
+        <section id="section-jobs" class="page-section active">
+          <div class="page-header">
+            <h2>Browse Job Openings</h2>
+            <p>Select a job to view details and apply.</p>
+          </div>
+          <div class="jd-cards-grid" id="candidateJobList">
+            <div class="empty-state">
+              <div class="empty-icon">💼</div>
+              <p>Loading jobs…</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- APPLY FORM -->
+        <section id="section-apply" class="page-section">
+          <div class="page-header">
+            <h2>Candidate Profile</h2>
+            <p>Fill your details to apply for a position.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📋 Application Form</div>
+            <div
+              id="applyJobInfo"
+              style="
+                background: #f0f0ff;
+                border-radius: 10px;
+                padding: 14px;
+                margin-bottom: 18px;
+                display: none;
+              "
+            >
+              <strong
+                id="applyJobTitle"
+                style="color: #5b21b6; font-size: 15px"
+              ></strong>
+              <p
+                id="applyJobDesc"
+                style="font-size: 13px; color: #666; margin-top: 4px"
+              ></p>
+            </div>
+            <input type="hidden" id="applyJobId" />
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="aName" placeholder="Your Full Name" />
+              </div>
+              <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="aEmail" placeholder="your@email.com" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone *</label>
+                <input type="text" id="aPhone" placeholder="+91 9876543210" />
+              </div>
+              <div class="form-group">
+                <label>Current Organization</label>
+                <input type="text" id="aOrg" placeholder="Company Name" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Total Experience (yrs) *</label>
+                <input type="number" id="aTotalExp" placeholder="5" />
+              </div>
+              <div class="form-group">
+                <label>Relevant Experience (yrs)</label>
+                <input type="number" id="aRelExp" placeholder="3" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Current CTC (LPA)</label>
+                <input type="number" id="aCurCTC" placeholder="10" />
+              </div>
+              <div class="form-group">
+                <label>Expected CTC (LPA)</label>
+                <input type="number" id="aExpCTC" placeholder="16" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Notice Period</label>
+                <input
+                  type="text"
+                  id="aNotice"
+                  placeholder="30 days / Immediate"
+                />
+              </div>
+              <div class="form-group">
+                <label>Preferred Location</label>
+                <input
+                  type="text"
+                  id="aPrefLoc"
+                  placeholder="Hyderabad / Bengaluru"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Source (How did you hear about us?)</label>
+                <input
+                  type="text"
+                  id="aSource"
+                  placeholder="LinkedIn / Referral / Naukri"
+                />
+              </div>
+              <div class="form-group">
+                <label>Resume (PDF only, max 10MB)</label>
+                <input type="file" id="aResumeFile" accept=".pdf" />
+                <small style="color: #aaa; font-size: 12px"
+                  >Stored securely on internal server.</small
+                >
+              </div>
+            </div>
+
+            <div class="form-group" id="jobSelectGroup">
+              <label>Job Applied For *</label>
+              <select id="aJobId">
+                <option value="">-- Select a Job --</option>
+              </select>
+            </div>
+
+            <button class="btn btn-submit" onclick="submitApplication()">
+              Submit Application
+            </button>
+            <div
+              id="applyMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+        </section>
+
+        <!-- MY PROGRESS -->
+        <section id="section-progress" class="page-section">
+          <div class="page-header">
+            <h2>My Application Progress</h2>
+            <p>
+              Your current application status — loaded automatically for your
+              account.
+            </p>
+          </div>
+
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+              "
+            >
+              <div class="card-title" style="margin: 0">
+                📊 Application Tracker
+              </div>
+              <!-- Refresh re-fetches -->
+              <button
+                class="btn"
+                style="font-size: 12px; padding: 6px 14px"
+                onclick="loadMyProgress()"
+              >
+                &#x1F504; Refresh
+              </button>
+            </div>
+            <p style="font-size: 13px; color: #888; margin-bottom: 16px">
+              Tracking application for your account.
+            </p>
+            <div id="progressContent">
+              <div class="empty-state">
+                <div class="empty-icon">&#x23F3;</div>
+                <p>Loading your application status&#x2026;</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/api.js"></script>
+    <script src="js/candidate-portal.js"></script>
+  </body>
+</html>

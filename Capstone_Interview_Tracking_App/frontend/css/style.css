@@ -1,0 +1,189 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    color: #fff;
+}
+
+/* Heading */
+h2 {
+    color: white;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Glass form */
+form {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    padding: 30px;
+    border-radius: 16px;
+    width: 340px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    transition: transform 0.3s ease;
+}
+
+form:hover {
+    transform: translateY(-2px);
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 11px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 11px;
+
+    background: #ffffff;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+button:hover {
+    background: #f1f1f1;
+    transform: scale(1.02);
+}
+
+/* Message */
+#message {
+    margin-top: 15px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+#message.success {
+    background-color: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+#message.error {
+    background-color: rgba(255, 77, 79, 0.15);
+    color: #ff4d4f;
+    border: 1px solid #ff4d4f;
+}
+
+/* Job Card */
+.jd-card {
+    background: #fff;
+    color: #111;
+    padding: 18px;
+    margin: 14px 0;
+    border-radius: 14px;
+
+    border: 1px solid #eaeaea;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+    transition: all 0.25s ease;
+}
+
+.jd-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Title */
+.jd-card h3 {
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: #4f46e5;
+}
+
+/* Text */
+.jd-card p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Skills input */
+#skills {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 14px;
+
+    transition: all 0.25s ease;
+}
+
+#skills:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.35);
+}
+
+/* Skill container */
+#skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.skill-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 12px;
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, #6c63ff, #3f3d56);
+    color: #fff;
+
+    font-size: 13px;
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.skill-item:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* checkbox */
+.skill-item input {
+    accent-color: white;
+    transform: scale(1.1);
+}
