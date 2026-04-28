@@ -41,6 +41,12 @@ public class Interview {
     private String focusArea;
 
     /**
+     * HR enters this while scheduling. Sent to panel via email.
+     */
+    @Column(length = 500)
+    private String meetingUrl;
+
+    /**
      * Many interviews belong to one candidate.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -119,4 +125,13 @@ public class Interview {
     public void setStatus(InterviewStatus status) {
         this.status = status;
     }
+
+    public String getMeetingUrl() {
+        return meetingUrl;
+    }
+
+    public void setMeetingUrl(String meetingUrl) {
+        this.meetingUrl = meetingUrl;
+    }
+
 }
