@@ -1,7 +1,7 @@
 package com.capstone.interviewtracker.dto.Response;
 
 /**
- * DTO used for returning panel details to client.
+ * DTO used for returning panel details to client(candidate,hr).
  */
 public class PanelResponseDTO {
 

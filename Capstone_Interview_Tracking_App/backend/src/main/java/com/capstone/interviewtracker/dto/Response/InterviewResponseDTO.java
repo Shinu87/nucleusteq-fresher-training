@@ -16,10 +16,14 @@ public class InterviewResponseDTO {
     private LocalDateTime scheduledAt;
     private String focusArea;
 
+    private String meetingUrl;
+
     private Long candidateId;
     private String candidateName;
 
     private List<String> panelNames;
+
+    private List<Long> panelIds;
 
     private InterviewStatus status;
 
@@ -90,4 +94,21 @@ public class InterviewResponseDTO {
     public void setStatus(InterviewStatus status) {
         this.status = status;
     }
+
+    public String getMeetingUrl() {
+        return meetingUrl;
+    }
+
+    public void setMeetingUrl(String meetingUrl) {
+        this.meetingUrl = meetingUrl;
+    }
+
+    public List<Long> getPanelIds() {
+        return panelIds;
+    }
+
+    public void setPanelIds(List<Long> panelIds) {
+        this.panelIds = panelIds;
+    }
+
 }

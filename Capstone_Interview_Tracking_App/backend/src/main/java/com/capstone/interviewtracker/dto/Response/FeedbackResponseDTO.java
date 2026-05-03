@@ -1,6 +1,7 @@
 package com.capstone.interviewtracker.dto.Response;
 
 import com.capstone.interviewtracker.enums.FeedbackStatus;
+import com.capstone.interviewtracker.enums.Stage;
 
 /**
  * DTO used for sending feedback details in API response.
@@ -16,7 +17,10 @@ public class FeedbackResponseDTO {
     private FeedbackStatus status;
 
     private Long interviewId;
+    private Stage interviewStage;
+
     private Long panelId;
+    private String panelName;
 
     /**
      * Getters and Setters
@@ -86,6 +90,14 @@ public class FeedbackResponseDTO {
         this.interviewId = interviewId;
     }
 
+    public Stage getInterviewStage() {
+        return interviewStage;
+    }
+
+    public void setInterviewStage(Stage interviewStage) {
+        this.interviewStage = interviewStage;
+    }
+
     public Long getPanelId() {
         return panelId;
     }
@@ -93,4 +105,13 @@ public class FeedbackResponseDTO {
     public void setPanelId(Long panelId) {
         this.panelId = panelId;
     }
+
+    public String getPanelName() {
+        return panelName;
+    }
+
+    public void setPanelName(String panelName) {
+        this.panelName = panelName;
+    }
+
 }

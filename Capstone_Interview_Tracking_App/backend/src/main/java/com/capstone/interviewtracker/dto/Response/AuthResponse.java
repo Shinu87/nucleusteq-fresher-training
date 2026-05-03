@@ -12,6 +12,7 @@ public class AuthResponse {
     private String email;
     private Role role;
     private String message;
+    private Integer age;
 
     /**
      * Constructor to set user details and message.
@@ -22,6 +23,11 @@ public class AuthResponse {
         this.email = email;
         this.role = role;
         this.message = message;
+    }
+
+    public AuthResponse(Long id, String name, String email, Role role, String message, Integer age) {
+        this(id, name, email, role, message);
+        this.age = age;
     }
 
     /**
@@ -57,5 +63,12 @@ public class AuthResponse {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * Returns candidate age.
+     */
+    public Integer getAge() {
+        return age;
     }
 }

@@ -30,6 +30,9 @@ public class InterviewRequestDTO {
      */
     private String focusArea;
 
+    /** HR-entered meeting URL sent to panel via email. */
+    private String meetingUrl;
+
     /**
      * Candidate ID.
      */
@@ -98,4 +101,13 @@ public class InterviewRequestDTO {
     public void setStatus(InterviewStatus status) {
         this.status = status;
     }
+
+    public String getMeetingUrl() {
+        return meetingUrl;
+    }
+
+    public void setMeetingUrl(String meetingUrl) {
+        this.meetingUrl = meetingUrl;
+    }
+
 }

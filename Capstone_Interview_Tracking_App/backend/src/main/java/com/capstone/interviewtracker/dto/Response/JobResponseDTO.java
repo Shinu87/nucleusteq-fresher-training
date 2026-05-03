@@ -25,6 +25,8 @@ public class JobResponseDTO {
 
     private JobType jobType;
 
+    private boolean active;
+
     /**
      * Getters and Setters
      */
@@ -107,5 +109,13 @@ public class JobResponseDTO {
 
     public void setJobType(JobType jobType) {
         this.jobType = jobType;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
