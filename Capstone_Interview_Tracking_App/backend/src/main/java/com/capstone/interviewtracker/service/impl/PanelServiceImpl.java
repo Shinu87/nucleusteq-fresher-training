@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.capstone.interviewtracker.constants.PanelConstants;
+import com.capstone.interviewtracker.constants.messages.PanelMessages;
 import com.capstone.interviewtracker.dto.Request.PanelRequestDTO;
 import com.capstone.interviewtracker.dto.Response.PanelResponseDTO;
 import com.capstone.interviewtracker.enums.Role;
-import com.capstone.interviewtracker.exception.ResourceAlreadyExistsException;
-import com.capstone.interviewtracker.exception.ResourceNotFoundException;
+import com.capstone.interviewtracker.exception.custom.ConflictException;
+import com.capstone.interviewtracker.exception.custom.ResourceNotFoundException;
 import com.capstone.interviewtracker.model.Panel;
 import com.capstone.interviewtracker.model.User;
 import com.capstone.interviewtracker.repository.PanelRepository;
@@ -28,10 +28,19 @@ public class PanelServiceImpl implements PanelService {
     private final EmailService emailService;
     private final UserServiceImpl userServiceImpl;
 
+    /**
+     * Constructor injection for PanelService dependencies.
+     *
+     * @param panelRepository repository for panel data
+     * @param userRepository  repository for user data
+     * @param emailService    service for sending emails
+     * @param userServiceImpl service for user-related operations
+     */
     public PanelServiceImpl(PanelRepository panelRepository,
             UserRepository userRepository,
             EmailService emailService,
             UserServiceImpl userServiceImpl) {
+
         this.panelRepository = panelRepository;
         this.userRepository = userRepository;
         this.emailService = emailService;
@@ -39,22 +48,29 @@ public class PanelServiceImpl implements PanelService {
     }
 
     /**
-     * HR creates panel member.
-     * Account remains inactive until activation.
+     * Creates a new panel member by HR.
+     * Ensures email, mobile, and user email are unique before creation.
+     * The panel account is created in inactive state and must be activated later.
+     *
+     * @param request panel creation request containing personal and work details
+     * @return created panel response DTO
      */
     @Override
     public PanelResponseDTO createPanel(PanelRequestDTO request) {
 
         if (panelRepository.existsByEmail(request.getEmail())) {
-            throw new ResourceAlreadyExistsException(PanelConstants.EMAIL_EXISTS);
+            throw new ConflictException(
+                    PanelMessages.EMAIL_EXISTS);
         }
 
         if (panelRepository.existsByMobile(request.getMobile())) {
-            throw new ResourceAlreadyExistsException(PanelConstants.MOBILE_EXISTS);
+            throw new ConflictException(
+                    PanelMessages.MOBILE_EXISTS);
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ResourceAlreadyExistsException(PanelConstants.USER_EXISTS);
+            throw new ConflictException(
+                    PanelMessages.USER_EXISTS);
         }
 
         Panel panel = new Panel();
@@ -69,31 +85,54 @@ public class PanelServiceImpl implements PanelService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Retrieves all panel members from the system.
+     *
+     * @return list of all panel response DTOs
+     */
     @Override
     public List<PanelResponseDTO> getAllPanels() {
-        return panelRepository.findAll().stream().map(this::mapToResponse).toList();
+        return panelRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
+    /**
+     * Retrieves a panel member by their unique ID.
+     *
+     * @param id panel member ID
+     * @return panel response DTO
+     * @throws ResourceNotFoundException if panel is not found
+     */
     @Override
     public PanelResponseDTO getPanelById(Long id) {
         Panel panel = panelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Panel member not found with id: " + id));
+                        PanelMessages.NOT_FOUND + id));
+
         return mapToResponse(panel);
     }
 
     /**
-     * HR activates panel.
+     * Activates a panel member after HR approval.
+     * Creates or updates the associated user account, links it to the panel,
+     * and sends a password setup email.
+     *
+     * @param panelId panel member ID to activate
+     * @return activated panel response DTO
+     * @throws ResourceNotFoundException if panel is not found
      */
     @Override
     public PanelResponseDTO activatePanel(Long panelId) {
 
         Panel panel = panelRepository.findById(panelId)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Panel member not found with id: " + panelId));
+                        PanelMessages.NOT_FOUND + panelId));
 
         if (panel.isActive()) {
-            throw new RuntimeException("Panel member is already active");
+            throw new ConflictException(
+                    PanelMessages.ALREADY_ACTIVE);
         }
 
         User user = userRepository.findByEmail(panel.getEmail()).orElse(null);
@@ -114,24 +153,25 @@ public class PanelServiceImpl implements PanelService {
             user = userRepository.save(user);
         }
 
-        /**
-         * link user account to panel and mark panel as active
-         */
         panel.setUser(user);
         panel.setActive(true);
         Panel saved = panelRepository.save(panel);
 
-        /**
-         * generate setup token, build link and send email to panel
-         */
         String setLink = userServiceImpl.createTokenAndBuildLink(
                 panel.getEmail(), Role.PANEL.name());
+
         emailService.sendPanelActivationEmail(
                 panel.getEmail(), panel.getName(), setLink);
 
         return mapToResponse(saved);
     }
 
+    /**
+     * Maps a Panel entity to its response DTO.
+     *
+     * @param panel panel entity
+     * @return panel response DTO
+     */
     private PanelResponseDTO mapToResponse(Panel panel) {
         PanelResponseDTO response = new PanelResponseDTO();
         response.setId(panel.getId());
