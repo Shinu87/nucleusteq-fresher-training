@@ -9,7 +9,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "users")
-public class User {
+public final class User {
 
     /**
      * Primary key for user table.
@@ -33,8 +33,22 @@ public class User {
     /**
      * Encrypted password.
      */
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    /** candidate mobile number. */
+    @Column(nullable = true)
+    private String mobile;
+
+    /** candidate gender. */
+    @Column(nullable = true, length = 20)
+    private String gender;
+
+    /**
+     * Candidate age captured at signup.
+     */
+    @Column(nullable = true)
+    private Integer age;
 
     /**
      * Role of the user (HR / PANEL / CANDIDATE).
@@ -42,6 +56,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    /**
+     * When false the account is deactivated — user cannot log in.
+     * to keep new accounts disabled until they set their password.
+     */
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     // Constructors
 
@@ -57,39 +78,116 @@ public class User {
 
     // Getters and Setters
 
+    /**
+     * @return user id
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * @return user name
+     */
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    /**
+     * @param name user name
+     */
+    public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     * @return user email
+     */
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    /**
+     * @param email user email
+     */
+    public void setEmail(final String email) {
         this.email = email;
     }
 
+    /**
+     * @return user password
+     */
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    /**
+     * @param password user password
+     */
+    public void setPassword(final String password) {
         this.password = password;
     }
 
+    /**
+     * @return user role
+     */
     public Role getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    /**
+     * @param role user role
+     */
+    public void setRole(final Role role) {
         this.role = role;
+    }
+
+    /**
+     * @return mobile number
+     */
+    public String getMobile() {
+        return mobile;
+    }
+
+    /**
+     * @param mobile mobile number
+     */
+    public void setMobile(final String mobile) {
+        this.mobile = mobile;
+    }
+
+    /**
+     * @return gender
+     */
+    public String getGender() {
+        return gender;
+    }
+
+    /**
+     * @param gender gender
+     */
+    public void setGender(final String gender) {
+        this.gender = gender;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    /**
+     * @return enabled status
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * @param enabled enabled status
+     */
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 }
