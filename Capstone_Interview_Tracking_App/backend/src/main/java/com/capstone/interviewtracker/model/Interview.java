@@ -12,7 +12,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "interviews")
-public class Interview {
+public final class Interview {
 
     /**
      * Primary key of interview table.
@@ -54,6 +54,12 @@ public class Interview {
     private Candidate candidate;
 
     /**
+     * Stores application cycle for the interview.
+     */
+    @Column(nullable = true)
+    private Integer applicationId;
+
+    /**
      * Many panels can take one interview and one panel can attend multiple
      * interviews.
      * Minimum 1 and maximum 2 panels allowed.
@@ -66,72 +72,128 @@ public class Interview {
      * Status of the interview.
      */
     @Enumerated(EnumType.STRING)
-    private InterviewStatus status;
+    @Column(nullable = false)
+    private InterviewStatus status = InterviewStatus.SCHEDULED;
 
     // Getters and Setters
 
+    /**
+     * @return interview id
+     */
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    /**
+     * @param id interview id
+     */
+    public void setId(final Long id) {
         this.id = id;
     }
 
+    /**
+     * @return interview stage
+     */
     public Stage getStage() {
         return stage;
     }
 
-    public void setStage(Stage stage) {
+    /**
+     * @param stage interview stage
+     */
+    public void setStage(final Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * @return scheduled time
+     */
     public LocalDateTime getScheduledAt() {
         return scheduledAt;
     }
 
-    public void setScheduledAt(LocalDateTime scheduledAt) {
+    /**
+     * @param scheduledAt scheduled time
+     */
+    public void setScheduledAt(final LocalDateTime scheduledAt) {
         this.scheduledAt = scheduledAt;
     }
 
+    /**
+     * @return focus area
+     */
     public String getFocusArea() {
         return focusArea;
     }
 
-    public void setFocusArea(String focusArea) {
+    /**
+     * @param focusArea focus area
+     */
+    public void setFocusArea(final String focusArea) {
         this.focusArea = focusArea;
     }
 
+    /**
+     * @return candidate
+     */
     public Candidate getCandidate() {
         return candidate;
     }
 
-    public void setCandidate(Candidate candidate) {
+    /**
+     * @param candidate candidate
+     */
+    public void setCandidate(final Candidate candidate) {
         this.candidate = candidate;
     }
 
+    public Integer getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(Integer applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    /**
+     * @return panel list
+     */
     public List<Panel> getPanels() {
         return panels;
     }
 
-    public void setPanels(List<Panel> panels) {
+    /**
+     * @param panels panel list
+     */
+    public void setPanels(final List<Panel> panels) {
         this.panels = panels;
     }
 
+    /**
+     * @return interview status
+     */
     public InterviewStatus getStatus() {
         return status;
     }
 
-    public void setStatus(InterviewStatus status) {
+    /**
+     * @param status interview status
+     */
+    public void setStatus(final InterviewStatus status) {
         this.status = status;
     }
 
+    /**
+     * @return meeting url
+     */
     public String getMeetingUrl() {
         return meetingUrl;
     }
 
-    public void setMeetingUrl(String meetingUrl) {
+    /**
+     * @param meetingUrl meeting url
+     */
+    public void setMeetingUrl(final String meetingUrl) {
         this.meetingUrl = meetingUrl;
     }
-
 }

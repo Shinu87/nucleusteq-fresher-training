@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "job_descriptions")
-public class JobDescription {
+public final class JobDescription {
 
     /**
      * Primary key for job description table.
@@ -75,83 +75,157 @@ public class JobDescription {
     @Column(nullable = false)
     private JobType jobType;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     /**
      * Getters and Setters
      */
 
+    /**
+     * @return job id
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * @return job title
+     */
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    /**
+     * @param title job title
+     */
+    public void setTitle(final String title) {
         this.title = title;
     }
 
+    /**
+     * @return job description
+     */
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    /**
+     * @param description job description
+     */
+    public void setDescription(final String description) {
         this.description = description;
     }
 
+    /**
+     * @return list of skills
+     */
     public List<Skill> getSkills() {
         return skills;
     }
 
-    public void setSkills(List<Skill> skills) {
+    /**
+     * @param skills list of skills
+     */
+    public void setSkills(final List<Skill> skills) {
         this.skills = skills;
     }
 
+    /**
+     * @return minimum experience
+     */
     public Integer getMinExperience() {
         return minExperience;
     }
 
-    public void setMinExperience(Integer minExperience) {
+    /**
+     * @param minExperience minimum experience
+     */
+    public void setMinExperience(final Integer minExperience) {
         this.minExperience = minExperience;
     }
 
+    /**
+     * @return maximum experience
+     */
     public Integer getMaxExperience() {
         return maxExperience;
     }
 
-    public void setMaxExperience(Integer maxExperience) {
+    /**
+     * @param maxExperience maximum experience
+     */
+    public void setMaxExperience(final Integer maxExperience) {
         this.maxExperience = maxExperience;
     }
 
+    /**
+     * @return minimum salary
+     */
     public Double getMinSalary() {
         return minSalary;
     }
 
-    public void setMinSalary(Double minSalary) {
+    /**
+     * @param minSalary minimum salary
+     */
+    public void setMinSalary(final Double minSalary) {
         this.minSalary = minSalary;
     }
 
+    /**
+     * @return maximum salary
+     */
     public Double getMaxSalary() {
         return maxSalary;
     }
 
-    public void setMaxSalary(Double maxSalary) {
+    /**
+     * @param maxSalary maximum salary
+     */
+    public void setMaxSalary(final Double maxSalary) {
         this.maxSalary = maxSalary;
     }
 
+    /**
+     * @return job location
+     */
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    /**
+     * @param location job location
+     */
+    public void setLocation(final String location) {
         this.location = location;
     }
 
+    /**
+     * @return job type
+     */
     public JobType getJobType() {
         return jobType;
     }
 
-    public void setJobType(JobType jobType) {
+    /**
+     * @param jobType job type
+     */
+    public void setJobType(final JobType jobType) {
         this.jobType = jobType;
+    }
+
+    /**
+     * @return active status
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * @param active active status
+     */
+    public void setActive(final boolean active) {
+        this.active = active;
     }
 }
