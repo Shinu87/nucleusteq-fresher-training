@@ -12,6 +12,7 @@ public class CandidateResponseDTO {
     private String name;
     private String email;
     private String phone;
+    private Integer age;
 
     private String resumeUrl;
     private String currentOrganization;
@@ -30,6 +31,7 @@ public class CandidateResponseDTO {
     private CandidateStatus status;
 
     private Long jobId;
+    private String jobTitle;
 
     /**
      * Getters and Setters
@@ -65,6 +67,14 @@ public class CandidateResponseDTO {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public String getResumeUrl() {
@@ -161,5 +171,13 @@ public class CandidateResponseDTO {
 
     public void setJobId(Long jobId) {
         this.jobId = jobId;
+    }
+
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(String jobTitle) {
+        this.jobTitle = jobTitle;
     }
 }
