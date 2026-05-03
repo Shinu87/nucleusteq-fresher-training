@@ -2,32 +2,40 @@ package com.capstone.interviewtracker.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capstone.interviewtracker.model.Skill;
-import com.capstone.interviewtracker.repository.SkillRepository;
+import com.capstone.interviewtracker.constants.api.HrApiConstants;
+import com.capstone.interviewtracker.dto.Response.SkillResponseDTO;
+import com.capstone.interviewtracker.service.SkillService;
 
 /**
- * Controller for getting skills data.
+ * Controller for handling skill-related operations.
  */
 @RestController
-@RequestMapping("/api/skills")
+@RequestMapping(HrApiConstants.SKILLS_BASE_PATH)
 public class SkillController {
 
-    private final SkillRepository skillRepository;
+    private final SkillService skillService;
 
-    public SkillController(SkillRepository skillRepository) {
-        this.skillRepository = skillRepository;
+    /**
+     * Constructor for SkillController.
+     *
+     * @param skillService service for skill operations
+     */
+    public SkillController(final SkillService skillService) {
+        this.skillService = skillService;
     }
 
     /**
-     * Returns list of all skills
+     * Retrieves all skills.
+     *
+     * @return list of skills
      */
-
     @GetMapping
-    public List<Skill> getAllSkills() {
-        return skillRepository.findAll();
+    public ResponseEntity<List<SkillResponseDTO>> getAllSkills() {
+        return ResponseEntity.ok(skillService.getAllSkills());
     }
 }
