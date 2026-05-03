@@ -11,7 +11,7 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "candidates")
-public class Candidate {
+public final class Candidate {
 
     /**
      * Primary key for candidate table.
@@ -34,16 +34,22 @@ public class Candidate {
     private User user;
 
     /**
-     * Email of the candidate should be unique.
+     * Candidate email used for identification.
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     /**
-     * Phone number of candidate.
+     * Candidate phone number used for contact.
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String phone;
+
+    /**
+     * Candidate age at the time of application.
+     */
+    @Column(nullable = true)
+    private Integer age;
 
     /**
      * Resume link stored as URL.
@@ -114,12 +120,20 @@ public class Candidate {
     private JobDescription jobDescription;
 
     /**
+     * Stores the application cycle number for a candidate.
+     */
+    @Column(nullable = true)
+    private Integer applicationId;
+
+    /**
      * Last updated timestamp for candidate record.
      */
     private LocalDateTime lastUpdatedAt;
 
     /**
      * Gets candidate ID.
+     *
+     * @return candidate id
      */
     public Long getId() {
         return id;
@@ -127,13 +141,17 @@ public class Candidate {
 
     /**
      * Sets candidate ID.
+     *
+     * @param id candidate id
      */
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
     /**
      * Gets candidate name.
+     *
+     * @return candidate name
      */
     public String getName() {
         return name;
@@ -141,13 +159,17 @@ public class Candidate {
 
     /**
      * Sets candidate name.
+     *
+     * @param name candidate name
      */
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
     /**
      * Gets candidate email.
+     *
+     * @return candidate email
      */
     public String getEmail() {
         return email;
@@ -155,13 +177,17 @@ public class Candidate {
 
     /**
      * Sets candidate email.
+     *
+     * @param email candidate email
      */
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
     /**
      * Gets candidate phone number.
+     *
+     * @return candidate phone
      */
     public String getPhone() {
         return phone;
@@ -169,13 +195,31 @@ public class Candidate {
 
     /**
      * Sets candidate phone number.
+     *
+     * @param phone candidate phone
      */
-    public void setPhone(String phone) {
+    public void setPhone(final String phone) {
         this.phone = phone;
     }
 
     /**
+     * Gets candidate age.
+     */
+    public Integer getAge() {
+        return age;
+    }
+
+    /**
+     * Sets candidate age.
+     */
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    /**
      * Gets resume URL.
+     *
+     * @return resume url
      */
     public String getResumeUrl() {
         return resumeUrl;
@@ -183,13 +227,17 @@ public class Candidate {
 
     /**
      * Sets resume URL.
+     *
+     * @param resumeUrl resume url
      */
-    public void setResumeUrl(String resumeUrl) {
+    public void setResumeUrl(final String resumeUrl) {
         this.resumeUrl = resumeUrl;
     }
 
     /**
      * Gets current organization.
+     *
+     * @return organization
      */
     public String getCurrentOrganization() {
         return currentOrganization;
@@ -197,13 +245,17 @@ public class Candidate {
 
     /**
      * Sets current organization.
+     *
+     * @param currentOrganization organization
      */
-    public void setCurrentOrganization(String currentOrganization) {
+    public void setCurrentOrganization(final String currentOrganization) {
         this.currentOrganization = currentOrganization;
     }
 
     /**
      * Gets total experience.
+     *
+     * @return total experience
      */
     public Integer getTotalExperience() {
         return totalExperience;
@@ -211,13 +263,17 @@ public class Candidate {
 
     /**
      * Sets total experience.
+     *
+     * @param totalExperience total experience
      */
-    public void setTotalExperience(Integer totalExperience) {
+    public void setTotalExperience(final Integer totalExperience) {
         this.totalExperience = totalExperience;
     }
 
     /**
      * Gets relevant experience.
+     *
+     * @return relevant experience
      */
     public Integer getRelevantExperience() {
         return relevantExperience;
@@ -225,13 +281,17 @@ public class Candidate {
 
     /**
      * Sets relevant experience.
+     *
+     * @param relevantExperience relevant experience
      */
-    public void setRelevantExperience(Integer relevantExperience) {
+    public void setRelevantExperience(final Integer relevantExperience) {
         this.relevantExperience = relevantExperience;
     }
 
     /**
      * Gets current CTC.
+     *
+     * @return current ctc
      */
     public Double getCurrentCTC() {
         return currentCTC;
@@ -239,13 +299,17 @@ public class Candidate {
 
     /**
      * Sets current CTC.
+     *
+     * @param currentCTC current ctc
      */
-    public void setCurrentCTC(Double currentCTC) {
+    public void setCurrentCTC(final Double currentCTC) {
         this.currentCTC = currentCTC;
     }
 
     /**
      * Gets expected CTC.
+     *
+     * @return expected ctc
      */
     public Double getExpectedCTC() {
         return expectedCTC;
@@ -253,13 +317,17 @@ public class Candidate {
 
     /**
      * Sets expected CTC.
+     *
+     * @param expectedCTC expected ctc
      */
-    public void setExpectedCTC(Double expectedCTC) {
+    public void setExpectedCTC(final Double expectedCTC) {
         this.expectedCTC = expectedCTC;
     }
 
     /**
      * Gets notice period.
+     *
+     * @return notice period
      */
     public String getNoticePeriod() {
         return noticePeriod;
@@ -267,13 +335,17 @@ public class Candidate {
 
     /**
      * Sets notice period.
+     *
+     * @param noticePeriod notice period
      */
-    public void setNoticePeriod(String noticePeriod) {
+    public void setNoticePeriod(final String noticePeriod) {
         this.noticePeriod = noticePeriod;
     }
 
     /**
      * Gets preferred location.
+     *
+     * @return preferred location
      */
     public String getPreferredLocation() {
         return preferredLocation;
@@ -281,13 +353,17 @@ public class Candidate {
 
     /**
      * Sets preferred location.
+     *
+     * @param preferredLocation preferred location
      */
-    public void setPreferredLocation(String preferredLocation) {
+    public void setPreferredLocation(final String preferredLocation) {
         this.preferredLocation = preferredLocation;
     }
 
     /**
      * Gets source of candidate.
+     *
+     * @return source
      */
     public String getSource() {
         return source;
@@ -295,13 +371,17 @@ public class Candidate {
 
     /**
      * Sets source of candidate.
+     *
+     * @param source source
      */
-    public void setSource(String source) {
+    public void setSource(final String source) {
         this.source = source;
     }
 
     /**
      * Gets current stage.
+     *
+     * @return stage
      */
     public Stage getCurrentStage() {
         return currentStage;
@@ -309,13 +389,17 @@ public class Candidate {
 
     /**
      * Sets current stage.
+     *
+     * @param currentStage stage
      */
-    public void setCurrentStage(Stage currentStage) {
+    public void setCurrentStage(final Stage currentStage) {
         this.currentStage = currentStage;
     }
 
     /**
      * Gets candidate status.
+     *
+     * @return status
      */
     public CandidateStatus getStatus() {
         return status;
@@ -323,13 +407,17 @@ public class Candidate {
 
     /**
      * Sets candidate status.
+     *
+     * @param status status
      */
-    public void setStatus(CandidateStatus status) {
+    public void setStatus(final CandidateStatus status) {
         this.status = status;
     }
 
     /**
      * Gets job description.
+     *
+     * @return job description
      */
     public JobDescription getJobDescription() {
         return jobDescription;
@@ -337,9 +425,29 @@ public class Candidate {
 
     /**
      * Sets job description.
+     *
+     * @param jobDescription job description
      */
-    public void setJobDescription(JobDescription jobDescription) {
+    public void setJobDescription(final JobDescription jobDescription) {
         this.jobDescription = jobDescription;
+    }
+
+    /**
+     * Gets application id.
+     *
+     * @return application id
+     */
+    public Integer getApplicationId() {
+        return applicationId;
+    }
+
+    /**
+     * Sets application id.
+     *
+     * @param applicationId application id
+     */
+    public void setApplicationId(Integer applicationId) {
+        this.applicationId = applicationId;
     }
 
     /**
@@ -349,5 +457,19 @@ public class Candidate {
     @PreUpdate
     public void updateTimestamp() {
         this.lastUpdatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * @return user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user user
+     */
+    public void setUser(final User user) {
+        this.user = user;
     }
 }
