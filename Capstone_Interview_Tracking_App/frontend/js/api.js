@@ -1,115 +1,136 @@
-/* api.js  –  common functions for all pages */
+/* api.js  shared helpers for all pages */
 
 const BASE_URL = "http://localhost:8080/api";
 
-/* checking user role */
+/*  AUTH GUARD */
 function requireRole(...roles) {
   const user = getUser();
-
-  // if user not logged in, go to login page
   if (!user) {
     window.location.href = "login.html";
     return null;
   }
-
-  // if role not allowed
   if (roles.length && !roles.includes(user.role)) {
-    alert("Access denied");
+    alert("Access denied.");
     window.location.href = "login.html";
     return null;
   }
-
   return user;
 }
 
-/*  get user from localStorage  */
 function getUser() {
   try {
     return JSON.parse(localStorage.getItem("user"));
   } catch {
-    return null; // if error, return null
+    return null;
   }
 }
 
-/*  logout function */
 function logout() {
-  localStorage.removeItem("user"); // remove user data
-  window.location.href = "login.html"; // go to login page
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
 }
 
-/* GET request  */
+/* fetch helper functions */
 async function apiGet(path) {
   const res = await fetch(`${BASE_URL}${path}`);
-
-  // if error from backend
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
   }
-
   return res.json();
 }
 
-/* POST request */
 async function apiPost(path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-
-  // check error
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
   }
-
   return res.json();
 }
 
-/* PUT request */
 async function apiPut(path, body = null) {
-  const options = {
-    method: "PUT",
-  };
-
-  // if body is present, add headers + body
+  const opts = { method: "PUT" };
   if (body !== null) {
-    options.headers = { "Content-Type": "application/json" };
-    options.body = JSON.stringify(body);
+    opts.headers = { "Content-Type": "application/json" };
+    opts.body = JSON.stringify(body);
   }
-
-  const res = await fetch(`${BASE_URL}${path}`, options);
-
-  // error check
+  const res = await fetch(`${BASE_URL}${path}`, opts);
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
   }
-
   return res.json();
 }
 
-/* toast message */
+/* toast message styles */
 function showToast(msg, type = "info") {
   let container = document.getElementById("toast-container");
-
-  // create container if not present
   if (!container) {
     container = document.createElement("div");
     container.id = "toast-container";
     document.body.appendChild(container);
   }
-
-  // create toast
   const t = document.createElement("div");
   t.className = `toast ${type}`;
   t.textContent = msg;
-
   container.appendChild(t);
+  setTimeout(() => t.remove(), 3400);
+}
 
-  // remove after some time
-  setTimeout(() => {
-    t.remove();
-  }, 3400);
+/* badge helper styles */
+function stageBadge(stage) {
+  const map = {
+    PROFILING: "badge-gray",
+    SCREENING: "badge-blue",
+    L1: "badge-purple",
+    L2: "badge-orange",
+    HR: "badge-yellow",
+  };
+  return `<span class="badge ${map[stage] || "badge-gray"}">${stage}</span>`;
+}
+
+function statusBadge(status) {
+  const map = {
+    IN_PROGRESS: "badge-blue",
+    SELECTED: "badge-green",
+    REJECTED: "badge-red",
+  };
+  return `<span class="badge ${map[status] || "badge-gray"}">${status?.replace("_", " ")}</span>`;
+}
+
+/** Interview status badge. */
+function interviewStatusBadge(s) {
+  const map = {
+    SCHEDULED: "badge-blue",
+    ONGOING: "badge-purple",
+    COMPLETED: "badge-green",
+    CANCELLED: "badge-red",
+  };
+  return `<span class="badge ${map[s] || "badge-gray"}">${s || "—"}</span>`;
+}
+
+function feedbackStatusBadge(s) {
+  return s === "SELECTED"
+    ? `<span class="badge badge-green">SELECTED</span>`
+    : `<span class="badge badge-red">REJECTED</span>`;
+}
+
+function fmtDate(dt) {
+  if (!dt) return "—";
+  return new Date(dt).toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+function starsHtml(rating) {
+  let s = "";
+  for (let i = 1; i <= 5; i++)
+    s += `<span style="color:${i <= rating ? "#f39c12" : "#ddd"};font-size:16px;">★</span>`;
+  return s;
 }
