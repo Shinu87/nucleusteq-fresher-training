@@ -12,6 +12,8 @@
         <h2>🚀 Create Account</h2>
         <p class="subtitle">Register as a candidate</p>
 
+        <!-- signup form - we do NOT take password here.
+           After submit the backend emails a password-setup link -->
         <form id="signupForm">
           <label for="name">Full Name</label>
           <input type="text" id="name" placeholder="John Doe" required />
@@ -24,17 +26,37 @@
             required
           />
 
-          <label for="password">Password</label>
+          <label for="mobile">Mobile</label>
           <input
-            type="password"
-            id="password"
-            placeholder="Create a strong password"
+            type="text"
+            id="mobile"
+            placeholder="9876543210"
+            maxlength="10"
+            required
+          />
+
+          <label for="gender">Gender</label>
+          <select id="gender" required>
+            <option value="">-- Select --</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+
+          <label for="age">Age</label>
+          <input
+            type="number"
+            id="age"
+            placeholder="e.g. 25"
+            min="18"
+            max="60"
             required
           />
 
           <button type="submit" class="btn-primary">Sign Up</button>
         </form>
 
+        <!-- success / error message goes here -->
         <div id="message"></div>
 
         <p class="link-text">
@@ -43,6 +65,7 @@
       </div>
     </div>
 
+    <script src="js/validation.js"></script>
     <script src="js/auth.js"></script>
   </body>
 </html>
