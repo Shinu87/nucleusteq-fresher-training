@@ -1,86 +1,182 @@
-// check user role (only candidate allowed)
+/* candidate portal script - candidate view */
 const user = requireRole("CANDIDATE");
+let allJobs = [];
+const MIN_AGE = 18;
+const MAX_AGE = 60;
+const AGE_MSG_TOO_YOUNG =
+  "Candidate must be at least 18 years old to apply for jobs";
+const AGE_MSG_TOO_OLD = "Candidate exceeds maximum eligible working age";
 
-let allJobs = []; // store all jobs
+function ageIneligibilityReason(age) {
+  if (age === null || age === undefined || age === "") {
+    return "Age is missing on your profile. Please contact support.";
+  }
+  const n = parseInt(age, 10);
+  if (Number.isNaN(n)) return "Age on your profile is not a valid number.";
+  if (n < MIN_AGE) return AGE_MSG_TOO_YOUNG;
+  if (n > MAX_AGE) return AGE_MSG_TOO_OLD;
+  return null;
+}
 
-// set sidebar user info
+/* per field validation rules for the Apply form */
+const applyRules = [
+  { id: "aName", label: "Full Name", required: true, minLength: 2 },
+  { id: "aPhone", label: "Phone", required: true, type: "phone" },
+  {
+    id: "aAge",
+    label: "Age",
+    required: true,
+    type: "number",
+    requiredMsg: "Age is required.",
+    custom: (value) => ageIneligibilityReason(value),
+  },
+  {
+    id: "aTotalExp",
+    label: "Total Experience",
+    required: true,
+    type: "number",
+    min: 0,
+    max: 60,
+  },
+  {
+    id: "aRelExp",
+    label: "Relevant Experience",
+    type: "number",
+    min: 0,
+    max: 60,
+    custom: (value) => {
+      const total = parseInt(document.getElementById("aTotalExp").value);
+      if (!Number.isNaN(total) && parseInt(value) > total) {
+        return "Relevant experience cannot exceed total experience.";
+      }
+      return null;
+    },
+  },
+  { id: "aCurCTC", label: "Current CTC", type: "number", min: 0, max: 1000 },
+  { id: "aExpCTC", label: "Expected CTC", type: "number", min: 0, max: 1000 },
+  { id: "aJobId", label: "Job", required: true, type: "select" },
+  {
+    id: "aResumeFile",
+    label: "Resume",
+    type: "file",
+    accept: ["application/pdf"],
+    acceptMsg: "Resume must be a PDF file.",
+    maxSizeMB: 10,
+  },
+];
+
+// fill sidebar with the logged-in user's name and email
 document.getElementById("sidebarName").textContent = user.name || "Candidate";
 document.getElementById("sidebarEmail").textContent = user.email || "";
 
-// load jobs when page loads
+// auto-actions on page load
 window.onload = async () => {
+  document.getElementById("aEmail").value = user.email || "";
+  document.getElementById("aName").value = user.name || "";
+
+  const ageField = document.getElementById("aAge");
+  if (ageField && user.age !== null && user.age !== undefined) {
+    ageField.value = user.age;
+  }
+
+  refreshAgeEligibilityBanner();
+
+  wireFieldValidation(applyRules);
+
   await loadJobsForCandidate();
+
+  const sp = new URLSearchParams(window.location.search);
+  const incomingJobId = sp.get("jobId");
+  if (incomingJobId && allJobs.some((j) => String(j.id) === incomingJobId)) {
+    goApply(parseInt(incomingJobId));
+  }
+
+  loadMyProgress();
 };
 
-// JOBS
-
-// function to get all jobs for candidate
-async function loadJobsForCandidate() {
-  try {
-    const jobs = await apiGet("/jobs"); // get jobs from backend
-
-    allJobs = jobs; // save jobs
-
-    renderJobCards(jobs); // show jobs in UI
-    populateJobDropdown(jobs); // fill dropdown
-  } catch (e) {
-    showToast("Failed to load jobs", "error"); // error message
+/**
+ * Shows or hides the age-eligibility banner based on the logged-in
+ * user's age. Called on load and after the apply form is rendered.
+ */
+function refreshAgeEligibilityBanner() {
+  const banner = document.getElementById("ageEligibilityBanner");
+  if (!banner) return;
+  const reason = ageIneligibilityReason(user.age);
+  if (reason) {
+    banner.style.display = "block";
+    banner.innerHTML =
+      `<strong>⚠️ You are not eligible to apply for jobs.</strong><br/>` +
+      `${reason} (Your age on file: ${user.age ?? "—"}). ` +
+      `If this looks wrong, please contact support.`;
+  } else {
+    banner.style.display = "none";
   }
 }
 
-// function to show job cards on page
+/* Section navigation */
+function showSection(name, el) {
+  document
+    .querySelectorAll(".page-section")
+    .forEach((s) => s.classList.remove("active"));
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((n) => n.classList.remove("active"));
+  document.getElementById(`section-${name}`).classList.add("active");
+  el.classList.add("active");
+}
+
+/* jobs section */
+async function loadJobsForCandidate() {
+  try {
+    const jobs = await apiGet("/jobs/active");
+    allJobs = jobs;
+    renderJobCards(jobs);
+    populateJobDropdown(jobs);
+  } catch (e) {
+    showToast("Failed to load jobs", "error");
+  }
+}
+
 function renderJobCards(jobs) {
   const container = document.getElementById("candidateJobList");
-
-  // if no jobs found
   if (!jobs.length) {
     container.innerHTML =
-      '<div class="empty-state"><div class="empty-icon">💼</div><p>No jobs available right now.</p></div>';
+      '<div class="empty-state"><div class="empty-icon">💼</div>' +
+      "<p>No jobs available right now.</p></div>";
     return;
   }
+  // Whether the logged-in candidate is age eligible to apply at all.
+  const ineligibleReason = ageIneligibilityReason(user.age);
 
-  // create job cards
   container.innerHTML = jobs
     .map(
       (j) => `
     <div class="jd-card">
       <h3>${j.title}</h3>
       <p>${j.description}</p>
-
-      <!-- job details -->
-      <p>
-        <b>Location</b> ${j.location} &nbsp;|&nbsp;
-        <b>JobType</b> ${j.jobType?.replace("_", " ")}
-      </p>
-
-      <p>
-        <b>Exp:</b> ${j.minExperience}–${j.maxExperience} yrs
-        &nbsp;|&nbsp;
-        <b>Salary</b> ₹${j.minSalary}–₹${j.maxSalary} LPA
-      </p>
-
-      <!-- skills section -->
+      <p><b>📍</b> ${j.location} &nbsp;|&nbsp; <b>🏷</b> ${j.jobType?.replace("_", " ")}</p>
+      <p><b>Exp:</b> ${j.minExperience}–${j.maxExperience} yrs &nbsp;|&nbsp;
+         <b>💰</b> ₹${j.minSalary}–₹${j.maxSalary} LPA</p>
       <div class="jd-skills">
-        ${(j.skills || [])
-          .map((s) => `<span class="jd-skill-tag">${s}</span>`)
-          .join("")}
+        ${(j.skills || []).map((s) => `<span class="jd-skill-tag">${s}</span>`).join("")}
       </div>
-
-      <!-- apply button -->
-      <button class="btn-apply" onclick="goApply(${j.id})">
-        Apply Now →
-      </button>
+      ${
+        ineligibleReason
+          ? `<button class="btn-apply" disabled
+                     title="${ineligibleReason.replace(/"/g, "&quot;")}"
+                     style="opacity:0.55;cursor:not-allowed;">
+               Apply Now →
+             </button>`
+          : `<button class="btn-apply" onclick="goApply(${j.id})">Apply Now →</button>`
+      }
     </div>
   `,
     )
     .join("");
 }
 
-// fill job dropdown in apply form
 function populateJobDropdown(jobs) {
   const sel = document.getElementById("aJobId");
-
-  // default option
   sel.innerHTML =
     '<option value="">-- Select a Job --</option>' +
     jobs
@@ -88,93 +184,82 @@ function populateJobDropdown(jobs) {
       .join("");
 }
 
-// when user clicks "Apply Now"
+/*  click "Apply" on a job card  jump to apply form */
 function goApply(jobId) {
-  // find selected job from list
-  const job = allJobs.find((j) => j.id === jobId);
-
-  // hide all pages
-  document
-    .querySelectorAll(".page-section")
-    .forEach((s) => s.classList.remove("active"));
-
-  // remove active from nav
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((n) => n.classList.remove("active"));
-
-  // show apply section
-  document.getElementById("section-apply").classList.add("active");
-  document.querySelectorAll(".nav-item")[1].classList.add("active");
-
-  // set job id in form
-  document.getElementById("applyJobId").value = jobId;
-  document.getElementById("aJobId").value = jobId;
-
-  // if job found, show job details
-  if (job) {
-    document.getElementById("applyJobInfo").style.display = "block";
-
-    document.getElementById("applyJobTitle").textContent =
-      `${job.title} — ${job.location}`;
-
-    document.getElementById("applyJobDesc").textContent = job.description;
-
-    document.getElementById("jobSelectGroup").style.display = "none";
-  }
-
-  // auto fill user details
-  document.getElementById("aEmail").value = user.email || "";
-  document.getElementById("aName").value = user.name || "";
-
-  // scroll to top
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-// apply form submit function
-async function submitApplication() {
-  const msgEl = document.getElementById("applyMsg");
-
-  // getting form values
-  const name = document.getElementById("aName").value.trim();
-  const email = document.getElementById("aEmail").value.trim();
-  const phone = document.getElementById("aPhone").value.trim();
-  const totalExp = document.getElementById("aTotalExp").value;
-
-  const jobId =
-    document.getElementById("aJobId").value ||
-    document.getElementById("applyJobId").value;
-
-  const resumeFile = document.getElementById("aResumeFile")?.files[0];
-
-  // check required fields
-  if (!name || !email || !phone || !totalExp || !jobId) {
-    showMsg(
-      msgEl,
-      "error",
-      "Please fill all required fields (Name, Email, Phone, Total Experience, Job).",
-    );
+  const reason = ageIneligibilityReason(user.age);
+  if (reason) {
+    alert(reason);
     return;
   }
 
-  // check resume file type and size
-  if (resumeFile) {
-    if (resumeFile.type !== "application/pdf") {
-      showMsg(msgEl, "error", "Resume must be a PDF file.");
-      return;
-    }
+  const job = allJobs.find((j) => j.id === jobId);
 
-    if (resumeFile.size > 10 * 1024 * 1024) {
-      showMsg(msgEl, "error", "Resume file size must be under 10MB.");
-      return;
-    }
+  document
+    .querySelectorAll(".page-section")
+    .forEach((s) => s.classList.remove("active"));
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((n) => n.classList.remove("active"));
+  document.getElementById("section-apply").classList.add("active");
+  document.querySelectorAll(".nav-item")[1].classList.add("active");
+
+  document.getElementById("applyJobId").value = jobId;
+  document.getElementById("aJobId").value = jobId;
+
+  if (job) {
+    document.getElementById("applyJobInfo").style.display = "block";
+    document.getElementById("applyJobTitle").textContent =
+      `${job.title} — ${job.location}`;
+    document.getElementById("applyJobDesc").textContent = job.description;
+    document.getElementById("jobSelectGroup").style.display = "none";
   }
 
-  // creating request body
+  // email is read only, comes from logged in user
+  document.getElementById("aEmail").value = user.email || "";
+  document.getElementById("aName").value = user.name || "";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* application submit handler */
+async function submitApplication() {
+  const msgEl = document.getElementById("applyMsg");
+
+  // ALWAYS use the logged in email the field is read-only
+  const email = (user.email || "").trim();
+  if (!email) {
+    showMsg(msgEl, "error", "Email missing - please log in again.");
+    return;
+  }
+
+  // Final age eligibility check before submit. Mirrors the backend rule.
+  const reason = ageIneligibilityReason(user.age);
+  if (reason) {
+    showMsg(msgEl, "error", reason);
+    return;
+  }
+
+  // per field validation (errors render under each field)
+  if (!validateAll(applyRules)) {
+    showMsg(msgEl, "error", "Please fix the highlighted fields.");
+    return;
+  }
+
+  const name = document.getElementById("aName").value.trim();
+  const phone = document.getElementById("aPhone").value.trim();
+  const totalExp = document.getElementById("aTotalExp").value;
+  const age = parseInt(user.age, 10);
+  const jobId =
+    document.getElementById("aJobId").value ||
+    document.getElementById("applyJobId").value;
+  const resumeFile = document.getElementById("aResumeFile").files[0];
+
+  // build payload matches backend CandidateRequestDTO
   const body = {
     name,
     email,
     phone,
+    age,
     currentOrganization: document.getElementById("aOrg").value.trim(),
     totalExperience: parseInt(totalExp),
     relevantExperience: parseInt(document.getElementById("aRelExp").value) || 0,
@@ -189,70 +274,313 @@ async function submitApplication() {
   };
 
   try {
-    // send application to backend
     const result = await apiPost("/candidates", body);
 
-    // if resume uploaded
+    // upload resume after candidate row is created
     if (resumeFile) {
       await uploadResume(result.id, resumeFile, msgEl);
     } else {
       showMsg(
         msgEl,
         "success",
-        `Application submitted! Switch to "My Progress" to track your status.`,
+        `✅ Application submitted! Your Candidate ID: ${result.id}.`,
       );
     }
+
+    // refresh progress automatically so My Progress tab shows latest data
+    loadMyProgress();
   } catch (e) {
-    // error message
     showMsg(
       msgEl,
       "error",
       e.message ||
-        "Submission failed. An active application may already exist for your email.",
+        "Submission failed. You may have already applied or have an active application.",
     );
   }
 }
 
-// resume upload function
-// uploads resume file to backend
-async function uploadResume(candidateId, file, msgEl) {
+/* Resume Upload (internal drive) */
+async function uploadResume(candidateId, file, msgEl, opts) {
+  const successMsg =
+    (opts && opts.successMsg) ||
+    `✅ Application submitted with resume! Your Candidate ID: ${candidateId}.`;
+  const errorPrefix =
+    (opts && opts.errorPrefix) ||
+    `⚠️ Application submitted (ID: ${candidateId}) but resume upload failed`;
+  const errorLevel = (opts && opts.errorLevel) || "warning";
+
   try {
     const formData = new FormData();
     formData.append("file", file);
 
-    // sending file to backend
     const res = await fetch(`${BASE_URL}/candidates/${candidateId}/resume`, {
       method: "POST",
       body: formData,
     });
 
-    // check response
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || "Resume upload failed");
     }
 
-    // success message
-    showMsg(
-      msgEl,
-      "success",
-      'Application submitted with resume! Switch to "My Progress" to track your status.',
-    );
+    showMsg(msgEl, "success", successMsg);
+    return true;
   } catch (e) {
-    // error while uploading resume
-    showMsg(
-      msgEl,
-      "warning",
-      `Application submitted but resume upload failed: ${e.message}. You can re-upload later.`,
-    );
+    showMsg(msgEl, errorLevel, `${errorPrefix}: ${e.message}.`);
+    return false;
   }
 }
 
-/* helper function */
+/**
+ * Handler for the Upload / Replace Resume button on the progress page.
+ */
+async function uploadResumeFromProfile(candidateId) {
+  const fileInput = document.getElementById("profileResumeFile");
+  const msgEl = document.getElementById("profileResumeMsg");
+  const file = fileInput && fileInput.files && fileInput.files[0];
 
-// function to show messages on UI
+  if (!file) {
+    showMsg(msgEl, "error", "Please choose a PDF file first.");
+    return;
+  }
+  if (file.type !== "application/pdf") {
+    showMsg(msgEl, "error", "Resume must be a PDF file.");
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    showMsg(msgEl, "error", "Resume must be under 10MB.");
+    return;
+  }
+
+  // Same uploadResume function used by the apply flow only the
+  // user facing message wording is tailored for the profile page.
+  const ok = await uploadResume(candidateId, file, msgEl, {
+    successMsg: "✅ Resume uploaded successfully!",
+    errorPrefix: "⚠️ Resume upload failed",
+    errorLevel: "error",
+  });
+
+  if (ok) {
+    loadMyProgress();
+  }
+}
+
+/*  re-apply: send candidate to Browse Jobs to start fresh  */
+function goToBrowseJobsForReapply() {
+  document
+    .querySelectorAll(".page-section")
+    .forEach((s) => s.classList.remove("active"));
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((n) => n.classList.remove("active"));
+  document.getElementById("section-jobs").classList.add("active");
+  document.querySelectorAll(".nav-item")[0].classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast("Select a job and submit a fresh application.", "success");
+}
+
+/* MY PROGRESS */
+async function loadMyProgress() {
+  const container = document.getElementById("progressContent");
+  if (!container) return;
+
+  const email = (user.email || "").trim();
+  if (!email) {
+    container.innerHTML =
+      '<div class="empty-state"><div class="empty-icon">⚠️</div>' +
+      "<p>Email missing - please log in again.</p></div>";
+    return;
+  }
+
+  // show loading state
+  container.innerHTML =
+    '<div class="empty-state"><div class="empty-icon">⏳</div>' +
+    "<p>Loading your application status…</p></div>";
+
+  try {
+    // hit the email based tracking endpoint
+    const res = await fetch(
+      `${BASE_URL}/candidates/me/application?email=${encodeURIComponent(email)}`,
+    );
+
+    if (res.status === 404) {
+      // candidate has no application yet
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>You haven't applied yet.</p>
+          <button class="btn" style="margin-top:12px;"
+                  onclick="goToBrowseJobsForReapply()">Browse Jobs →</button>
+        </div>`;
+      return;
+    }
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || "Failed to load progress");
+    }
+
+    const data = await res.json();
+    renderProgress(data);
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
+       <p>Could not load progress: ${e.message || "unknown error"}</p></div>`;
+  }
+}
+
+/* render the progress data returned by /me/application */
+function renderProgress(data) {
+  const container = document.getElementById("progressContent");
+
+  // build the stage step pipeline
+  const stages = ["PROFILING", "SCREENING", "L1", "L2", "HR"];
+  const curIdx = stages.indexOf(data.currentStage);
+
+  const stageHtml = stages
+    .map(
+      (s, i) => `
+    <div class="stage-step">
+      <div class="stage-dot ${
+        i < curIdx ? "done" : i === curIdx ? "active" : ""
+      }">
+        ${i < curIdx ? "✓" : i + 1}
+      </div>
+      <span class="stage-label">${s}</span>
+    </div>
+  `,
+    )
+    .join("");
+
+  // interview list (no feedback content shown to candidate)
+  const intHtml = (data.interviews || []).length
+    ? data.interviews
+        .map(
+          (iv) => `
+        <div class="detail-item" style="margin-bottom:10px;">
+          <div class="di-label">${iv.stage} Interview</div>
+          <div class="di-value">
+            📅 ${fmtDate(iv.scheduledAt)}<br/>
+            👥 ${(iv.panelNames || []).join(", ") || "TBD"}<br/>
+            ${interviewStatusBadge(iv.interviewStatus)}
+            ${
+              iv.feedbackSubmitted
+                ? '<span class="badge badge-green" style="margin-left:6px;">Feedback Submitted</span>'
+                : ""
+            }
+          </div>
+        </div>
+      `,
+        )
+        .join("")
+    : '<p style="color:#aaa;font-size:13px;">No interviews scheduled yet.</p>';
+
+  // re-apply box appears only when application is REJECTED
+  const reApplyBox =
+    data.applicationStatus === "REJECTED"
+      ? `
+      <div class="detail-section"
+           style="border:1.5px solid #f59e0b;border-radius:10px;padding:16px;margin-top:16px;">
+        <h4>🔄 Re-Apply for a New Job</h4>
+        <p style="font-size:13px;color:#888;margin-bottom:12px;">
+          Your previous application was rejected. You can apply afresh now.
+        </p>
+        <button class="btn btn-warning"
+                onclick="goToBrowseJobsForReapply()">Browse Jobs & Apply Fresh →</button>
+      </div>`
+      : "";
+
+  // big visible derivedStatus pill at the top
+  const derivedHtml = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <span style="font-weight:600;color:#666;">Application Status:</span>
+      <span class="badge ${derivedStatusClass(data.derivedStatus)}"
+            style="font-size:14px;padding:6px 14px;">
+        ${data.derivedStatus || "Applied"}
+      </span>
+    </div>`;
+
+  container.innerHTML = `
+    <div class="detail-section">
+      ${derivedHtml}
+      <div class="stage-progress">${stageHtml}</div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Your Details</h4>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="di-label">Name</div>
+          <div class="di-value">${data.candidateName || "—"}</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">Email</div>
+          <div class="di-value">${data.candidateEmail || "—"}</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">Stage</div>
+          <div class="di-value">${stageBadge(data.currentStage)}</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">Job</div>
+          <div class="di-value">${data.jobTitle || data.jobId || "—"}</div>
+        </div>
+        <div class="detail-item">
+          <div class="di-label">Resume</div>
+          <div class="di-value">
+            <div style="margin-bottom:6px;">
+              ${data.resumeUploaded ? "✅ Uploaded" : "❌ Not uploaded"}
+            </div>
+            <!-- Reuses the existing POST /api/candidates/{id}/resume
+                 endpoint via uploadResumeFromProfile(). Same backend,
+                 same validations, same storage. The widget is shown for
+                 every logged-in candidate (self-registered AND
+                 HR-onboarded) so they can attach a resume the first
+                 time, or replace it later. -->
+            <input type="file" id="profileResumeFile" accept=".pdf"
+                   style="display:block;margin-bottom:6px;font-size:12px;" />
+            <button class="btn btn-sm" style="font-size:12px;"
+                    onclick="uploadResumeFromProfile(${data.candidateId})">
+              ${data.resumeUploaded ? "Replace Resume" : "Upload Resume"}
+            </button>
+            <div id="profileResumeMsg" style="margin-top:6px;font-size:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Interview Schedule</h4>
+      ${intHtml}
+    </div>
+
+    ${reApplyBox}
+  `;
+}
+
+/* pick a colored badge class for the derived status pill */
+function derivedStatusClass(label) {
+  switch ((label || "").toLowerCase()) {
+    case "rejected":
+      return "badge-red";
+    case "completed":
+      return "badge-green";
+    case "l1":
+      return "badge-purple";
+    case "l2":
+      return "badge-orange";
+    case "hr":
+      return "badge-yellow";
+    case "screening":
+      return "badge-blue";
+    case "applied":
+    default:
+      return "badge-gray";
+  }
+}
+
+/* ── small message helper for forms on this page ── */
 function showMsg(el, type, text) {
-  el.style.display = "block"; // make message visible
-  el.className = `msg ${type}`; // set message type (success/error/warning)
-  el.textContent = text; // set message text
+  el.style.display = "block";
+  el.className = `msg ${type}`;
+  el.textContent = text;
 }
