@@ -15,6 +15,9 @@
           <span>Candidate Portal</span>
         </div>
         <nav class="sidebar-nav">
+          <a class="nav-item" href="index.html">
+            <span class="icon">🏠</span> Home
+          </a>
           <a class="nav-item active" onclick="showSection('jobs', this)">
             <span class="icon">💼</span> Browse Jobs
           </a>
@@ -43,15 +46,12 @@
 
       <!-- MAIN CONTENT -->
       <main class="main-content">
-        <!-- ── BROWSE JOBS ─────────────────────────────────── -->
+        <!--  BROWSE JOBS  -->
         <section id="section-jobs" class="page-section active">
           <div class="page-header">
             <h2>Browse Job Openings</h2>
             <p>Select a job to view details and apply.</p>
           </div>
-          <!-- Age-eligibility banner. Filled by candidate-portal.js when the
-               logged-in candidate's age is outside the 18-60 range. Hidden
-               by default so eligible users see no clutter. -->
           <div
             id="ageEligibilityBanner"
             style="
@@ -73,7 +73,7 @@
           </div>
         </section>
 
-        <!-- ── APPLY / PROFILE FORM ───────────────────────── -->
+        <!-- APPLY / PROFILE FORM -->
         <section id="section-apply" class="page-section">
           <div class="page-header">
             <h2>Candidate Profile</h2>
@@ -132,19 +132,8 @@
                 />
               </div>
               <div class="form-group">
-                <!-- Age comes from signup - shown read-only here so the
-                     candidate can see what's on file. Backend re-validates
-                     the 18-60 rule even if this value is tampered with. -->
-                <label>Age * (from signup)</label>
-                <input
-                  type="number"
-                  id="aAge"
-                  placeholder="e.g. 25"
-                  min="18"
-                  max="60"
-                  readonly
-                  style="background: #f3f4f6; cursor: not-allowed"
-                />
+                <label>Date of Birth</label>
+                <input type="date" id="aDob" />
               </div>
             </div>
             <div class="form-row">
@@ -240,7 +229,7 @@
           </div>
         </section>
 
-        <!-- ── MY PROGRESS ───────────────────────────────────── -->
+        <!--  MY PROGRESS  -->
         <section id="section-progress" class="page-section">
           <div class="page-header">
             <h2>My Application Progress</h2>

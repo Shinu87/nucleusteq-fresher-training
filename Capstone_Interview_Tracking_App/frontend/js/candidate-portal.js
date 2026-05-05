@@ -1,20 +1,24 @@
 /* candidate portal script - candidate view */
 const user = requireRole("CANDIDATE");
 let allJobs = [];
-const MIN_AGE = 18;
-const MAX_AGE = 60;
-const AGE_MSG_TOO_YOUNG =
-  "Candidate must be at least 18 years old to apply for jobs";
-const AGE_MSG_TOO_OLD = "Candidate exceeds maximum eligible working age";
 
-function ageIneligibilityReason(age) {
-  if (age === null || age === undefined || age === "") {
-    return "Age is missing on your profile. Please contact support.";
-  }
-  const n = parseInt(age, 10);
-  if (Number.isNaN(n)) return "Age on your profile is not a valid number.";
-  if (n < MIN_AGE) return AGE_MSG_TOO_YOUNG;
-  if (n > MAX_AGE) return AGE_MSG_TOO_OLD;
+function dobIneligibilityReason(dob) {
+  if (!dob) return "Date of birth is missing on your profile.";
+  const dobDate = new Date(dob);
+  const today = new Date();
+  const age18Date = new Date(
+    dobDate.getFullYear() + 18,
+    dobDate.getMonth(),
+    dobDate.getDate(),
+  );
+  if (age18Date > today) return "Candidate must be at least 18 years old.";
+  const age60Date = new Date(
+    dobDate.getFullYear() + 60,
+    dobDate.getMonth(),
+    dobDate.getDate(),
+  );
+  if (age60Date <= today)
+    return "Candidate exceeds maximum eligible working age.";
   return null;
 }
 
@@ -23,12 +27,11 @@ const applyRules = [
   { id: "aName", label: "Full Name", required: true, minLength: 2 },
   { id: "aPhone", label: "Phone", required: true, type: "phone" },
   {
-    id: "aAge",
-    label: "Age",
+    id: "aDob",
+    label: "Date of Birth",
     required: true,
-    type: "number",
-    requiredMsg: "Age is required.",
-    custom: (value) => ageIneligibilityReason(value),
+    requiredMsg: "Date of birth is required.",
+    custom: (value) => dobIneligibilityReason(value),
   },
   {
     id: "aTotalExp",
@@ -74,9 +77,13 @@ window.onload = async () => {
   document.getElementById("aEmail").value = user.email || "";
   document.getElementById("aName").value = user.name || "";
 
-  const ageField = document.getElementById("aAge");
-  if (ageField && user.age !== null && user.age !== undefined) {
-    ageField.value = user.age;
+  // Set max date on DOB picker to today minus 18 years
+  const dobField = document.getElementById("aDob");
+  if (dobField) {
+    const maxDob = new Date();
+    maxDob.setFullYear(maxDob.getFullYear() - 18);
+    dobField.max = maxDob.toISOString().split("T")[0];
+    if (user.dateOfBirth) dobField.value = user.dateOfBirth;
   }
 
   refreshAgeEligibilityBanner();
@@ -101,12 +108,12 @@ window.onload = async () => {
 function refreshAgeEligibilityBanner() {
   const banner = document.getElementById("ageEligibilityBanner");
   if (!banner) return;
-  const reason = ageIneligibilityReason(user.age);
+  const reason = dobIneligibilityReason(user.dateOfBirth);
   if (reason) {
     banner.style.display = "block";
     banner.innerHTML =
       `<strong>⚠️ You are not eligible to apply for jobs.</strong><br/>` +
-      `${reason} (Your age on file: ${user.age ?? "—"}). ` +
+      `${reason} (Your date of birth on file: ${user.dateOfBirth ?? "—"}). ` +
       `If this looks wrong, please contact support.`;
   } else {
     banner.style.display = "none";
@@ -146,7 +153,7 @@ function renderJobCards(jobs) {
     return;
   }
   // Whether the logged-in candidate is age eligible to apply at all.
-  const ineligibleReason = ageIneligibilityReason(user.age);
+  const ineligibleReason = dobIneligibilityReason(user.dateOfBirth);
 
   container.innerHTML = jobs
     .map(
@@ -186,7 +193,7 @@ function populateJobDropdown(jobs) {
 
 /*  click "Apply" on a job card  jump to apply form */
 function goApply(jobId) {
-  const reason = ageIneligibilityReason(user.age);
+  const reason = dobIneligibilityReason(user.dateOfBirth);
   if (reason) {
     alert(reason);
     return;
@@ -233,7 +240,7 @@ async function submitApplication() {
   }
 
   // Final age eligibility check before submit. Mirrors the backend rule.
-  const reason = ageIneligibilityReason(user.age);
+  const reason = dobIneligibilityReason(user.dateOfBirth);
   if (reason) {
     showMsg(msgEl, "error", reason);
     return;
@@ -248,7 +255,7 @@ async function submitApplication() {
   const name = document.getElementById("aName").value.trim();
   const phone = document.getElementById("aPhone").value.trim();
   const totalExp = document.getElementById("aTotalExp").value;
-  const age = parseInt(user.age, 10);
+  const dateOfBirth = document.getElementById("aDob").value || user.dateOfBirth;
   const jobId =
     document.getElementById("aJobId").value ||
     document.getElementById("applyJobId").value;
@@ -259,7 +266,7 @@ async function submitApplication() {
     name,
     email,
     phone,
-    age,
+    dateOfBirth,
     currentOrganization: document.getElementById("aOrg").value.trim(),
     totalExperience: parseInt(totalExp),
     relevantExperience: parseInt(document.getElementById("aRelExp").value) || 0,
