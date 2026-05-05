@@ -68,15 +68,25 @@ public class FeedbackServiceImpl implements FeedbackService {
                 logger.info("Submitting feedback for interview id: {} by panel id: {}",
                                 request.getInterviewId(), request.getPanelId());
 
+                logger.debug("Looking up interview in database for ID: {}", request.getInterviewId());
                 Interview interview = interviewRepository.findById(request.getInterviewId())
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                FeedbackMessages.INTERVIEW_NOT_FOUND + " with id: "
-                                                                + request.getInterviewId()));
+                                .orElseThrow(() -> {
+                                        logger.warn("Submit feedback failed - interview not found for ID: {}",
+                                                        request.getInterviewId());
+                                        return new ResourceNotFoundException(
+                                                        FeedbackMessages.INTERVIEW_NOT_FOUND + " with id: "
+                                                                        + request.getInterviewId());
+                                });
+
+                logger.debug("Interview found - ID: {}, status: {}, scheduledAt: {}",
+                                interview.getId(), interview.getStatus(), interview.getScheduledAt());
 
                 boolean interviewDone = interview.getStatus() == InterviewStatus.COMPLETED
                                 || interview.getScheduledAt().isBefore(LocalDateTime.now());
 
                 if (!interviewDone) {
+                        logger.warn("Submit feedback failed - interview not yet done for ID: {}, scheduledAt: {}",
+                                        interview.getId(), interview.getScheduledAt());
                         throw new BadRequestException(
                                         FeedbackMessages.FEEDBACK_ONLY_AFTER_INTERVIEW_COMPLETION
                                                         + " Scheduled at: " + interview.getScheduledAt());
@@ -90,26 +100,40 @@ public class FeedbackServiceImpl implements FeedbackService {
                                         interview.getId());
                 }
 
+                logger.debug("Looking up panel in database for ID: {}", request.getPanelId());
                 Panel panel = panelRepository.findById(request.getPanelId())
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                PanelMessages.NOT_FOUND + request.getPanelId()));
+                                .orElseThrow(() -> {
+                                        logger.warn("Submit feedback failed - panel not found for ID: {}",
+                                                        request.getPanelId());
+                                        return new ResourceNotFoundException(
+                                                        PanelMessages.NOT_FOUND + request.getPanelId());
+                                });
 
+                logger.debug("Checking if panelId: {} is assigned to interviewId: {}",
+                                request.getPanelId(), request.getInterviewId());
                 boolean isAssigned = interview.getPanels().stream()
                                 .anyMatch(p -> p.getId().equals(request.getPanelId()));
 
                 if (!isAssigned) {
+                        logger.warn("Submit feedback failed - panelId: {} is not assigned to interviewId: {}",
+                                        request.getPanelId(), request.getInterviewId());
                         throw new BadRequestException(
                                         FeedbackMessages.PANEL_NOT_ASSIGNED_TO_INTERVIEW);
                 }
 
+                logger.debug("Checking if feedback already submitted by panelId: {} for interviewId: {}",
+                                request.getPanelId(), request.getInterviewId());
                 if (feedbackRepository.existsByInterviewIdAndPanelId(
                                 request.getInterviewId(),
                                 request.getPanelId())) {
-
+                        logger.warn("Submit feedback failed - feedback already submitted by panelId: {} for interviewId: {}",
+                                        request.getPanelId(), request.getInterviewId());
                         throw new ConflictException(
                                         FeedbackMessages.FEEDBACK_ALREADY_SUBMITTED_BY_PANEL);
                 }
 
+                logger.debug("Building Feedback object for interviewId: {}, panelId: {}",
+                                request.getInterviewId(), request.getPanelId());
                 Feedback feedback = new Feedback();
                 feedback.setComments(request.getComments());
                 feedback.setStrengths(request.getStrengths());
@@ -120,6 +144,8 @@ public class FeedbackServiceImpl implements FeedbackService {
                 feedback.setInterview(interview);
                 feedback.setPanel(panel);
 
+                logger.debug("Saving feedback to database for interviewId: {}, panelId: {}",
+                                request.getInterviewId(), request.getPanelId());
                 Feedback saved = feedbackRepository.save(feedback);
 
                 logger.info("Feedback submitted with id: {}", saved.getId());
@@ -138,10 +164,17 @@ public class FeedbackServiceImpl implements FeedbackService {
 
                 logger.info("Fetching feedback for interview id: {}", interviewId);
 
-                return feedbackRepository.findByInterviewId(interviewId)
+                logger.debug("Calling feedbackRepository.findByInterviewId() for interviewId: {}", interviewId);
+
+                List<FeedbackResponseDTO> feedbackList = feedbackRepository.findByInterviewId(interviewId)
                                 .stream()
                                 .map(this::mapToResponse)
                                 .toList();
+
+                logger.info("Successfully fetched {} feedback record(s) for interviewId: {}",
+                                feedbackList.size(), interviewId);
+
+                return feedbackList;
         }
 
         /**
@@ -155,10 +188,17 @@ public class FeedbackServiceImpl implements FeedbackService {
 
                 logger.info("Fetching all feedback for candidate id: {}", candidateId);
 
-                return feedbackRepository.findByCandidateId(candidateId)
+                logger.debug("Calling feedbackRepository.findByCandidateId() for candidateId: {}", candidateId);
+
+                List<FeedbackResponseDTO> feedbackList = feedbackRepository.findByCandidateId(candidateId)
                                 .stream()
                                 .map(this::mapToResponse)
                                 .toList();
+
+                logger.info("Successfully fetched {} feedback record(s) for candidateId: {}",
+                                feedbackList.size(), candidateId);
+
+                return feedbackList;
         }
 
         /**
@@ -172,7 +212,15 @@ public class FeedbackServiceImpl implements FeedbackService {
         @Override
         public boolean hasFeedbackSubmitted(Long interviewId, Long panelId) {
 
-                return feedbackRepository.existsByInterviewIdAndPanelId(interviewId, panelId);
+                logger.debug("Checking if feedback already submitted by panelId: {} for interviewId: {}",
+                                panelId, interviewId);
+
+                boolean exists = feedbackRepository.existsByInterviewIdAndPanelId(interviewId, panelId);
+
+                logger.debug("Feedback submitted check result - interviewId: {}, panelId: {}, exists: {}",
+                                interviewId, panelId, exists);
+
+                return exists;
         }
 
         /**
@@ -182,6 +230,8 @@ public class FeedbackServiceImpl implements FeedbackService {
          * @return mapped response DTO
          */
         private FeedbackResponseDTO mapToResponse(Feedback feedback) {
+
+                logger.debug("Mapping feedback entity to response DTO for feedbackId: {}", feedback.getId());
 
                 FeedbackResponseDTO response = new FeedbackResponseDTO();
                 response.setId(feedback.getId());
