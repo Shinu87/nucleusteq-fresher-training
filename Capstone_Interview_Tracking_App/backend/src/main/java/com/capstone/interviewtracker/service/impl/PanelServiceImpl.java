@@ -2,6 +2,8 @@ package com.capstone.interviewtracker.service.impl;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.capstone.interviewtracker.constants.messages.PanelMessages;
@@ -22,6 +24,9 @@ import com.capstone.interviewtracker.service.PanelService;
  */
 @Service
 public class PanelServiceImpl implements PanelService {
+
+    // logger for this service class
+    private static final Logger logger = LoggerFactory.getLogger(PanelServiceImpl.class);
 
     private final PanelRepository panelRepository;
     private final UserRepository userRepository;
@@ -58,30 +63,53 @@ public class PanelServiceImpl implements PanelService {
     @Override
     public PanelResponseDTO createPanel(PanelRequestDTO request) {
 
+        // logging when create panel request is received
+        logger.info("Create panel request received for email: {}", request.getEmail());
+
+        // logging before checking if panel email already exists in DB
+        logger.debug("Checking if panel email already exists: {}", request.getEmail());
         if (panelRepository.existsByEmail(request.getEmail())) {
+            // logging when panel email is already registered
+            logger.warn("Create panel failed - email already exists: {}", request.getEmail());
             throw new ConflictException(
                     PanelMessages.EMAIL_EXISTS);
         }
 
+        // logging before checking if panel mobile already exists in DB
+        logger.debug("Checking if panel mobile already exists: {}", request.getMobile());
         if (panelRepository.existsByMobile(request.getMobile())) {
+            // logging when panel mobile number is already registered
+            logger.warn("Create panel failed - mobile already exists: {}", request.getMobile());
             throw new ConflictException(
                     PanelMessages.MOBILE_EXISTS);
         }
 
+        // logging before checking if user with same email already exists
+        logger.debug("Checking if user account already exists for email: {}", request.getEmail());
         if (userRepository.existsByEmail(request.getEmail())) {
+            // logging when a user account already exists for this email
+            logger.warn("Create panel failed - user account already exists for email: {}", request.getEmail());
             throw new ConflictException(
                     PanelMessages.USER_EXISTS);
         }
 
+        // logging before building and saving the panel object
+        logger.debug("Building new Panel object for email: {}", request.getEmail());
         Panel panel = new Panel();
         panel.setName(request.getName().trim());
         panel.setEmail(request.getEmail().trim().toLowerCase());
         panel.setMobile(request.getMobile().trim());
         panel.setOrganization(request.getOrganization().trim());
         panel.setDesignation(request.getDesignation().trim());
+        panel.setExpertise(request.getExpertise().trim());
         panel.setActive(false);
 
+        // logging before saving panel to DB
+        logger.debug("Saving new panel to database for email: {}", panel.getEmail());
         Panel saved = panelRepository.save(panel);
+        // logging after panel is saved successfully
+        logger.info("Panel created successfully with ID: {} for email: {}", saved.getId(), saved.getEmail());
+
         return mapToResponse(saved);
     }
 
@@ -92,10 +120,22 @@ public class PanelServiceImpl implements PanelService {
      */
     @Override
     public List<PanelResponseDTO> getAllPanels() {
-        return panelRepository.findAll()
+
+        // logging when get all panels request is received
+        logger.info("Fetching all panel members from the database");
+
+        // logging before querying DB for all panels
+        logger.debug("Calling panelRepository.findAll()");
+
+        List<PanelResponseDTO> panels = panelRepository.findAll()
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
+
+        // logging after all panels are fetched and mapped
+        logger.info("Successfully fetched {} panel member(s) from the database", panels.size());
+
+        return panels;
     }
 
     /**
@@ -107,9 +147,21 @@ public class PanelServiceImpl implements PanelService {
      */
     @Override
     public PanelResponseDTO getPanelById(Long id) {
+
+        // logging when get panel by ID request is received
+        logger.info("Fetching panel member for ID: {}", id);
+
+        // logging before querying DB for panel by ID
+        logger.debug("Looking up panel in database for ID: {}", id);
         Panel panel = panelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        PanelMessages.NOT_FOUND + id));
+                .orElseThrow(() -> {
+                    // logging when panel is not found for given ID
+                    logger.warn("Panel not found for ID: {}", id);
+                    return new ResourceNotFoundException(PanelMessages.NOT_FOUND + id);
+                });
+
+        // logging after panel is found successfully
+        logger.debug("Panel found for ID: {}, email: {}", id, panel.getEmail());
 
         return mapToResponse(panel);
     }
@@ -126,42 +178,81 @@ public class PanelServiceImpl implements PanelService {
     @Override
     public PanelResponseDTO activatePanel(Long panelId) {
 
+        // logging when activate panel request is received
+        logger.info("Activate panel request received for panelId: {}", panelId);
+
+        // logging before looking up panel in DB
+        logger.debug("Looking up panel in database for panelId: {}", panelId);
         Panel panel = panelRepository.findById(panelId)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        PanelMessages.NOT_FOUND + panelId));
+                .orElseThrow(() -> {
+                    // logging when panel is not found for activation
+                    logger.warn("Activate panel failed - panel not found for ID: {}", panelId);
+                    return new ResourceNotFoundException(PanelMessages.NOT_FOUND + panelId);
+                });
 
         if (panel.isActive()) {
+            // logging when panel is already active
+            logger.warn("Activate panel failed - panel is already active for ID: {}", panelId);
             throw new ConflictException(
                     PanelMessages.ALREADY_ACTIVE);
         }
 
+        // logging before checking if a user account exists for this panel's email
+        logger.debug("Checking if user account exists for panel email: {}", panel.getEmail());
         User user = userRepository.findByEmail(panel.getEmail()).orElse(null);
 
         if (user == null) {
+            // logging when no existing user found - creating new user account
+            logger.info("No existing user found for email: {} - creating new user account", panel.getEmail());
             user = new User();
             user.setName(panel.getName());
             user.setEmail(panel.getEmail());
             user.setPassword(null);
             user.setRole(Role.PANEL);
             user.setEnabled(false);
+
+            // logging before saving new user to DB
+            logger.debug("Saving new user account for panel email: {}", panel.getEmail());
             user = userRepository.save(user);
+            // logging after new user is saved
+            logger.info("New user account created with ID: {} for panel email: {}", user.getId(), user.getEmail());
         } else {
+            // logging when existing user found - updating user account for panel role
+            logger.info("Existing user found for email: {} - updating user account for PANEL role", panel.getEmail());
             user.setPassword(null);
             user.setEnabled(false);
             user.setRole(Role.PANEL);
             user.setName(panel.getName());
+
+            // logging before saving updated user to DB
+            logger.debug("Saving updated user account for panel email: {}", panel.getEmail());
             user = userRepository.save(user);
+            // logging after existing user is updated
+            logger.info("Existing user account updated with ID: {} for panel email: {}", user.getId(), user.getEmail());
         }
 
+        // logging before linking user to panel and marking panel as active
+        logger.debug("Linking user to panel and setting panel active for panelId: {}", panelId);
         panel.setUser(user);
         panel.setActive(true);
-        Panel saved = panelRepository.save(panel);
 
+        // logging before saving activated panel to DB
+        logger.debug("Saving activated panel to database for panelId: {}", panelId);
+        Panel saved = panelRepository.save(panel);
+        // logging after panel is saved as active
+        logger.info("Panel activated and saved successfully for panelId: {}", panelId);
+
+        // logging before generating password setup token and link for panel
+        logger.debug("Generating password setup token for panel email: {}", panel.getEmail());
         String setLink = userServiceImpl.createTokenAndBuildLink(
                 panel.getEmail(), Role.PANEL.name());
 
+        // logging before sending activation email to panel member
+        logger.info("Sending activation email to panel member: {}", panel.getEmail());
         emailService.sendPanelActivationEmail(
                 panel.getEmail(), panel.getName(), setLink);
+        // logging after activation email is sent
+        logger.info("Activation email sent successfully to panel member: {}", panel.getEmail());
 
         return mapToResponse(saved);
     }
@@ -173,6 +264,8 @@ public class PanelServiceImpl implements PanelService {
      * @return panel response DTO
      */
     private PanelResponseDTO mapToResponse(Panel panel) {
+        // logging when panel entity is being mapped to response DTO
+        logger.debug("Mapping panel entity to response DTO for panelId: {}", panel.getId());
         PanelResponseDTO response = new PanelResponseDTO();
         response.setId(panel.getId());
         response.setName(panel.getName());
@@ -180,6 +273,7 @@ public class PanelServiceImpl implements PanelService {
         response.setMobile(panel.getMobile());
         response.setOrganization(panel.getOrganization());
         response.setDesignation(panel.getDesignation());
+        response.setExpertise(panel.getExpertise());
         response.setActive(panel.isActive());
         return response;
     }

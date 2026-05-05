@@ -11,6 +11,7 @@ public class PanelResponseDTO {
     private String mobile;
     private String organization;
     private String designation;
+    private String expertise;
     private boolean active;
 
     /**
@@ -63,6 +64,14 @@ public class PanelResponseDTO {
 
     public void setDesignation(String designation) {
         this.designation = designation;
+    }
+
+    public String getExpertise() {
+        return expertise;
+    }
+
+    public void setExpertise(String expertise) {
+        this.expertise = expertise;
     }
 
     public boolean isActive() {

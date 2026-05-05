@@ -47,6 +47,12 @@ public final class Panel {
     private String designation;
 
     /**
+     * Area of expertise of panel member (e.g. Java Backend, React Frontend).
+     */
+    @Column(nullable = false)
+    private String expertise;
+
+    /**
      * Indicates whether panel is active or not.
      */
     @Column(nullable = false)
@@ -159,6 +165,20 @@ public final class Panel {
      */
     public void setDesignation(final String designation) {
         this.designation = designation;
+    }
+
+    /**
+     * @return expertise
+     */
+    public String getExpertise() {
+        return expertise;
+    }
+
+    /**
+     * @param expertise area of expertise
+     */
+    public void setExpertise(final String expertise) {
+        this.expertise = expertise;
     }
 
     /**

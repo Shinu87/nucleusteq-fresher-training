@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +46,7 @@ public class PanelController {
      * @param request panel request data
      * @return created panel response
      */
+    @PreAuthorize("hasRole('HR')")
     @PostMapping
     public ResponseEntity<PanelResponseDTO> createPanel(
             @Valid @RequestBody PanelRequestDTO request) {
@@ -59,6 +61,7 @@ public class PanelController {
      *
      * @return list of panel responses
      */
+    @PreAuthorize("hasAnyRole('HR', 'PANEL')")
     @GetMapping
     public ResponseEntity<List<PanelResponseDTO>> getAllPanels() {
         return ResponseEntity.ok(panelService.getAllPanels());
@@ -70,6 +73,7 @@ public class PanelController {
      * @param id panel id
      * @return panel response
      */
+    @PreAuthorize("hasRole('HR')")
     @GetMapping(HrApiConstants.PANELS_BY_ID)
     public ResponseEntity<PanelResponseDTO> getPanelById(
             @PathVariable Long id) {
@@ -84,6 +88,7 @@ public class PanelController {
      * @param id panel id
      * @return updated panel response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(HrApiConstants.PANELS_ACTIVATE)
     public ResponseEntity<PanelResponseDTO> activatePanel(
             @PathVariable Long id) {

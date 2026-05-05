@@ -24,6 +24,9 @@ public class PanelRequestDTO {
     @NotBlank(message = "Designation is required")
     private String designation;
 
+    @NotBlank(message = "Expertise is required")
+    private String expertise;
+
     private boolean active;
 
     /**
@@ -68,6 +71,14 @@ public class PanelRequestDTO {
 
     public void setDesignation(String designation) {
         this.designation = designation;
+    }
+
+    public String getExpertise() {
+        return expertise;
+    }
+
+    public void setExpertise(String expertise) {
+        this.expertise = expertise;
     }
 
     public boolean isActive() {
