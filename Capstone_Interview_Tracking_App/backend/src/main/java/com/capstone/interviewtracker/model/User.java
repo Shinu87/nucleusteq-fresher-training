@@ -2,6 +2,7 @@ package com.capstone.interviewtracker.model;
 
 import com.capstone.interviewtracker.enums.Role;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 /**
  * Represents application users for authentication and authorization.
@@ -45,10 +46,11 @@ public final class User {
     private String gender;
 
     /**
-     * Candidate age captured at signup.
+     * Candidate date of birth captured at signup.
+     * Age is derived dynamically from this field.
      */
     @Column(nullable = true)
-    private Integer age;
+    private LocalDate dateOfBirth;
 
     /**
      * Role of the user (HR / PANEL / CANDIDATE).
@@ -169,12 +171,29 @@ public final class User {
         this.gender = gender;
     }
 
-    public Integer getAge() {
-        return age;
+    /**
+     * @return date of birth
+     */
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    /**
+     * @param dateOfBirth date of birth
+     */
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    /**
+     * Derives the candidates age from date of birth.
+     *
+     * @return calculated age in years, or null if dateOfBirth is not set
+     */
+    public Integer getAge() {
+        if (dateOfBirth == null)
+            return null;
+        return java.time.Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     /**

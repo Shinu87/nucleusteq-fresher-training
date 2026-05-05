@@ -1,5 +1,7 @@
 package com.capstone.interviewtracker.dto.Response;
 
+import java.time.LocalDate;
+
 import com.capstone.interviewtracker.enums.CandidateStatus;
 import com.capstone.interviewtracker.enums.Stage;
 
@@ -12,7 +14,7 @@ public class CandidateResponseDTO {
     private String name;
     private String email;
     private String phone;
-    private Integer age;
+    private LocalDate dateOfBirth;
 
     private String resumeUrl;
     private String currentOrganization;
@@ -69,12 +71,18 @@ public class CandidateResponseDTO {
         this.phone = phone;
     }
 
-    public Integer getAge() {
-        return age;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Integer getAge() {
+        if (dateOfBirth == null)
+            return null;
+        return java.time.Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     public String getResumeUrl() {

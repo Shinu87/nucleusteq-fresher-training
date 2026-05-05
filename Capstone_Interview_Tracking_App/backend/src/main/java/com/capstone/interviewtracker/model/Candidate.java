@@ -1,5 +1,6 @@
 package com.capstone.interviewtracker.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.capstone.interviewtracker.enums.CandidateStatus;
@@ -46,10 +47,10 @@ public final class Candidate {
     private String phone;
 
     /**
-     * Candidate age at the time of application.
+     * Candidate date of birth. Age is derived dynamically from this field.
      */
     @Column(nullable = true)
-    private Integer age;
+    private LocalDate dateOfBirth;
 
     /**
      * Resume link stored as URL.
@@ -203,17 +204,32 @@ public final class Candidate {
     }
 
     /**
-     * Gets candidate age.
+     * Gets candidate date of birth.
+     *
+     * @return date of birth
      */
-    public Integer getAge() {
-        return age;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
     /**
-     * Sets candidate age.
+     * Sets candidate date of birth.
+     *
+     * @param dateOfBirth date of birth
      */
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    /**
+     * Derives the candidate's age from date of birth.
+     *
+     * @return calculated age in years, or null if dateOfBirth is not set
+     */
+    public Integer getAge() {
+        if (dateOfBirth == null)
+            return null;
+        return java.time.Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 
     /**

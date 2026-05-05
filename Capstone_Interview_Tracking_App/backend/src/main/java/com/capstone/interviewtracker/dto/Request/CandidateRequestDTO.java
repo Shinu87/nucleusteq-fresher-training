@@ -1,12 +1,12 @@
 package com.capstone.interviewtracker.dto.Request;
 
+import java.time.LocalDate;
 import com.capstone.interviewtracker.enums.CandidateStatus;
 import com.capstone.interviewtracker.enums.Stage;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 
 /**
  * DTO used for creating and updating Candidate details.
@@ -34,12 +34,11 @@ public class CandidateRequestDTO {
     private String phone;
 
     /**
-     * Candidate age.
-     * Must be between 18 and 60 as per eligibility rules.
+     * Candidate date of birth.
+     * Must be in the past. Age >= 18 is validated in the service layer.
      */
-    @Min(value = 18, message = "Candidate must be at least 18 years old to apply for jobs")
-    @Max(value = 60, message = "Candidate exceeds maximum eligible working age")
-    private Integer age;
+    @Past(message = "Date of birth must be in the past")
+    private LocalDate dateOfBirth;
 
     /**
      * Resume URL.
@@ -133,12 +132,12 @@ public class CandidateRequestDTO {
         this.phone = phone;
     }
 
-    public Integer getAge() {
-        return age;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getResumeUrl() {

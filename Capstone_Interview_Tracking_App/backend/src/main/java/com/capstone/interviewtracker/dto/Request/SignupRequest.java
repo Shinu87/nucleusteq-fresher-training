@@ -1,12 +1,11 @@
 package com.capstone.interviewtracker.dto.Request;
 
+import java.time.LocalDate;
 import com.capstone.interviewtracker.enums.Role;
-
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 
 /**
@@ -30,10 +29,9 @@ public class SignupRequest {
     @Pattern(regexp = "^(MALE|FEMALE|OTHER)$", message = "Gender must be MALE, FEMALE or OTHER")
     private String gender;
 
-    @NotNull(message = "Age is required")
-    @Min(value = 18, message = "Candidate must be at least 18 years old to apply for jobs")
-    @Max(value = 60, message = "Candidate exceeds maximum eligible working age")
-    private Integer age;
+    @NotNull(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
+    private LocalDate dateOfBirth;
 
     @NotNull(message = "Role is required")
     private Role role;
@@ -74,12 +72,12 @@ public class SignupRequest {
         this.gender = gender;
     }
 
-    public Integer getAge() {
-        return age;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Role getRole() {

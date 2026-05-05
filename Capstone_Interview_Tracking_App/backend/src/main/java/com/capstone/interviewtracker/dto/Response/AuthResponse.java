@@ -1,6 +1,7 @@
 package com.capstone.interviewtracker.dto.Response;
 
 import com.capstone.interviewtracker.enums.Role;
+import java.time.LocalDate;
 
 /**
  * This class is used to send response after login or signup.
@@ -12,7 +13,7 @@ public class AuthResponse {
     private String email;
     private Role role;
     private String message;
-    private Integer age;
+    private LocalDate dateOfBirth;
 
     /**
      * Constructor to set user details and message.
@@ -25,9 +26,9 @@ public class AuthResponse {
         this.message = message;
     }
 
-    public AuthResponse(Long id, String name, String email, Role role, String message, Integer age) {
+    public AuthResponse(Long id, String name, String email, Role role, String message, LocalDate dateOfBirth) {
         this(id, name, email, role, message);
-        this.age = age;
+        this.dateOfBirth = dateOfBirth;
     }
 
     /**
@@ -66,9 +67,18 @@ public class AuthResponse {
     }
 
     /**
-     * Returns candidate age.
+     * Returns candidate date of birth.
+     */
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    /**
+     * Derives age from dateOfBirth.
      */
     public Integer getAge() {
-        return age;
+        if (dateOfBirth == null)
+            return null;
+        return java.time.Period.between(dateOfBirth, LocalDate.now()).getYears();
     }
 }
