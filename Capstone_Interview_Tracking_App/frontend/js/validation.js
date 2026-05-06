@@ -1,45 +1,9 @@
-/* =====================================================
-   validation.js - shared per-field validation helper
-   -----------------------------------------------------
-   Each page declares an array of "rule" objects and calls
-   wireFieldValidation(rules). The helper:
-
-   • on blur          -> validates that field
-   • on input/change  -> re-validates AFTER the field has
-                         already failed once (so we don't
-                         shout at the user while they're
-                         typing the very first time)
-   • renders a <small class="field-error"> directly below
-     the field with the message
-   • toggles a .input-invalid class on the field itself
-   • exposes validateAll(rules) to be called from existing
-     submit handlers as a final line of defence
-
-   Rule shape:
-   {
-     id:       "fieldId"      // required - the input/select/textarea element id
-     label:    "Full Name"    // optional - used in default messages
-     required: true,          // optional
-     type:     "email" | "phone" | "url" | "text" | "number" | "select" | "file"
-     min:      0,             // optional - for numbers
-     max:      99,            // optional - for numbers
-     minLength: 6,            // optional - for text/password
-     accept:   ["application/pdf"],   // optional - for files
-     maxSizeMB: 10,                   // optional - for files
-     pattern:  /regex/,
-     patternMsg: "...",
-     custom:   (value, allValues) => "msg" | null
-   }
-====================================================== */
-
-/* ── error element helpers ───────────────────────────── */
+/* error element helpers */
 
 function fvErrorEl(fieldId, create = false) {
   const el = document.getElementById(fieldId);
   if (!el) return null;
 
-  // password fields live inside a .password-wrapper; the error
-  // should attach AFTER the wrapper, not after the bare input.
   const anchor = el.closest(".password-wrapper") || el;
 
   const next = anchor.nextElementSibling;
@@ -75,7 +39,7 @@ function fvClearError(fieldId) {
   fvSetError(fieldId, "");
 }
 
-/* ── pure validators (return string msg or null) ─────── */
+/* validators  */
 
 function fvValidateRule(rule, allRules) {
   const el = document.getElementById(rule.id);
@@ -99,11 +63,9 @@ function fvValidateRule(rule, allRules) {
     return null;
   }
 
-  // everything else is value-based
   let value = el.value;
   if (typeof value === "string") value = value.trim();
 
-  // required check
   if (
     rule.required &&
     (value === "" || value === null || value === undefined)
@@ -111,10 +73,8 @@ function fvValidateRule(rule, allRules) {
     return rule.requiredMsg || `${label} is required.`;
   }
 
-  // optional empty -> nothing more to check
   if (value === "" || value === null || value === undefined) return null;
 
-  // type-specific built-ins
   switch (rule.type) {
     case "email":
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
@@ -122,7 +82,6 @@ function fvValidateRule(rule, allRules) {
       }
       break;
     case "phone":
-      // 10-digit Indian style starting 6-9
       if (!/^[6-9][0-9]{9}$/.test(value)) {
         return `${label} must be a 10-digit number starting with 6-9.`;
       }
@@ -144,7 +103,6 @@ function fvValidateRule(rule, allRules) {
       break;
     }
     case "select":
-      // empty handled by required above
       break;
     case "text":
     default:
@@ -154,17 +112,14 @@ function fvValidateRule(rule, allRules) {
       break;
   }
 
-  // generic minLength (for password etc., even when type omitted)
   if (rule.minLength && value.length < rule.minLength) {
     return `${label} must be at least ${rule.minLength} characters.`;
   }
 
-  // pattern
   if (rule.pattern && !rule.pattern.test(value)) {
     return rule.patternMsg || `${label} is not in the expected format.`;
   }
 
-  // cross-field / custom validator
   if (typeof rule.custom === "function") {
     const allValues = {};
     (allRules || [rule]).forEach((r) => {
@@ -179,13 +134,8 @@ function fvValidateRule(rule, allRules) {
   return null;
 }
 
-/* ── wire blur + smart-input listeners ───────────────── */
-
 function wireFieldValidation(rules) {
   if (!Array.isArray(rules)) return;
-
-  // remember which fields have already failed once - we only
-  // start re-validating on every keystroke AFTER that.
   const dirty = new Set();
 
   rules.forEach((rule) => {
@@ -199,21 +149,14 @@ function wireFieldValidation(rules) {
       return !msg;
     };
 
-    // BLUR -> always validate on field exit
     el.addEventListener("blur", runValidation);
 
-    // INPUT/CHANGE -> only after the field has failed once.
-    // This is the polite UX: clear the red as soon as the user
-    // starts fixing it, but don't yell while they're still
-    // filling it in for the first time.
     const liveEvent =
       el.tagName === "SELECT" || rule.type === "file" ? "change" : "input";
     el.addEventListener(liveEvent, () => {
       if (dirty.has(rule.id)) runValidation();
     });
 
-    // cross-field rules (e.g. confirmPassword vs password):
-    // when a "watches" partner changes, re-run this rule too.
     if (Array.isArray(rule.watches)) {
       rule.watches.forEach((otherId) => {
         const other = document.getElementById(otherId);
@@ -226,7 +169,7 @@ function wireFieldValidation(rules) {
   });
 }
 
-/* ── final-pass for submit handlers ──────────────────── */
+/* final-pass for submit handlers */
 
 function validateAll(rules) {
   let firstBadId = null;
@@ -243,7 +186,7 @@ function validateAll(rules) {
   return true;
 }
 
-/* ── reset all errors for a rule set (used after success) ── */
+/*  reset all errors for a rule set */
 function clearAllErrors(rules) {
   rules.forEach((r) => fvClearError(r.id));
 }
