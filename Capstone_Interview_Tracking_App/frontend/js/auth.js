@@ -30,29 +30,50 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* signup form handler
-   takes name, email, mobile, gender (no password)
+   takes name, email, mobile, gender, dob
    password setup link is sent by backend */
 const signupForm = document.getElementById("signupForm");
 if (signupForm) {
+  const dobInput = document.getElementById("dob");
+  if (dobInput) {
+    const today = new Date();
+    const maxDob = new Date(
+      today.getFullYear() - 18,
+      today.getMonth(),
+      today.getDate(),
+    );
+    dobInput.max = maxDob.toISOString().split("T")[0];
+  }
+
   const signupRules = [
     { id: "name", label: "Full Name", required: true, minLength: 2 },
     { id: "email", label: "Email", required: true, type: "email" },
     { id: "mobile", label: "Mobile", required: true, type: "phone" },
     { id: "gender", label: "Gender", required: true, type: "select" },
     {
-      id: "age",
-      label: "Age",
+      id: "dob",
+      label: "Date of Birth",
       required: true,
-      type: "number",
-      requiredMsg: "Age is required.",
+      requiredMsg: "Date of birth is required.",
       custom: (value) => {
-        const n = parseInt(value, 10);
-        if (Number.isNaN(n)) return "Age must be a number.";
-        if (n < 18) {
-          return "Candidate must be at least 18 years old to apply for jobs";
+        if (!value) return "Date of birth is required.";
+        const dob = new Date(value);
+        const today = new Date();
+        const age18Date = new Date(
+          dob.getFullYear() + 18,
+          dob.getMonth(),
+          dob.getDate(),
+        );
+        if (age18Date > today) {
+          return "Candidate must be at least 18 years old.";
         }
-        if (n > 60) {
-          return "Candidate exceeds maximum eligible working age";
+        const age60Date = new Date(
+          dob.getFullYear() + 60,
+          dob.getMonth(),
+          dob.getDate(),
+        );
+        if (age60Date <= today) {
+          return "Candidate exceeds maximum eligible working age.";
         }
         return null;
       },
@@ -72,9 +93,16 @@ if (signupForm) {
     const email = document.getElementById("email").value.trim();
     const mobile = document.getElementById("mobile").value.trim();
     const gender = document.getElementById("gender").value;
-    const age = parseInt(document.getElementById("age").value, 10);
+    const dateOfBirth = document.getElementById("dob").value;
 
-    const data = { name, email, mobile, gender, age, role: "CANDIDATE" };
+    const data = {
+      name,
+      email,
+      mobile,
+      gender,
+      dateOfBirth,
+      role: "CANDIDATE",
+    };
 
     // call signup API
     apiPost("/auth/signup", data)
@@ -112,17 +140,38 @@ if (loginForm) {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    apiPost("/auth/login", { email, password })
-      .then((result) => {
-        localStorage.setItem("user", JSON.stringify(result));
+    // apiPost("/auth/login", { email, password })
+    //   .then((result) => {
+    //     localStorage.setItem("user", JSON.stringify(result));
 
-        if (result.role === "HR") {
-          window.location.href = "dashboard.html";
-        } else if (result.role === "PANEL") {
-          window.location.href = "panel-dashboard.html";
-        } else {
-          window.location.href = "candidate-portal.html";
-        }
+    //     window.location.href = "index.html";
+    // if (result.role === "HR") {
+    //   window.location.href = "dashboard.html";
+    // } else if (result.role === "PANEL") {
+    //   window.location.href = "panel-dashboard.html";
+    // } else {
+    //   window.location.href = "candidate-portal.html";
+    // }
+    //   })
+    //   .catch((err) => {
+    //     setMsg("error", err.message || "Login failed. Check credentials.");
+    //   });
+    const encodedPassword = btoa(password);
+
+    apiPost("/auth/login", {
+      email: email,
+      password: encodedPassword,
+    })
+      .then((result) => {
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...result,
+            password: encodedPassword,
+          }),
+        );
+
+        window.location.href = "index.html";
       })
       .catch((err) => {
         setMsg("error", err.message || "Login failed. Check credentials.");
@@ -188,3 +237,7 @@ if (setPasswordForm) {
       });
   });
 }
+
+document.getElementById("name").addEventListener("input", function () {
+  this.value = this.value.replace(/[^a-zA-Z\s]/g, "");
+});
