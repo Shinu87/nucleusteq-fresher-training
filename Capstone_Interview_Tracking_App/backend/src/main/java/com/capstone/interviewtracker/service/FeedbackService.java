@@ -24,9 +24,10 @@ public interface FeedbackService {
      * Retrieves all feedback submitted for a specific interview.
      *
      * @param interviewId interview ID
+     * @param email       authenticated user email used for role-based filtering
      * @return list of feedback response DTOs
      */
-    List<FeedbackResponseDTO> getFeedbackByInterview(Long interviewId);
+    List<FeedbackResponseDTO> getFeedbackByInterview(Long interviewId, String email);
 
     /**
      * Retrieves all feedback submitted for a candidate across interviews.

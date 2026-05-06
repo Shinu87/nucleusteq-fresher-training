@@ -18,6 +18,7 @@ import com.capstone.interviewtracker.exception.custom.ConflictException;
 import com.capstone.interviewtracker.model.Feedback;
 import com.capstone.interviewtracker.model.Interview;
 import com.capstone.interviewtracker.model.Panel;
+import com.capstone.interviewtracker.model.User;
 import com.capstone.interviewtracker.repository.FeedbackRepository;
 import com.capstone.interviewtracker.repository.InterviewRepository;
 import com.capstone.interviewtracker.repository.PanelRepository;
@@ -157,24 +158,45 @@ public class FeedbackServiceImpl implements FeedbackService {
          * Fetches all feedback entries for a given interview.
          *
          * @param interviewId interview id
+         * @param email       authenticated user email used for role-based filtering
          * @return list of feedback responses
          */
         @Override
-        public List<FeedbackResponseDTO> getFeedbackByInterview(Long interviewId) {
+        public List<FeedbackResponseDTO> getFeedbackByInterview(Long interviewId, String email) {
 
-                logger.info("Fetching feedback for interview id: {}", interviewId);
+                logger.info("Fetching feedback for interview id: {} by user: {}", interviewId, email);
 
-                logger.debug("Calling feedbackRepository.findByInterviewId() for interviewId: {}", interviewId);
+                User user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-                List<FeedbackResponseDTO> feedbackList = feedbackRepository.findByInterviewId(interviewId)
-                                .stream()
-                                .map(this::mapToResponse)
-                                .toList();
+                String role = user.getRole().name();
 
-                logger.info("Successfully fetched {} feedback record(s) for interviewId: {}",
-                                feedbackList.size(), interviewId);
+                logger.debug("User role: {}", role);
 
-                return feedbackList;
+                List<Feedback> feedbacks = feedbackRepository.findByInterviewId(interviewId);
+
+                List<FeedbackResponseDTO> result;
+
+                if ("HR".equals(role)) {
+
+                        result = feedbacks.stream()
+                                        .map(this::mapToResponse)
+                                        .toList();
+
+                } else {
+
+                        result = feedbacks.stream()
+                                        .filter(f -> f.getPanel()
+                                                        .getUser()
+                                                        .getEmail()
+                                                        .equalsIgnoreCase(email))
+                                        .map(this::mapToResponse)
+                                        .toList();
+                }
+
+                logger.info("Returning {} feedback(s) for interviewId: {}", result.size(), interviewId);
+
+                return result;
         }
 
         /**
