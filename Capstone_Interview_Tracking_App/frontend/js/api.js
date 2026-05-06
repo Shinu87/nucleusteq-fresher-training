@@ -25,6 +25,25 @@ function getUser() {
   }
 }
 
+/**
+ * Builds the Authorization header from stored credentials.
+ * Credentials are stored at login as { email, password }.
+ * Every API call re-sends them as HTTP Basic auth so the
+ * AuthFilter can authenticate and populate the SecurityContext.
+ */
+function getAuthHeader() {
+  const user = getUser();
+
+  if (!user || !user.email || !user.password) return {};
+
+  const encoded = btoa(
+    unescape(encodeURIComponent(user.email + ":" + user.password)),
+  );
+  return {
+    Authorization: "Basic " + encoded,
+  };
+}
+
 function logout() {
   localStorage.removeItem("user");
   window.location.href = "login.html";
@@ -32,7 +51,19 @@ function logout() {
 
 /* fetch helper functions */
 async function apiGet(path) {
-  const res = await fetch(`${BASE_URL}${path}`);
+  const res = await fetch(`${BASE_URL}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+    return;
+  }
+
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
@@ -43,9 +74,13 @@ async function apiGet(path) {
 async function apiPost(path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
     body: JSON.stringify(body),
   });
+
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
@@ -54,12 +89,21 @@ async function apiPost(path, body) {
 }
 
 async function apiPut(path, body = null) {
-  const opts = { method: "PUT" };
-  if (body !== null) {
-    opts.headers = { "Content-Type": "application/json" };
-    opts.body = JSON.stringify(body);
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: body !== null ? JSON.stringify(body) : undefined,
+  });
+
+  if (res.status === 401 || res.status === 403) {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+    return;
   }
-  const res = await fetch(`${BASE_URL}${path}`, opts);
+
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
