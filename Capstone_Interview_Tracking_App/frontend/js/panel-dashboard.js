@@ -18,7 +18,6 @@ const feedbackRules = [
     minLength: 3,
   },
   {
-    // rating is a hidden input updated by clicking stars
     id: "fbRating",
     label: "Rating",
     required: true,
@@ -104,10 +103,8 @@ async function renderPanelInterviews(interviews) {
     return;
   }
 
-  // for each interview also check feedback submission status
   const rows = await Promise.all(
     interviews.map(async (iv, i) => {
-      // panel can submit feedback when status is ONGOING or COMPLETED
       const canSubmit = iv.status === "ONGOING" || iv.status === "COMPLETED";
 
       let feedbackBadge = "";
@@ -127,7 +124,6 @@ async function renderPanelInterviews(interviews) {
           '<span class="badge badge-gray" style="margin-left:6px;font-size:11px;">Not Yet</span>';
       }
 
-      // meeting url cell
       const meetingCell = iv.meetingUrl
         ? `<a href="${iv.meetingUrl}" target="_blank">Open</a>`
         : "—";
@@ -143,10 +139,10 @@ async function renderPanelInterviews(interviews) {
         <td>${interviewStatusBadge(iv.status)}${feedbackBadge}</td>
         <td>
           <button class="btn btn-sm btn-info"
-                  onclick="viewCandidateProfile(${iv.candidateId})">Profile</button>
+                  onclick="viewCandidateProfile(${iv.candidateId})">  Profile  </button>
           ${
             canSubmit
-              ? `<button class="btn btn-sm btn-primary" style="margin-left:4px;"
+              ? `<button class="btn btn-sm" style="margin-left:4px;"
                        onclick="goSubmitFeedback(${iv.id})">Feedback</button>`
               : ""
           }
@@ -161,7 +157,6 @@ async function renderPanelInterviews(interviews) {
 
 function populateInterviewDropdown(interviews) {
   const sel = document.getElementById("fbInterviewId");
-  // only ONGOING/COMPLETED interviews can receive feedback
   const eligible = interviews.filter(
     (iv) => iv.status === "ONGOING" || iv.status === "COMPLETED",
   );
