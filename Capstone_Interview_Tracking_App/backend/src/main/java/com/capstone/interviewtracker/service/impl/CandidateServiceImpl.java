@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.capstone.interviewtracker.exception.custom.BadRequestException;
 import com.capstone.interviewtracker.exception.custom.ConflictException;
 import com.capstone.interviewtracker.exception.custom.ResourceNotFoundException;
+import com.capstone.interviewtracker.exception.custom.UnauthorizedException;
 import com.capstone.interviewtracker.constants.messages.CandidateMessages;
 import com.capstone.interviewtracker.constants.messages.InterviewMessages;
 import com.capstone.interviewtracker.constants.messages.JobMessages;
@@ -399,16 +400,17 @@ public class CandidateServiceImpl implements CandidateService {
          *
          * @param candidateId candidate id
          * @param newJobId    new job id
+         * @param email       mail id
          * @return updated candidate response
          */
         @Override
         public CandidateResponseDTO reApply(
                         Long candidateId,
-                        Long newJobId) {
+                        Long newJobId,
+                        String email) {
 
                 logger.info("Re-apply request received for candidateId: {}, newJobId: {}", candidateId, newJobId);
 
-                logger.debug("Looking up candidate in database for ID: {}", candidateId);
                 Candidate candidate = candidateRepository.findById(candidateId)
                                 .orElseThrow(() -> {
                                         logger.warn("Re-apply failed - candidate not found for ID: {}", candidateId);
@@ -416,14 +418,20 @@ public class CandidateServiceImpl implements CandidateService {
                                                         CandidateMessages.CANDIDATE_NOT_FOUND + ": " + candidateId);
                                 });
 
+                if (!candidate.getEmail().equalsIgnoreCase(email)) {
+                        logger.warn("Unauthorized re-apply attempt by user: {} for candidateId: {}", email,
+                                        candidateId);
+                        throw new UnauthorizedException("You cannot reapply for another candidate");
+                }
+
                 if (candidate.getStatus() != CandidateStatus.REJECTED) {
-                        logger.warn("Re-apply failed - candidate is not REJECTED. Current status: {} for candidateId: {}",
+                        logger.warn("Re-apply failed - candidate not REJECTED. Current status: {} for candidateId: {}",
                                         candidate.getStatus(), candidateId);
+
                         throw new ConflictException(
                                         CandidateMessages.REAPPLICATION_ALLOWED_ONLY_AFTER_REJECTION);
                 }
 
-                logger.debug("Fetching new job from database for jobId: {}", newJobId);
                 JobDescription newJob = jobDescriptionRepository.findById(newJobId)
                                 .orElseThrow(() -> {
                                         logger.warn("Re-apply failed - job not found for ID: {}", newJobId);
@@ -432,19 +440,17 @@ public class CandidateServiceImpl implements CandidateService {
                                 });
 
                 if (!newJob.isActive()) {
-                        logger.warn("Re-apply failed - job is not active for ID: {}", newJobId);
-                        throw new BadRequestException(
-                                        JobMessages.JOB_NOT_ACTIVE);
+                        logger.warn("Re-apply failed - job not active for ID: {}", newJobId);
+                        throw new BadRequestException(JobMessages.JOB_NOT_ACTIVE);
                 }
 
                 candidate.setJobDescription(newJob);
                 candidate.setCurrentStage(Stage.PROFILING);
                 candidate.setStatus(CandidateStatus.IN_PROGRESS);
-                candidate.setApplicationId(
-                                nextApplicationId(candidate));
+                candidate.setApplicationId(nextApplicationId(candidate));
 
-                logger.debug("Saving re-applied candidate to database for candidateId: {}", candidateId);
                 Candidate saved = candidateRepository.save(candidate);
+
                 logger.info("Candidate re-applied successfully - candidateId: {}, newJobId: {}, applicationId: {}",
                                 saved.getId(), newJobId, saved.getApplicationId());
 
@@ -549,31 +555,48 @@ public class CandidateServiceImpl implements CandidateService {
         /**
          * Updates resume path for a candidate.
          *
-         * @param candidateId candidate id
-         * @param resumePath  stored resume file path
+         * @param candidateId   candidate id
+         * @param resumePath    stored resume file path
+         * @param loggedInEmail email of the authenticated user for authorization check
          * @return updated candidate response
          */
         @Override
         public CandidateResponseDTO updateResumePath(
                         Long candidateId,
-                        String resumePath) {
+                        String resumePath,
+                        String loggedInEmail) {
 
                 logger.info("Update resume path request received for candidateId: {}", candidateId);
 
-                logger.debug("Looking up candidate in database for ID: {}", candidateId);
                 Candidate candidate = candidateRepository.findById(candidateId)
                                 .orElseThrow(() -> {
-                                        logger.warn("Update resume failed - candidate not found for ID: {}",
-                                                        candidateId);
+                                        logger.warn("Candidate not found for ID: {}", candidateId);
                                         return new ResourceNotFoundException(
                                                         CandidateMessages.CANDIDATE_NOT_FOUND + ": " + candidateId);
                                 });
 
+                User user = userRepository.findByEmail(loggedInEmail)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+                /* SECURITY CHECK */
+                if (user.getRole().name().equals("CANDIDATE")) {
+
+                        if (!candidate.getEmail().equalsIgnoreCase(loggedInEmail)) {
+                                logger.warn("Unauthorized resume update attempt by user: {}", loggedInEmail);
+                                throw new UnauthorizedException(
+                                                "You are not allowed to update another candidate's resume");
+                        }
+                }
+
+                /* HR is allowed to update any candidate */
+
                 logger.debug("Updating resume path for candidateId: {} to: {}", candidateId, resumePath);
+
                 candidate.setResumeUrl(resumePath);
 
                 Candidate saved = candidateRepository.save(candidate);
-                logger.info("Resume path updated successfully for candidateId: {}", candidateId);
+
+                logger.info("Resume updated successfully for candidateId: {}", candidateId);
 
                 return mapToResponse(saved);
         }

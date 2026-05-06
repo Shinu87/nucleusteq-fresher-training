@@ -34,18 +34,23 @@ public interface CandidateService {
      *
      * @param candidateId candidate ID
      * @param newJobId    new job ID
+     * @param email       authenticated user email for ownership verification
      * @return updated candidate response DTO
      */
-    CandidateResponseDTO reApply(Long candidateId, Long newJobId);
+    CandidateResponseDTO reApply(Long candidateId, Long newJobId, String email);
 
     /**
      * Updates resume file path for a candidate.
      *
-     * @param candidateId candidate ID
-     * @param resumePath  file path of uploaded resume
+     * @param candidateId   candidate ID
+     * @param resumePath    file path of uploaded resume
+     * @param loggedInEmail authenticated user email used for ownership verification
      * @return updated candidate response DTO
      */
-    CandidateResponseDTO updateResumePath(Long candidateId, String resumePath);
+    CandidateResponseDTO updateResumePath(
+            Long candidateId,
+            String resumePath,
+            String loggedInEmail);
 
     /**
      * Retrieves all candidates in the system.

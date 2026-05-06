@@ -3,8 +3,11 @@ package com.capstone.interviewtracker.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +50,7 @@ public class CandidateController {
      * @param request candidate request data
      * @return created candidate response
      */
+    @PreAuthorize("hasAnyRole('HR','CANDIDATE')")
     @PostMapping()
     public ResponseEntity<CandidateResponseDTO> createCandidate(@Valid @RequestBody CandidateRequestDTO request) {
         CandidateResponseDTO response = candidateService.createCandidate(request);
@@ -58,6 +62,7 @@ public class CandidateController {
      *
      * @return list of candidates
      */
+    @PreAuthorize("hasRole('HR')")
     @GetMapping
     public ResponseEntity<List<CandidateResponseDTO>> getAllCandidates() {
         return ResponseEntity.ok(candidateService.getAllCandidates());
@@ -69,12 +74,20 @@ public class CandidateController {
      * @param email the candidate email
      * @return application status response
      */
+    @PreAuthorize("hasRole('CANDIDATE')")
     @GetMapping(CandidateApiConstants.ME_APPLICATION)
     public ResponseEntity<ApplicationStatusDTO> getMyApplication(
             @RequestParam(name = "email") String email) {
 
         if (email == null || email.isBlank()) {
             return ResponseEntity.badRequest().build();
+        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = auth != null ? auth.getName() : null;
+
+        if (loggedInEmail == null || !loggedInEmail.equalsIgnoreCase(email.trim())) {
+            return ResponseEntity.status(403).build();
         }
 
         ApplicationStatusDTO dto = candidateService.getApplicationStatusByEmail(email.trim());
@@ -94,12 +107,19 @@ public class CandidateController {
      * @param file resume file
      * @return updated candidate response
      */
+    @PreAuthorize("hasAnyRole('CANDIDATE','HR')")
     @PostMapping(CandidateApiConstants.RESUME)
     public ResponseEntity<CandidateResponseDTO> uploadResume(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
         String storedPath = resumeStorageService.storeResume(file);
-        CandidateResponseDTO response = candidateService.updateResumePath(id, storedPath);
+
+        CandidateResponseDTO response = candidateService.updateResumePath(id, storedPath, email);
+
         return ResponseEntity.ok(response);
     }
 
@@ -111,15 +131,23 @@ public class CandidateController {
      * @param body request body containing jobId
      * @return updated candidate response
      */
+    @PreAuthorize("hasRole('CANDIDATE')")
     @PostMapping(CandidateApiConstants.REAPPLY)
     public ResponseEntity<CandidateResponseDTO> reApply(
             @PathVariable Long id,
             @RequestBody Map<String, Long> body) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
         Long newJobId = body.get("jobId");
+
         if (newJobId == null) {
             return ResponseEntity.badRequest().build();
         }
-        CandidateResponseDTO response = candidateService.reApply(id, newJobId);
+
+        CandidateResponseDTO response = candidateService.reApply(id, newJobId, email);
+
         return ResponseEntity.ok(response);
     }
 
@@ -129,6 +157,7 @@ public class CandidateController {
      * @param id candidate id
      * @return candidate details
      */
+    @PreAuthorize("hasAnyRole('HR','PANEL')")
     @GetMapping(CandidateApiConstants.BY_ID)
     public ResponseEntity<CandidateResponseDTO> getCandidateById(@PathVariable Long id) {
         return ResponseEntity.ok(candidateService.getCandidateById(id));
@@ -141,6 +170,7 @@ public class CandidateController {
      * @param id candidate id
      * @return updated candidate response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(CandidateApiConstants.ADVANCE)
     public ResponseEntity<CandidateResponseDTO> advanceStage(@PathVariable Long id) {
         return ResponseEntity.ok(candidateService.advanceStage(id));
@@ -152,6 +182,7 @@ public class CandidateController {
      * @param id candidate id
      * @return updated candidate response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(CandidateApiConstants.REJECT)
     public ResponseEntity<CandidateResponseDTO> rejectCandidate(@PathVariable Long id) {
         return ResponseEntity.ok(candidateService.rejectCandidate(id));
