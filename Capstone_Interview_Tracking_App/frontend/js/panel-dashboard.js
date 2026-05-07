@@ -194,17 +194,51 @@ function goSubmitFeedback(interviewId) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+async function downloadResume(path) {
+  try {
+    const url = `${BASE_URL}/resumes/download?path=${encodeURIComponent(path)}`;
+
+    const response = await fetch(
+      `${BASE_URL}/resumes/download?path=${encodeURIComponent(path)}`,
+      {
+        method: "GET",
+        headers: {
+          ...getAuthHeader(),
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Download failed");
+    }
+
+    const blob = await response.blob();
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = "resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (err) {
+    console.error(err);
+    showToast("Failed to download resume", "error");
+  }
+}
+
 async function viewCandidateProfile(candidateId) {
   try {
     const c = await apiGet(`/candidates/${candidateId}`);
     const card = document.getElementById("candidateProfileCard");
     const content = document.getElementById("candidateProfileContent");
 
-    // resume link (served via internal drive endpoint)
     const resumeLink = c.resumeUrl
-      ? `<p style="margin-top:12px;font-size:13px;">📄
-          <a href="${BASE_URL}/resumes/download?path=${encodeURIComponent(c.resumeUrl)}"
-             target="_blank">Download Resume</a></p>`
+      ? `<p style="margin-top:12px;font-size:13px;">
+        📄 <button onclick="downloadResume('${c.resumeUrl}')"
+           style="background:none;border:none;color:#007bff;cursor:pointer;padding:0;font:inherit;">
+           Download Resume
+        </button>
+     </p>`
       : '<p style="margin-top:12px;font-size:13px;color:#aaa;">No resume uploaded.</p>';
 
     content.innerHTML = `
