@@ -16,11 +16,13 @@ import com.capstone.interviewtracker.dto.Request.FeedbackRequestDTO;
 import com.capstone.interviewtracker.dto.Response.FeedbackResponseDTO;
 import com.capstone.interviewtracker.enums.FeedbackStatus;
 import com.capstone.interviewtracker.enums.InterviewStatus;
+import com.capstone.interviewtracker.enums.Role;
 import com.capstone.interviewtracker.enums.Stage;
 import com.capstone.interviewtracker.exception.custom.ResourceNotFoundException;
 import com.capstone.interviewtracker.model.Feedback;
 import com.capstone.interviewtracker.model.Interview;
 import com.capstone.interviewtracker.model.Panel;
+import com.capstone.interviewtracker.model.User;
 import com.capstone.interviewtracker.repository.FeedbackRepository;
 import com.capstone.interviewtracker.repository.InterviewRepository;
 import com.capstone.interviewtracker.repository.PanelRepository;
@@ -73,7 +75,7 @@ class FeedbackServiceImplTest {
         interview.setId(1L);
         interview.setStage(Stage.L1);
         interview.setStatus(InterviewStatus.SCHEDULED);
-        // scheduled time is in past so feedback can be submitted
+        /* scheduled time is in past so feedback can be submitted */
         interview.setScheduledAt(LocalDateTime.now().minusHours(1));
         interview.setPanels(List.of(panel));
 
@@ -191,14 +193,42 @@ class FeedbackServiceImplTest {
     }
 
     /**
-     * Tests fetching feedback list by interview id.
+     * Tests fetching feedback list by interview id as HR - HR sees all feedback.
+     * getFeedbackByInterview now takes (interviewId, email) and filters by role.
      */
     @Test
-    void testGetFeedbackByInterview() {
+    void testGetFeedbackByInterviewAsHr() {
+        User hrUser = new User();
+        hrUser.setEmail("hr@example.com");
+        hrUser.setRole(Role.HR);
+
+        when(userRepository.findByEmail("hr@example.com")).thenReturn(Optional.of(hrUser));
         when(feedbackRepository.findByInterviewId(1L)).thenReturn(List.of(feedback));
-        List<FeedbackResponseDTO> result = feedbackService.getFeedbackByInterview(1L);
+
+        List<FeedbackResponseDTO> result = feedbackService.getFeedbackByInterview(1L, "hr@example.com");
         assertEquals(1, result.size());
         assertEquals(99L, result.get(0).getId());
+    }
+
+    /**
+     * Tests fetching feedback list by interview id as PANEL - PANEL sees only own
+     * feedback.
+     */
+    @Test
+    void testGetFeedbackByInterviewAsPanel() {
+        User panelUser = new User();
+        panelUser.setEmail("panel@example.com");
+        panelUser.setRole(Role.PANEL);
+
+        User panelUserRef = new User();
+        panelUserRef.setEmail("panel@example.com");
+        panel.setUser(panelUserRef);
+
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(feedbackRepository.findByInterviewId(1L)).thenReturn(List.of(feedback));
+
+        List<FeedbackResponseDTO> result = feedbackService.getFeedbackByInterview(1L, "panel@example.com");
+        assertEquals(1, result.size());
     }
 
     /**

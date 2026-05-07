@@ -92,7 +92,8 @@ class UserServiceImplTest {
 
         setPasswordRequest = new SetPasswordRequest();
         setPasswordRequest.setToken("token123");
-        setPasswordRequest.setPassword("NewSecret@123");
+        setPasswordRequest.setPassword(Base64.getEncoder()
+                .encodeToString("NewSecret@123".getBytes(StandardCharsets.UTF_8)));
 
         savedUser = new User();
         ReflectionTestUtils.setField(savedUser, "id", 7L);

@@ -36,6 +36,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Test class for InterviewServiceImpl.
@@ -430,12 +433,25 @@ class InterviewServiceImplTest {
         overdue.setCandidate(candidate);
         overdue.setPanels(List.of(panel));
 
+        User hrUser = new User();
+        hrUser.setEmail("hr@company.com");
+        hrUser.setRole(Role.HR);
+
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        SecurityContext securityContext = org.mockito.Mockito.mock(SecurityContext.class);
+        org.mockito.Mockito.when(auth.getName()).thenReturn("hr@company.com");
+        org.mockito.Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail("hr@company.com")).thenReturn(Optional.of(hrUser));
         when(interviewRepository.findAllWithPanels()).thenReturn(List.of(overdue));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
 
         List<InterviewResponseDTO> list = interviewService.getAllInterviews();
         assertEquals(1, list.size());
         assertEquals(InterviewStatus.ONGOING, overdue.getStatus());
+
+        SecurityContextHolder.clearContext();
     }
 
     /**

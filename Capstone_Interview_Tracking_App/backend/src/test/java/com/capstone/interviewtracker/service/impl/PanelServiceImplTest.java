@@ -28,7 +28,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
+import com.capstone.interviewtracker.enums.Role;
 
 /**
  * Test class for PanelServiceImpl.
@@ -132,10 +136,24 @@ class PanelServiceImplTest {
      */
     @Test
     void testGetAllPanels() {
+        User hrUser = new User();
+        hrUser.setEmail("hr@company.com");
+        hrUser.setRole(Role.HR);
+
+        Authentication auth = org.mockito.Mockito.mock(Authentication.class);
+        SecurityContext securityContext = org.mockito.Mockito.mock(SecurityContext.class);
+        org.mockito.Mockito.when(auth.getName()).thenReturn("hr@company.com");
+        org.mockito.Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findByEmail("hr@company.com")).thenReturn(Optional.of(hrUser));
         when(panelRepository.findAll()).thenReturn(List.of(panel));
+
         List<PanelResponseDTO> result = panelService.getAllPanels();
         assertEquals(1, result.size());
         assertEquals(5L, result.get(0).getId());
+
+        SecurityContextHolder.clearContext();
     }
 
     /**

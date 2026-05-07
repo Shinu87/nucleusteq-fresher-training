@@ -20,6 +20,7 @@ import com.capstone.interviewtracker.dto.Response.ApplicationStatusDTO;
 import com.capstone.interviewtracker.dto.Response.CandidateResponseDTO;
 import com.capstone.interviewtracker.enums.CandidateStatus;
 import com.capstone.interviewtracker.enums.InterviewStatus;
+import com.capstone.interviewtracker.enums.Role;
 import com.capstone.interviewtracker.enums.Stage;
 import com.capstone.interviewtracker.exception.custom.BadRequestException;
 import com.capstone.interviewtracker.exception.custom.ResourceNotFoundException;
@@ -294,7 +295,7 @@ class CandidateServiceImplTest {
         when(jobDescriptionRepository.findById(11L)).thenReturn(Optional.of(job));
         when(candidateRepository.save(any(Candidate.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        CandidateResponseDTO response = candidateService.reApply(100L, 11L);
+        CandidateResponseDTO response = candidateService.reApply(100L, 11L, existingCandidate.getEmail());
         assertNotNull(response);
         assertEquals(Stage.PROFILING, existingCandidate.getCurrentStage());
         assertEquals(CandidateStatus.IN_PROGRESS, existingCandidate.getStatus());
@@ -306,7 +307,8 @@ class CandidateServiceImplTest {
     @Test
     void testReApplyCandidateNotFound() {
         when(candidateRepository.findById(100L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> candidateService.reApply(100L, 11L));
+        assertThrows(ResourceNotFoundException.class,
+                () -> candidateService.reApply(100L, 11L, existingCandidate.getEmail()));
     }
 
     /**
@@ -316,7 +318,7 @@ class CandidateServiceImplTest {
     void testReApplyNotRejected() {
         existingCandidate.setStatus(CandidateStatus.IN_PROGRESS);
         when(candidateRepository.findById(100L)).thenReturn(Optional.of(existingCandidate));
-        assertThrows(RuntimeException.class, () -> candidateService.reApply(100L, 11L));
+        assertThrows(RuntimeException.class, () -> candidateService.reApply(100L, 11L, existingCandidate.getEmail()));
     }
 
     /**
@@ -327,7 +329,8 @@ class CandidateServiceImplTest {
         existingCandidate.setStatus(CandidateStatus.REJECTED);
         when(candidateRepository.findById(100L)).thenReturn(Optional.of(existingCandidate));
         when(jobDescriptionRepository.findById(11L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> candidateService.reApply(100L, 11L));
+        assertThrows(ResourceNotFoundException.class,
+                () -> candidateService.reApply(100L, 11L, existingCandidate.getEmail()));
     }
 
     /**
@@ -339,7 +342,7 @@ class CandidateServiceImplTest {
         job.setActive(false);
         when(candidateRepository.findById(100L)).thenReturn(Optional.of(existingCandidate));
         when(jobDescriptionRepository.findById(11L)).thenReturn(Optional.of(job));
-        assertThrows(RuntimeException.class, () -> candidateService.reApply(100L, 11L));
+        assertThrows(RuntimeException.class, () -> candidateService.reApply(100L, 11L, existingCandidate.getEmail()));
     }
 
     /**
@@ -347,10 +350,16 @@ class CandidateServiceImplTest {
      */
     @Test
     void testUpdateResumeSuccess() {
+        User candidateUser = new User();
+        candidateUser.setEmail("Rahul@example.com");
+        candidateUser.setRole(Role.CANDIDATE);
+
         when(candidateRepository.findById(100L)).thenReturn(Optional.of(existingCandidate));
+        when(userRepository.findByEmail("Rahul@example.com")).thenReturn(Optional.of(candidateUser));
         when(candidateRepository.save(any(Candidate.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        CandidateResponseDTO response = candidateService.updateResumePath(100L, "uploads/resumes/x.pdf");
+        CandidateResponseDTO response = candidateService.updateResumePath(100L, "uploads/resumes/x.pdf",
+                "Rahul@example.com");
         assertEquals("uploads/resumes/x.pdf", response.getResumeUrl());
     }
 
@@ -361,7 +370,7 @@ class CandidateServiceImplTest {
     void testUpdateResumeCandidateNotFound() {
         when(candidateRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class,
-                () -> candidateService.updateResumePath(100L, "x"));
+                () -> candidateService.updateResumePath(100L, "x", "Rahul@example.com"));
     }
 
     /**
