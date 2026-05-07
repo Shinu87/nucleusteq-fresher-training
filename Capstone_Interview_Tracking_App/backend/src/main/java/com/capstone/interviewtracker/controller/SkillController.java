@@ -3,6 +3,7 @@ package com.capstone.interviewtracker.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,6 +35,7 @@ public class SkillController {
      *
      * @return list of skills
      */
+    @PreAuthorize("hasRole('HR')")
     @GetMapping
     public ResponseEntity<List<SkillResponseDTO>> getAllSkills() {
         return ResponseEntity.ok(skillService.getAllSkills());
