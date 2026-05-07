@@ -1,6 +1,7 @@
 package com.capstone.interviewtracker.repository;
 
 import com.capstone.interviewtracker.model.Panel;
+import com.capstone.interviewtracker.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,4 +44,12 @@ public interface PanelRepository extends JpaRepository<Panel, Long> {
      * @return list of active panels
      */
     List<Panel> findByActiveTrue();
+
+    /**
+     * Finds a panel associated with the given user.
+     *
+     * @param user the user entity linked to the panel
+     * @return an Optional containing the panel if found, otherwise empty
+     */
+    Optional<Panel> findByUser(User user);
 }

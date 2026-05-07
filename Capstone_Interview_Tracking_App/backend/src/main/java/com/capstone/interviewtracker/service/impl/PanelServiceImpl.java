@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.core.Authentication;
 import com.capstone.interviewtracker.constants.messages.PanelMessages;
 import com.capstone.interviewtracker.dto.Request.PanelRequestDTO;
 import com.capstone.interviewtracker.dto.Response.PanelResponseDTO;
 import com.capstone.interviewtracker.enums.Role;
+import com.capstone.interviewtracker.exception.custom.BadRequestException;
 import com.capstone.interviewtracker.exception.custom.ConflictException;
 import com.capstone.interviewtracker.exception.custom.ResourceNotFoundException;
 import com.capstone.interviewtracker.model.Panel;
@@ -121,21 +123,35 @@ public class PanelServiceImpl implements PanelService {
     @Override
     public List<PanelResponseDTO> getAllPanels() {
 
-        // logging when get all panels request is received
-        logger.info("Fetching all panel members from the database");
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
 
-        // logging before querying DB for all panels
-        logger.debug("Calling panelRepository.findAll()");
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        List<PanelResponseDTO> panels = panelRepository.findAll()
-                .stream()
+        List<Panel> panels;
+
+        if (user.getRole() == Role.HR) {
+
+            logger.info("HR → fetching all panels");
+            panels = panelRepository.findAll();
+
+        } else if (user.getRole() == Role.PANEL) {
+
+            logger.info("PANEL → fetching only own panel");
+
+            Panel panel = panelRepository.findByUser(user)
+                    .orElseThrow(() -> new ResourceNotFoundException("Panel not found"));
+
+            panels = List.of(panel);
+
+        } else {
+            throw new BadRequestException("Access denied");
+        }
+
+        return panels.stream()
                 .map(this::mapToResponse)
                 .toList();
-
-        // logging after all panels are fetched and mapped
-        logger.info("Successfully fetched {} panel member(s) from the database", panels.size());
-
-        return panels;
     }
 
     /**
