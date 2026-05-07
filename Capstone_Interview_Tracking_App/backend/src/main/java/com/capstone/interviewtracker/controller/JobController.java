@@ -3,6 +3,7 @@ package com.capstone.interviewtracker.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +46,7 @@ public class JobController {
      * @return created job response
      */
     @PostMapping
+    @PreAuthorize("hasRole('HR')")
     public ResponseEntity<JobResponseDTO> createJob(
             @Valid @RequestBody JobRequestDTO request) {
 
@@ -56,6 +58,7 @@ public class JobController {
      *
      * @return list of job responses
      */
+    @PreAuthorize("hasRole('HR')")
     @GetMapping
     public ResponseEntity<List<JobResponseDTO>> getAllJobs() {
         return ResponseEntity.ok(jobService.getAllJobs());
@@ -79,6 +82,7 @@ public class JobController {
      * @param id job id
      * @return updated job response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(HrApiConstants.JOBS_DEACTIVATE)
     public ResponseEntity<JobResponseDTO> deactivateJob(
             @PathVariable Long id) {
@@ -92,6 +96,7 @@ public class JobController {
      * @param id job id
      * @return updated job response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(HrApiConstants.JOBS_ACTIVATE)
     public ResponseEntity<JobResponseDTO> activateJob(
             @PathVariable Long id) {
