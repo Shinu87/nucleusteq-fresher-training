@@ -50,7 +50,17 @@ function logout() {
 }
 
 /* fetch helper functions */
-async function apiGet(path) {
+function _handleAuthFailure(res, silent) {
+  if (silent) return false;
+  if (res.status === 401) {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+    return true;
+  }
+  return false;
+}
+
+async function apiGet(path, opts = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
@@ -58,11 +68,7 @@ async function apiGet(path) {
     },
   });
 
-  if (res.status === 401 || res.status === 403) {
-    localStorage.removeItem("user");
-    window.location.href = "login.html";
-    return;
-  }
+  if (_handleAuthFailure(res, opts.silent)) return;
 
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
@@ -71,7 +77,7 @@ async function apiGet(path) {
   return res.json();
 }
 
-async function apiPost(path, body) {
+async function apiPost(path, body, opts = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
     headers: {
@@ -81,6 +87,8 @@ async function apiPost(path, body) {
     body: JSON.stringify(body),
   });
 
+  if (_handleAuthFailure(res, opts.silent)) return;
+
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
     throw e;
@@ -88,7 +96,7 @@ async function apiPost(path, body) {
   return res.json();
 }
 
-async function apiPut(path, body = null) {
+async function apiPut(path, body = null, opts = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "PUT",
     headers: {
@@ -98,11 +106,7 @@ async function apiPut(path, body = null) {
     body: body !== null ? JSON.stringify(body) : undefined,
   });
 
-  if (res.status === 401 || res.status === 403) {
-    localStorage.removeItem("user");
-    window.location.href = "login.html";
-    return;
-  }
+  if (_handleAuthFailure(res, opts.silent)) return;
 
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
@@ -111,6 +115,24 @@ async function apiPut(path, body = null) {
   return res.json();
 }
 
+/**
+ * For multipart uploads (resume).
+ */
+async function apiPostForm(path, formData, opts = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { ...getAuthHeader() },
+    body: formData,
+  });
+
+  if (_handleAuthFailure(res, opts.silent)) return;
+
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw e;
+  }
+  return res.json();
+}
 /* toast message styles */
 function showToast(msg, type = "info") {
   let container = document.getElementById("toast-container");
