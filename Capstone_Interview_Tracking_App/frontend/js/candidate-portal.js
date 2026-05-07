@@ -320,20 +320,18 @@ async function uploadResume(candidateId, file, msgEl, opts) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${BASE_URL}/candidates/${candidateId}/resume`, {
-      method: "POST",
-      body: formData,
+    await apiPostForm(`/candidates/${candidateId}/resume`, formData, {
+      silent: true,
     });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || "Resume upload failed");
-    }
 
     showMsg(msgEl, "success", successMsg);
     return true;
   } catch (e) {
-    showMsg(msgEl, errorLevel, `${errorPrefix}: ${e.message}.`);
+    showMsg(
+      msgEl,
+      errorLevel,
+      `${errorPrefix}: ${e.message || "upload failed"}.`,
+    );
     return false;
   }
 }
@@ -408,6 +406,12 @@ async function loadMyProgress() {
     // hit the email based tracking endpoint
     const res = await fetch(
       `${BASE_URL}/candidates/me/application?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+      },
     );
 
     if (res.status === 404) {
