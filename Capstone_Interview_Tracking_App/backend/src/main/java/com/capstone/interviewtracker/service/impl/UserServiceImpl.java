@@ -1,5 +1,6 @@
 package com.capstone.interviewtracker.service.impl;
 
+import java.util.Base64;
 import com.capstone.interviewtracker.constants.messages.AuthMessages;
 import com.capstone.interviewtracker.dto.Request.LoginRequest;
 import com.capstone.interviewtracker.dto.Request.SetPasswordRequest;
@@ -221,7 +222,10 @@ public class UserServiceImpl implements UserService {
                                 });
 
                 logger.debug("Encoding and saving new password for user: {}", user.getEmail());
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
+                String decodedPassword = new String(
+                                Base64.getDecoder().decode(request.getPassword()));
+
+                user.setPassword(passwordEncoder.encode(decodedPassword));
                 user.setEnabled(true);
                 userRepository.save(user);
                 logger.info("Password updated and account enabled for user: {}", user.getEmail());

@@ -140,22 +140,6 @@ if (loginForm) {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    // apiPost("/auth/login", { email, password })
-    //   .then((result) => {
-    //     localStorage.setItem("user", JSON.stringify(result));
-
-    //     window.location.href = "index.html";
-    // if (result.role === "HR") {
-    //   window.location.href = "dashboard.html";
-    // } else if (result.role === "PANEL") {
-    //   window.location.href = "panel-dashboard.html";
-    // } else {
-    //   window.location.href = "candidate-portal.html";
-    // }
-    //   })
-    //   .catch((err) => {
-    //     setMsg("error", err.message || "Login failed. Check credentials.");
-    //   });
     const encodedPassword = btoa(password);
 
     apiPost("/auth/login", {
@@ -167,7 +151,7 @@ if (loginForm) {
           "user",
           JSON.stringify({
             ...result,
-            password: encodedPassword,
+            password: password,
           }),
         );
 
@@ -219,9 +203,26 @@ if (setPasswordForm) {
     }
 
     const password = document.getElementById("password").value;
+    const encodedPassword = btoa(password);
 
     // call API
-    apiPost("/auth/set-password", { token, password })
+    fetch("http://localhost:8080/api/auth/set-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token,
+        password: encodedPassword,
+      }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw err;
+        }
+        return res.json();
+      })
       .then(() => {
         setMsg(
           "success",
