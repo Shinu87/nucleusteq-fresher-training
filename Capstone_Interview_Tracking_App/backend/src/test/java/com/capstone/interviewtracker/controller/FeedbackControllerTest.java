@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -227,11 +229,13 @@ class FeedbackControllerTest {
 
         /**
          * Tests that PANEL can fetch feedback list by interview id.
+         * getFeedbackByInterview now takes (interviewId, email) - the controller
+         * extracts the email from SecurityContext and passes it to the service.
          */
         @Test
-        @WithMockUser(roles = "PANEL")
+        @WithMockUser(username = "panel@example.com", roles = "PANEL")
         void testGetFeedbackByInterviewAsPanel() throws Exception {
-                when(feedbackService.getFeedbackByInterview(10L))
+                when(feedbackService.getFeedbackByInterview(eq(10L), anyString()))
                                 .thenReturn(List.of(sampleFeedback(1L), sampleFeedback(2L)));
 
                 mockMvc.perform(get("/api/feedbacks/interview/10"))
@@ -244,9 +248,9 @@ class FeedbackControllerTest {
          * Tests that HR can fetch feedback list by interview id.
          */
         @Test
-        @WithMockUser(roles = "HR")
+        @WithMockUser(username = "hr@example.com", roles = "HR")
         void testGetFeedbackByInterviewAsHr() throws Exception {
-                when(feedbackService.getFeedbackByInterview(10L))
+                when(feedbackService.getFeedbackByInterview(eq(10L), anyString()))
                                 .thenReturn(List.of(sampleFeedback(1L)));
 
                 mockMvc.perform(get("/api/feedbacks/interview/10"))
