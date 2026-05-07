@@ -70,7 +70,7 @@ async function loadActiveJobs() {
   const countEl = document.getElementById("jobsCount");
 
   try {
-    const jobs = await apiGet("/jobs/active");
+    const jobs = await apiGet("/jobs/active", { silent: true });
     countEl.textContent = jobs.length;
 
     if (!jobs.length) {
