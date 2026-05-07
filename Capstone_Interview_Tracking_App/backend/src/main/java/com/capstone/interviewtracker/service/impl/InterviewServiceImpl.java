@@ -7,7 +7,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.capstone.interviewtracker.constants.messages.CandidateMessages;
 import com.capstone.interviewtracker.constants.messages.InterviewMessages;
 import com.capstone.interviewtracker.constants.messages.PanelMessages;
@@ -346,21 +347,40 @@ public class InterviewServiceImpl implements InterviewService {
         @Override
         public List<InterviewResponseDTO> getAllInterviews() {
 
-                logger.info("Fetching all interviews from the database");
+                logger.info("Fetching interviews for logged-in user");
 
-                logger.debug("Calling interviewRepository.findAllWithPanels()");
-                List<Interview> all = interviewRepository.findAllWithPanels();
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                String email = auth.getName();
 
-                logger.debug("Checking and promoting SCHEDULED interviews to ONGOING if time has passed");
-                promoteScheduledToOngoing(all);
+                User user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                List<InterviewResponseDTO> result = all.stream()
+                List<Interview> interviews;
+
+                if (user.getRole() == Role.HR) {
+
+                        logger.debug("HR detected → fetching all interviews");
+                        interviews = interviewRepository.findAllWithPanels();
+
+                } else if (user.getRole() == Role.PANEL) {
+
+                        logger.debug("PANEL detected → fetching ONLY assigned interviews");
+
+                        Panel panel = panelRepository.findByUser(user)
+                                        .orElseThrow(() -> new ResourceNotFoundException("Panel not found"));
+
+                        interviews = interviewRepository.findInterviewsByPanelId(panel.getId());
+
+                } else {
+                        logger.warn("Unauthorized role: {}", user.getRole());
+                        throw new BadRequestException("Access denied");
+                }
+
+                promoteScheduledToOngoing(interviews);
+
+                return interviews.stream()
                                 .map(this::mapToResponse)
                                 .toList();
-
-                logger.info("Successfully fetched {} interview(s) from the database", result.size());
-
-                return result;
         }
 
         /**

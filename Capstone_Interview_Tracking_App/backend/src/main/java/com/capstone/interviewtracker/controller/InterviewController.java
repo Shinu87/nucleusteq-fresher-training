@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class InterviewController {
      * @param request interview request data
      * @return created interview response
      */
+    @PreAuthorize("hasRole('HR')")
     @PostMapping
     public ResponseEntity<InterviewResponseDTO> scheduleInterview(
             @Valid @RequestBody InterviewRequestDTO request) {
@@ -59,6 +61,7 @@ public class InterviewController {
      * @param id interview id
      * @return updated interview response
      */
+    @PreAuthorize("hasRole('HR')")
     @PutMapping(HrApiConstants.INTERVIEWS_COMPLETE)
     public ResponseEntity<InterviewResponseDTO> markCompleted(
             @PathVariable Long id) {
@@ -73,6 +76,7 @@ public class InterviewController {
      *
      * @return list of interview responses
      */
+    @PreAuthorize("hasAnyRole('HR', 'PANEL')")
     @GetMapping
     public ResponseEntity<List<InterviewResponseDTO>> getAllInterviews() {
         return ResponseEntity.ok(interviewService.getAllInterviews());
@@ -84,6 +88,7 @@ public class InterviewController {
      * @param id interview id
      * @return interview response
      */
+    @PreAuthorize("hasAnyRole('HR', 'PANEL')")
     @GetMapping(HrApiConstants.INTERVIEWS_BY_ID)
     public ResponseEntity<InterviewResponseDTO> getInterviewById(
             @PathVariable Long id) {
@@ -97,6 +102,7 @@ public class InterviewController {
      * @param candidateId candidate id
      * @return list of interview responses
      */
+    @PreAuthorize("hasAnyRole('HR', 'PANEL')")
     @GetMapping(HrApiConstants.INTERVIEWS_BY_CANDIDATE)
     public ResponseEntity<List<InterviewResponseDTO>> getInterviewsByCandidate(
             @PathVariable Long candidateId) {

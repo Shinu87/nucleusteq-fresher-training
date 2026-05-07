@@ -89,4 +89,20 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
                         @Param("applicationId") Integer applicationId,
                         @Param("stage") Stage stage);
 
+        /**
+         * Retrieves all interviews assigned to a specific panel member.
+         * Uses JOIN between Interview and Panel entities to filter interviews
+         * where the given panel is part of the interview panel list.
+         *
+         * @param panelId the ID of the panel member
+         * @return list of interviews associated with the given panel
+         */
+        @Query("""
+                            SELECT DISTINCT i
+                            FROM Interview i
+                            JOIN i.panels p
+                            WHERE p.id = :panelId
+                        """)
+        List<Interview> findInterviewsByPanelId(@Param("panelId") Long panelId);
+
 }
