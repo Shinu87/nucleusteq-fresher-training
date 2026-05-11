@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Dashboard – Interview Tracker</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h1>Interview<br />Tracker</h1>
+          <span>Panel Portal</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-item" href="index.html">
+            <span class="icon">🏠</span> Home
+          </a>
+          <a class="nav-item active" onclick="showSection('interviews', this)">
+            <span class="icon">📅</span> My Interviews
+          </a>
+          <a class="nav-item" onclick="showSection('feedback', this)">
+            <span class="icon">📝</span> Submit Feedback
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <strong id="sidebarName">Panel Member</strong>
+            <span id="sidebarEmail"></span>
+          </div>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content">
+        <!-- Interviews List -->
+        <section id="section-interviews" class="page-section active">
+          <div class="page-header">
+            <h2>My Assigned Interviews</h2>
+            <p>View candidates and interview details assigned to you.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📋 All Interviews</div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Candidate</th>
+                    <th>Stage</th>
+                    <th>Scheduled At</th>
+                    <th>Focus Area</th>
+                    <th>Meeting</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="panelInterviewBody">
+                  <tr>
+                    <td
+                      colspan="8"
+                      style="text-align: center; color: #aaa; padding: 24px"
+                    >
+                      Loading…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Candidate Profile View -->
+          <div class="card" id="candidateProfileCard" style="display: none">
+            <div class="card-title">👤 Candidate Profile</div>
+            <div id="candidateProfileContent"></div>
+            <div style="margin-top: 14px">
+              <button
+                class="btn"
+                style="background: #e0e0ee"
+                onclick="
+                  document.getElementById(
+                    'candidateProfileCard',
+                  ).style.display = 'none'
+                "
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Submit Feedback -->
+        <section id="section-feedback" class="page-section">
+          <div class="page-header">
+            <h2>Submit Feedback</h2>
+            <p>Provide evaluation for candidates you interviewed.</p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">📝 Feedback Form</div>
+
+            <div class="form-group">
+              <label>Select Interview *</label>
+              <select id="fbInterviewId">
+                <option value="">-- Select Interview --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Comments * (mandatory)</label>
+              <textarea
+                id="fbComments"
+                placeholder="Overall evaluation comments…"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Strengths</label>
+                <textarea
+                  id="fbStrengths"
+                  placeholder="Candidate's strengths…"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>Weaknesses</label>
+                <textarea
+                  id="fbWeaknesses"
+                  placeholder="Areas for improvement…"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Areas Covered</label>
+              <input
+                type="text"
+                id="fbAreasCovered"
+                placeholder="e.g. Java, Spring Boot, SQL…"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Rating (1–5) *</label>
+              <div class="rating-stars" id="ratingStars">
+                <span class="star" data-v="1" onclick="setRating(1)">★</span>
+                <span class="star" data-v="2" onclick="setRating(2)">★</span>
+                <span class="star" data-v="3" onclick="setRating(3)">★</span>
+                <span class="star" data-v="4" onclick="setRating(4)">★</span>
+                <span class="star" data-v="5" onclick="setRating(5)">★</span>
+              </div>
+              <input type="hidden" id="fbRating" value="0" />
+            </div>
+
+            <div class="form-group">
+              <label>Decision *</label>
+              <select id="fbStatus">
+                <option value="SELECTED">Selected</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+
+            <button class="btn btn-submit" onclick="submitFeedback()">
+              Submit Feedback
+            </button>
+            <div
+              id="fbMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/api.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/panel-dashboard.js"></script>
+  </body>
+</html>

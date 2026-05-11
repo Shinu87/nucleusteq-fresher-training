@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HR Dashboard – Interview Tracker</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <!--  SIDEBAR  -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <h1>Interview<br />Tracker</h1>
+          <span>HR Portal</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a class="nav-item" href="index.html">
+            <span class="icon">🏠</span> Home
+          </a>
+          <a class="nav-item active" onclick="showSection('home')">
+            <span class="icon">🏠</span> Dashboard
+          </a>
+          <a class="nav-item" onclick="showSection('jobs')">
+            <span class="icon">💼</span> Job Descriptions
+          </a>
+          <a class="nav-item" onclick="showSection('candidates')">
+            <span class="icon">👤</span> Candidates
+          </a>
+          <a class="nav-item" onclick="showSection('panels')">
+            <span class="icon">🧑‍💼</span> Panel Members
+          </a>
+          <a class="nav-item" onclick="showSection('interviews')">
+            <span class="icon">📅</span> Interviews
+          </a>
+          <a class="nav-item" onclick="showSection('feedback')">
+            <span class="icon">📝</span> Feedback
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-user">
+            <strong id="sidebarName">HR User</strong>
+            <span id="sidebarEmail"></span>
+          </div>
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </aside>
+
+      <!--  MAIN CONTENT  -->
+      <main class="main-content">
+        <!--  HOME / STATS  -->
+        <section id="section-home" class="page-section active">
+          <div class="page-header">
+            <h2>Dashboard Overview</h2>
+            <p>Welcome back! Here's the recruitment summary.</p>
+          </div>
+          <div class="grid-3" id="statsGrid">
+            <div class="stat-card">
+              <div class="stat-icon purple">💼</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statJobs">—</div>
+                <div class="stat-label">Job Descriptions</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">👤</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statCandidates">—</div>
+                <div class="stat-label">Total Candidates</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">🧑‍💼</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statPanels">—</div>
+                <div class="stat-label">Panel Members</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">📅</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statInterviews">—</div>
+                <div class="stat-label">Interviews Scheduled</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">✅</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statSelected">—</div>
+                <div class="stat-label">Selected</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">🔄</div>
+              <div class="stat-info">
+                <div class="stat-value" id="statInProgress">—</div>
+                <div class="stat-label">In Progress</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!--  JOB DESCRIPTIONS  -->
+        <section id="section-jobs" class="page-section">
+          <div class="page-header">
+            <h2>Job Descriptions</h2>
+            <p>Create and manage all job openings.</p>
+          </div>
+
+          <!-- Create JD Form -->
+          <div class="card">
+            <div class="card-title">➕ Create New Job Description</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Job Title *</label>
+                <input
+                  type="text"
+                  id="jdTitle"
+                  placeholder="e.g. Senior Java Developer"
+                />
+              </div>
+              <div class="form-group">
+                <label>Location *</label>
+                <input
+                  type="text"
+                  id="jdLocation"
+                  placeholder="e.g. Bengaluru"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Job Description *</label>
+              <textarea
+                id="jdDesc"
+                placeholder="Describe the role, responsibilities…"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Min Experience (yrs) *</label>
+                <input type="number" id="jdMinExp" placeholder="2" min="0" />
+              </div>
+              <div class="form-group">
+                <label>Max Experience (yrs) *</label>
+                <input type="number" id="jdMaxExp" placeholder="6" min="0" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Min Salary (LPA) *</label>
+                <input
+                  type="number"
+                  id="jdMinSal"
+                  placeholder="8"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+              <div class="form-group">
+                <label>Max Salary (LPA) *</label>
+                <input
+                  type="number"
+                  id="jdMaxSal"
+                  placeholder="18"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Job Type *</label>
+              <select id="jdJobType">
+                <option value="FULL_TIME">Full Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="REMOTE">Remote</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Skills Required *</label>
+              <div class="skills-grid" id="jdSkillsContainer"></div>
+            </div>
+            <button class="btn btn-submit" onclick="createJD()">
+              Create Job Description
+            </button>
+            <div
+              id="jdMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <!-- JD List -->
+          <div class="card">
+            <div class="card-title">📋 All Job Descriptions</div>
+            <div class="jd-cards-grid" id="jdList">
+              <div class="empty-state">
+                <div class="empty-icon">💼</div>
+                <p>No jobs yet.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!--  CANDIDATES  -->
+        <section id="section-candidates" class="page-section">
+          <div class="page-header">
+            <h2>Candidates</h2>
+            <p>Manage candidate profiles and control stage progression.</p>
+          </div>
+
+          <!-- Add Candidate Form -->
+          <div class="card">
+            <div class="card-title">➕ Add Candidate Profile (by HR)</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="cName" placeholder="Candidate Name" />
+              </div>
+              <div class="form-group">
+                <label>Email *</label>
+                <input
+                  type="email"
+                  id="cEmail"
+                  placeholder="candidate@email.com"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Phone *</label>
+                <input
+                  type="text"
+                  id="cPhone"
+                  placeholder="9876543210"
+                  maxlength="10"
+                />
+              </div>
+              <div class="form-group">
+                <label>Date of Birth *</label>
+                <input type="date" id="cDob" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Current Organization</label>
+                <input type="text" id="cOrg" placeholder="Company Name" />
+              </div>
+              <div class="form-group">
+                <label>Total Experience (yrs) *</label>
+                <input type="number" id="cTotalExp" placeholder="5" min="0" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Relevant Experience (yrs)</label>
+                <input type="number" id="cRelExp" placeholder="3" min="0" />
+              </div>
+              <div class="form-group">
+                <label>Current CTC (LPA)</label>
+                <input
+                  type="number"
+                  id="cCurCTC"
+                  placeholder="10"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Expected CTC (LPA)</label>
+                <input
+                  type="number"
+                  id="cExpCTC"
+                  placeholder="16"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+              <div class="form-group">
+                <label>Notice Period</label>
+                <input type="text" id="cNotice" placeholder="30 days" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Preferred Location</label>
+                <input type="text" id="cPrefLoc" placeholder="Hyderabad" />
+              </div>
+              <div class="form-group">
+                <label>Source</label>
+                <input
+                  type="text"
+                  id="cSource"
+                  placeholder="LinkedIn / Referral"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Resume URL</label>
+                <input
+                  type="text"
+                  id="cResumeUrl"
+                  placeholder="https://drive.google.com/…"
+                />
+              </div>
+              <div class="form-group"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Job Applied For *</label>
+                <select id="cJobId">
+                  <option value="">-- Select Job --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Initial Stage *</label>
+                <select id="cStage">
+                  <option value="PROFILING">Profiling</option>
+                  <option value="SCREENING">Screening</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Status *</label>
+              <select id="cStatus">
+                <option value="IN_PROGRESS">In Progress</option>
+              </select>
+            </div>
+            <button class="btn btn-submit" onclick="createCandidate()">
+              Add Candidate
+            </button>
+            <div
+              id="cMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <!-- Filter + Candidate List -->
+          <div class="card">
+            <div class="card-title">👤 All Candidates</div>
+            <div class="filter-bar">
+              <select id="filterStage" onchange="filterCandidates()">
+                <option value="">All Stages</option>
+                <option value="PROFILING">Profiling</option>
+                <option value="SCREENING">Screening</option>
+                <option value="L1">L1 Technical</option>
+                <option value="L2">L2 Technical</option>
+                <option value="HR">HR Round</option>
+              </select>
+              <select id="filterStatus" onchange="filterCandidates()">
+                <option value="">All Statuses</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="SELECTED">Selected</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+              <select id="filterJob" onchange="filterCandidates()">
+                <option value="">All Jobs</option>
+              </select>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Stage</th>
+                    <th>Status</th>
+                    <th>Job ID</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="candidateTableBody">
+                  <tr>
+                    <td
+                      colspan="7"
+                      style="text-align: center; color: #aaa; padding: 24px"
+                    >
+                      Loading…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Candidate Detail View -->
+          <div class="card" id="candidateDetailCard" style="display: none">
+            <div class="card-title">📄 Candidate Details</div>
+            <div id="candidateDetailContent"></div>
+          </div>
+        </section>
+
+        <!--  PANEL MEMBERS  -->
+        <section id="section-panels" class="page-section">
+          <div class="page-header">
+            <h2>Panel Members</h2>
+            <p>Create panel members and manage activation.</p>
+          </div>
+
+          <!-- Create Panel Form -->
+          <div class="card">
+            <div class="card-title">➕ Add Panel Member</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="pName" placeholder="Panel Member Name" />
+              </div>
+              <div class="form-group">
+                <label>Email *</label>
+                <input
+                  type="email"
+                  id="pEmail"
+                  placeholder="panel@company.com"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Mobile *</label>
+                <input
+                  type="text"
+                  id="pMobile"
+                  placeholder="9876543210"
+                  maxlength="10"
+                />
+              </div>
+              <div class="form-group">
+                <label>Organization *</label>
+                <input type="text" id="pOrg" placeholder="Company Name" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Designation *</label>
+              <input
+                type="text"
+                id="pDesig"
+                placeholder="Senior Engineer / Tech Lead"
+              />
+            </div>
+            <div class="form-group">
+              <label>Expertise *</label>
+              <select id="pExpertise">
+                <option value="">-- Select Expertise --</option>
+                <option value="Java Backend">Java Backend</option>
+                <option value="React Frontend">React Frontend</option>
+                <option value="Data Science">Data Science</option>
+                <option value="DevOps">DevOps</option>
+                <option value="Machine Learning">Machine Learning</option>
+                <option value="Python Backend">Python Backend</option>
+                <option value="Angular Frontend">Angular Frontend</option>
+                <option value="Cloud / AWS">Cloud / AWS</option>
+                <option value="System Design">System Design</option>
+                <option value="Mobile (Android/iOS)">
+                  Mobile (Android/iOS)
+                </option>
+              </select>
+            </div>
+            <button class="btn btn-submit" onclick="createPanel()">
+              Add Panel Member
+            </button>
+            <div
+              id="pMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <!-- Panel List -->
+          <div class="card">
+            <div class="card-title">🧑‍💼 All Panel Members</div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Organization</th>
+                    <th>Designation</th>
+                    <th>Expertise</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="panelTableBody">
+                  <tr>
+                    <td
+                      colspan="9"
+                      style="text-align: center; color: #aaa; padding: 24px"
+                    >
+                      Loading…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" id="activatePanelCard" style="display: none">
+            <div class="card-title">🔑 Activate Panel Member</div>
+            <p style="color: #666; font-size: 14px; margin-bottom: 14px">
+              Activating <strong id="activatePanelName"></strong>.<br />
+              The system will create their account and email a
+              <strong>password setup link</strong> to
+              <span id="activatePanelEmail" style="color: #5b21b6"></span>. They
+              will set their own password.
+            </p>
+            <button class="btn btn-submit" onclick="doActivatePanel()">
+              Activate &amp; Send Email
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              style="margin-left: 10px"
+              onclick="
+                document.getElementById('activatePanelCard').style.display =
+                  'none'
+              "
+            >
+              Cancel
+            </button>
+            <div
+              id="activateMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+        </section>
+
+        <!--  INTERVIEWS  -->
+        <section id="section-interviews" class="page-section">
+          <div class="page-header">
+            <h2>Interviews</h2>
+            <p>Schedule L1, L2, and HR round interviews.</p>
+          </div>
+
+          <!-- Schedule Interview Form -->
+          <div class="card">
+            <div class="card-title">📅 Schedule Interview</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Candidate *</label>
+                <select id="iCandidateId">
+                  <option value="">-- Select Candidate --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Stage *</label>
+                <select id="iStage" onchange="onIStageChange()">
+                  <option value="L1">L1 Technical</option>
+                  <option value="L2">L2 Technical</option>
+                  <option value="HR">HR Round</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date &amp; Time *</label>
+                <input type="datetime-local" id="iScheduledAt" />
+              </div>
+              <div class="form-group">
+                <label>Meeting URL *</label>
+                <input
+                  type="url"
+                  id="iMeetingUrl"
+                  placeholder="https://meet.google.com/abc-defg-hij"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Focus Area (free text)</label>
+              <textarea
+                id="iFocusArea"
+                placeholder="e.g. Java, Spring Boot, System Design…"
+              ></textarea>
+            </div>
+            <div class="form-group" id="iPanelGroup">
+              <label>Panel Members (min 1, max 2)</label>
+              <div id="iPanelCheckboxes" class="skills-grid"></div>
+            </div>
+            <div class="form-group" id="iHrNotice" style="display: none">
+              <div
+                style="
+                  padding: 12px 16px;
+                  border-radius: 8px;
+                  background: #eef2ff;
+                  border: 1.5px solid #c7d2fe;
+                  color: #3730a3;
+                  font-size: 13px;
+                "
+              >
+                <strong>ℹ HR round.</strong>
+                HR conducts this interview directly — panel selection is
+                disabled. You will submit feedback yourself from the
+                <em>Feedback</em> section after the interview.
+              </div>
+            </div>
+            <button class="btn btn-submit" onclick="scheduleInterview()">
+              Schedule Interview
+            </button>
+            <div
+              id="iMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <!-- Interview List -->
+          <div class="card">
+            <div class="card-title">📋 All Interviews</div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Candidate</th>
+                    <th>Stage</th>
+                    <th>Scheduled At</th>
+                    <th>Panel</th>
+                    <th>Status</th>
+                    <th>Meeting</th>
+                  </tr>
+                </thead>
+                <tbody id="interviewTableBody">
+                  <tr>
+                    <td
+                      colspan="7"
+                      style="text-align: center; color: #aaa; padding: 24px"
+                    >
+                      Loading…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!--  FEEDBACK  -->
+        <section id="section-feedback" class="page-section">
+          <div class="page-header">
+            <h2>Feedback</h2>
+            <p>View all panel feedback for candidates.</p>
+          </div>
+
+          <div class="card" id="hrFeedbackCard" style="display: none">
+            <div class="card-title">📝 Submit HR Feedback</div>
+            <p style="color: #666; font-size: 13px; margin-top: -6px">
+              Use this form to record your HR-round evaluation. The system will
+              mark the candidate as SELECTED or REJECTED based on your decision
+              when you advance the stage.
+            </p>
+
+            <div class="form-group">
+              <label>HR Interview *</label>
+              <select id="hrFbInterviewId">
+                <option value="">-- Select HR Interview --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Comments * (mandatory)</label>
+              <textarea
+                id="hrFbComments"
+                placeholder="Overall HR-round evaluation comments…"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Strengths</label>
+                <textarea
+                  id="hrFbStrengths"
+                  placeholder="Candidate's strengths…"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <label>Weaknesses</label>
+                <textarea
+                  id="hrFbWeaknesses"
+                  placeholder="Areas for improvement…"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Areas Covered</label>
+              <input
+                type="text"
+                id="hrFbAreasCovered"
+                placeholder="e.g. Culture fit, expectations, notice period…"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>Rating (1–5) *</label>
+              <div class="rating-stars" id="hrRatingStars">
+                <span class="star" data-v="1" onclick="setHrRating(1)">★</span>
+                <span class="star" data-v="2" onclick="setHrRating(2)">★</span>
+                <span class="star" data-v="3" onclick="setHrRating(3)">★</span>
+                <span class="star" data-v="4" onclick="setHrRating(4)">★</span>
+                <span class="star" data-v="5" onclick="setHrRating(5)">★</span>
+              </div>
+              <input type="hidden" id="hrFbRating" value="0" />
+            </div>
+
+            <div class="form-group">
+              <label>Decision *</label>
+              <select id="hrFbStatus">
+                <option value="">-- Select Decision --</option>
+                <option value="SELECTED">Selected</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+
+            <button class="btn btn-submit" onclick="submitHrFeedback()">
+              Submit HR Feedback
+            </button>
+            <div
+              id="hrFbMsg"
+              class="msg"
+              style="display: none; margin-top: 10px"
+            ></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">🔍 View Feedback by Candidate</div>
+            <div class="filter-bar">
+              <select
+                id="fbCandidateFilter"
+                onchange="loadFeedbackForCandidate()"
+              >
+                <option value="">-- Select Candidate --</option>
+              </select>
+            </div>
+            <div id="feedbackContent">
+              <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <p>Select a candidate to view feedback.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/modules/hr.stats.js"></script>
+    <script src="js/modules/hr.jobs.js"></script>
+    <script src="js/modules/hr.candidates.js"></script>
+    <script src="js/modules/hr.panels.js"></script>
+    <script src="js/modules/hr.interviews.js"></script>
+    <script src="js/modules/hr.feedback.js"></script>
+    <script src="js/modules/dashboard.init.js"></script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Job Descriptions</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <h1>Job Descriptions</h1>
+
+    <!-- HR FORM (visible only for HR, i will hide later for candidates) -->
+    <div id="jd-form">
+      <h2>Create Job Description</h2>
+
+      <input type="text" id="title" placeholder="Job Title" />
+      <br />
+      <textarea id="description" placeholder="Job Description"></textarea>
+      <br />
+
+      <label>Select Skills:</label>
+      <div id="skills-container"></div>
+
+      <div class="row">
+        <input type="number" id="minExp" placeholder="Min Exp" />
+        <input type="number" id="maxExp" placeholder="Max Exp" />
+      </div>
+
+      <div class="row">
+        <input type="number" id="minSalary" placeholder="Min Salary" />
+        <input type="number" id="maxSalary" placeholder="Max Salary" />
+      </div>
+
+      <input type="text" id="location" placeholder="Location" />
+
+      <button onclick="createJD()">Create JD</button>
+    </div>
+
+    <hr />
+
+    <!-- JD LIST -->
+    <div id="jd-list">
+      <h2>Available Jobs</h2>
+    </div>
+
+    <!-- JS FILE -->
+    <script src="js/jd.js"></script>
+
+    <script>
+      window.onload = function () {
+        loadSkills();
+        loadJobs();
+      };
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) {
+        alert("Please login first");
+        window.location.href = "login.html";
+      }
+      if (user.role !== "HR") {
+        document.getElementById("jd-form").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

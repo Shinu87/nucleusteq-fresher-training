@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home – Interview Tracker</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Homepage-specific layout */
+      .home-wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 24px 60px;
+      }
+
+      .home-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 28px;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .home-brand h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.2;
+      }
+
+      .home-brand span {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .home-topbar-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .home-user-pill {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .home-user-pill small {
+        font-weight: 400;
+        opacity: 0.8;
+        margin-left: 6px;
+      }
+
+      .home-btn {
+        background: #fff;
+        color: #5b21b6;
+        border: none;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+      }
+
+      .home-btn:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+      }
+
+      .home-btn-ghost {
+        background: transparent;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+      .home-hero {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 18px;
+        padding: 28px 30px;
+        margin-bottom: 26px;
+        color: #fff;
+      }
+
+      .home-hero h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .home-hero p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .home-section-title {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .home-section-title .count {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        padding: 2px 10px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .jd-card .btn-disabled-note {
+        margin-top: 14px;
+        width: 100%;
+        padding: 9px;
+        background: #f3f4f6;
+        color: #888;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 12.5px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="home-wrap">
+      <!-- TOP BAR -->
+      <div class="home-topbar">
+        <div class="home-brand">
+          <h1>💼 Interview Tracker</h1>
+          <span>Discover open positions and apply</span>
+        </div>
+
+        <div class="home-topbar-actions" id="topbarActions">
+          <!-- populated by home.js based on auth state -->
+        </div>
+      </div>
+
+      <div class="home-hero">
+        <h2 id="heroTitle">Find your next opportunity</h2>
+        <p id="heroSubtitle">
+          Browse all active job openings below. Sign in as a candidate to apply.
+        </p>
+      </div>
+
+      <!-- ACTIVE JOBS LIST -->
+      <div class="home-section-title">
+        <span>📋 Open Positions</span>
+        <span class="count" id="jobsCount">0</span>
+      </div>
+
+      <div class="jd-cards-grid" id="homeJobList">
+        <div class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>Loading jobs…</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <script src="js/api.js"></script>
+    <script src="js/home.js"></script>
+  </body>
+</html>
