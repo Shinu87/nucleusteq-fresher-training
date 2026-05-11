@@ -2,9 +2,11 @@ package com.capstone.interviewtracker.constants.messages;
 
 public final class ValidationMessages {
 
-    public static final String AGE_REQUIRED = "Age is required to apply.";
-    public static final String AGE_MIN = "Minimum age is 18.";
-    public static final String AGE_MAX = "Maximum age is 60.";
+    public static final String DOB_REQUIRED = "Date of birth is required.";
+
+    public static final String DOB_UNDERAGE = "Candidate must be at least 18 years old.";
+
+    public static final String DOB_OVER_MAX_AGE = "Candidate exceeds maximum eligible working age.";
 
     public static final String VALUE_CANNOT_BE_NEGATIVE = "Value cannot be negative.";
 
