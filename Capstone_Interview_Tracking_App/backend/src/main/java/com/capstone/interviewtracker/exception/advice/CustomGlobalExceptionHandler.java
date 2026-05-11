@@ -2,6 +2,8 @@ package com.capstone.interviewtracker.exception.advice;
 
 import java.time.LocalDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -23,12 +25,17 @@ import com.capstone.interviewtracker.exception.custom.UnauthorizedException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CustomGlobalExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(CustomGlobalExceptionHandler.class);
+
     /**
      * Handles ResourceNotFoundException and returns 404 response.
      */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(
             final ResourceNotFoundException ex) {
+
+        logger.warn("ResourceNotFoundException caught - message: {}", ex.getMessage());
+
         return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
@@ -38,6 +45,9 @@ public class CustomGlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(
             final BadRequestException ex) {
+
+        logger.warn("BadRequestException caught - message: {}", ex.getMessage());
+
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
@@ -47,6 +57,9 @@ public class CustomGlobalExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(
             final ConflictException ex) {
+
+        logger.warn("ConflictException caught - message: {}", ex.getMessage());
+
         return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -56,6 +69,9 @@ public class CustomGlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorized(
             final UnauthorizedException ex) {
+
+        logger.warn("UnauthorizedException caught - message: {}", ex.getMessage());
+
         return buildResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
@@ -65,6 +81,8 @@ public class CustomGlobalExceptionHandler {
     private ResponseEntity<ErrorResponse> buildResponse(
             final String message,
             final HttpStatus status) {
+
+        logger.debug("Building error response - status: {}, message: {}", status.value(), message);
 
         final ErrorResponse body = new ErrorResponse(message, status.value(), LocalDateTime.now());
 
