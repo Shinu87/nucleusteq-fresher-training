@@ -60,16 +60,22 @@ class FeedbackServiceImplTest {
     private Interview interview;
     private Panel panel;
     private Feedback feedback;
+    private User panelUser;
 
     /**
      * Sets up common test data before each test.
      */
     @BeforeEach
     void setUp() {
+        panelUser = new User();
+        panelUser.setEmail("panel@example.com");
+        panelUser.setRole(Role.PANEL);
+
         panel = new Panel();
         panel.setId(2L);
         panel.setName("Panel A");
         panel.setEmail("panel@example.com");
+        panel.setUser(panelUser);
 
         interview = new Interview();
         interview.setId(1L);
@@ -105,11 +111,12 @@ class FeedbackServiceImplTest {
     void testSubmitFeedbackSuccess() {
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(panelRepository.findById(2L)).thenReturn(Optional.of(panel));
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(panelRepository.findByUser(panelUser)).thenReturn(Optional.of(panel));
         when(feedbackRepository.existsByInterviewIdAndPanelId(1L, 2L)).thenReturn(false);
         when(feedbackRepository.save(any(Feedback.class))).thenReturn(feedback);
 
-        FeedbackResponseDTO result = feedbackService.submitFeedback(request);
+        FeedbackResponseDTO result = feedbackService.submitFeedback(request, "panel@example.com");
 
         assertNotNull(result);
         assertEquals(99L, result.getId());
@@ -123,11 +130,12 @@ class FeedbackServiceImplTest {
     void testSubmitFeedbackInterviewAlreadyCompleted() {
         interview.setStatus(InterviewStatus.COMPLETED);
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
-        when(panelRepository.findById(2L)).thenReturn(Optional.of(panel));
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(panelRepository.findByUser(panelUser)).thenReturn(Optional.of(panel));
         when(feedbackRepository.existsByInterviewIdAndPanelId(1L, 2L)).thenReturn(false);
         when(feedbackRepository.save(any(Feedback.class))).thenReturn(feedback);
 
-        FeedbackResponseDTO result = feedbackService.submitFeedback(request);
+        FeedbackResponseDTO result = feedbackService.submitFeedback(request, "panel@example.com");
         assertNotNull(result);
     }
 
@@ -137,7 +145,8 @@ class FeedbackServiceImplTest {
     @Test
     void testSubmitFeedbackInterviewNotFound() {
         when(interviewRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> feedbackService.submitFeedback(request));
+        assertThrows(ResourceNotFoundException.class,
+                () -> feedbackService.submitFeedback(request, "panel@example.com"));
     }
 
     /**
@@ -149,7 +158,8 @@ class FeedbackServiceImplTest {
         interview.setScheduledAt(LocalDateTime.now().plusDays(1));
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
 
-        assertThrows(RuntimeException.class, () -> feedbackService.submitFeedback(request));
+        assertThrows(RuntimeException.class,
+                () -> feedbackService.submitFeedback(request, "panel@example.com"));
     }
 
     /**
@@ -159,9 +169,11 @@ class FeedbackServiceImplTest {
     void testSubmitFeedbackPanelNotFound() {
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(panelRepository.findById(2L)).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(panelRepository.findByUser(panelUser)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> feedbackService.submitFeedback(request));
+        assertThrows(ResourceNotFoundException.class,
+                () -> feedbackService.submitFeedback(request, "panel@example.com"));
     }
 
     /**
@@ -174,9 +186,11 @@ class FeedbackServiceImplTest {
         interview.setPanels(List.of(otherPanel));
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(panelRepository.findById(2L)).thenReturn(Optional.of(panel));
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(panelRepository.findByUser(panelUser)).thenReturn(Optional.of(panel));
 
-        assertThrows(RuntimeException.class, () -> feedbackService.submitFeedback(request));
+        assertThrows(RuntimeException.class,
+                () -> feedbackService.submitFeedback(request, "panel@example.com"));
     }
 
     /**
@@ -186,10 +200,12 @@ class FeedbackServiceImplTest {
     void testSubmitFeedbackAlreadySubmitted() {
         when(interviewRepository.findById(1L)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
-        when(panelRepository.findById(2L)).thenReturn(Optional.of(panel));
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(panelRepository.findByUser(panelUser)).thenReturn(Optional.of(panel));
         when(feedbackRepository.existsByInterviewIdAndPanelId(1L, 2L)).thenReturn(true);
 
-        assertThrows(RuntimeException.class, () -> feedbackService.submitFeedback(request));
+        assertThrows(RuntimeException.class,
+                () -> feedbackService.submitFeedback(request, "panel@example.com"));
     }
 
     /**
@@ -216,15 +232,12 @@ class FeedbackServiceImplTest {
      */
     @Test
     void testGetFeedbackByInterviewAsPanel() {
-        User panelUser = new User();
-        panelUser.setEmail("panel@example.com");
-        panelUser.setRole(Role.PANEL);
-
         User panelUserRef = new User();
         panelUserRef.setEmail("panel@example.com");
+        panelUserRef.setRole(Role.PANEL);
         panel.setUser(panelUserRef);
 
-        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUser));
+        when(userRepository.findByEmail("panel@example.com")).thenReturn(Optional.of(panelUserRef));
         when(feedbackRepository.findByInterviewId(1L)).thenReturn(List.of(feedback));
 
         List<FeedbackResponseDTO> result = feedbackService.getFeedbackByInterview(1L, "panel@example.com");

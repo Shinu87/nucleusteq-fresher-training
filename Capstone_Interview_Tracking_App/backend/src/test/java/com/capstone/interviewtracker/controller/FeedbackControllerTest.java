@@ -85,9 +85,9 @@ class FeedbackControllerTest {
          * Tests that PANEL user can submit feedback successfully.
          */
         @Test
-        @WithMockUser(roles = "PANEL")
+        @WithMockUser(username = "panel@example.com", roles = "PANEL")
         void testSubmitFeedbackAsPanel() throws Exception {
-                when(feedbackService.submitFeedback(any(FeedbackRequestDTO.class)))
+                when(feedbackService.submitFeedback(any(FeedbackRequestDTO.class), anyString()))
                                 .thenReturn(sampleFeedback(1L));
 
                 mockMvc.perform(post("/api/feedbacks")
@@ -103,9 +103,9 @@ class FeedbackControllerTest {
          * Tests that HR user can submit feedback successfully.
          */
         @Test
-        @WithMockUser(roles = "HR")
+        @WithMockUser(username = "hr@example.com", roles = "HR")
         void testSubmitFeedbackAsHr() throws Exception {
-                when(feedbackService.submitFeedback(any(FeedbackRequestDTO.class)))
+                when(feedbackService.submitFeedback(any(FeedbackRequestDTO.class), anyString()))
                                 .thenReturn(sampleFeedback(1L));
 
                 mockMvc.perform(post("/api/feedbacks")

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.capstone.interviewtracker.constants.messages.AuthMessages;
 import com.capstone.interviewtracker.constants.messages.FeedbackMessages;
 import com.capstone.interviewtracker.constants.messages.PanelMessages;
 import com.capstone.interviewtracker.dto.Request.FeedbackRequestDTO;
@@ -64,7 +65,7 @@ public class FeedbackServiceImpl implements FeedbackService {
          * After submission, the interview is marked COMPLETED if needed.
          */
         @Override
-        public FeedbackResponseDTO submitFeedback(FeedbackRequestDTO request) {
+        public FeedbackResponseDTO submitFeedback(FeedbackRequestDTO request, String email) {
 
                 logger.info("Submitting feedback for interview id: {} by panel id: {}",
                                 request.getInterviewId(), request.getPanelId());
@@ -102,7 +103,12 @@ public class FeedbackServiceImpl implements FeedbackService {
                 }
 
                 logger.debug("Looking up panel in database for ID: {}", request.getPanelId());
-                Panel panel = panelRepository.findById(request.getPanelId())
+                // Panel panel = panelRepository.findById(request.getPanelId())
+                User user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                AuthMessages.USER_NOT_FOUND));
+
+                Panel panel = panelRepository.findByUser(user)
                                 .orElseThrow(() -> {
                                         logger.warn("Submit feedback failed - panel not found for ID: {}",
                                                         request.getPanelId());

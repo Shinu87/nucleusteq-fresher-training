@@ -200,3 +200,86 @@ function starsHtml(rating) {
     s += `<span style="color:${i <= rating ? "#f39c12" : "#ddd"};font-size:16px;">★</span>`;
   return s;
 }
+
+/*  LOADER HELPERS  */
+
+function _ensureLoaderOverlay() {
+  let overlay = document.getElementById("appLoaderOverlay");
+  if (overlay) return overlay;
+
+  overlay = document.createElement("div");
+  overlay.id = "appLoaderOverlay";
+  overlay.className = "app-loader-overlay";
+  overlay.innerHTML = `
+    <div class="app-loader-box">
+      <div class="app-loader-spinner"></div>
+      <div class="app-loader-text" id="appLoaderText">Loading…</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  return overlay;
+}
+
+/**
+ * Shows the full-screen loader overlay.
+ */
+function showLoader(label) {
+  const overlay = _ensureLoaderOverlay();
+  const txt = overlay.querySelector("#appLoaderText");
+  if (txt) txt.textContent = label || "Loading…";
+  overlay.classList.add("active");
+}
+
+/** Hides the full-screen loader overlay. */
+function hideLoader() {
+  const overlay = document.getElementById("appLoaderOverlay");
+  if (overlay) overlay.classList.remove("active");
+}
+
+/**
+ * Wraps an async function with a button-level loader: disables the
+ * button, swaps its text to `label`, runs `fn`, then restores the
+ * button (even when fn throws). Prevents accidental double-submits.
+ */
+async function withButtonLoader(target, label, fn) {
+  let btn = null;
+
+  /* Resolve the button element from the supplied target */
+  if (typeof target === "string") {
+    btn = document.getElementById(target);
+  } else if (target && target.target && target.target.tagName) {
+    btn = target.currentTarget || target.target;
+  } else if (target && target.tagName) {
+    btn = target;
+  }
+
+  /* If we couldn't find a button just run the function */
+  if (!btn) return await fn();
+
+  const originalText = btn.innerHTML;
+  const originalDisabled = btn.disabled;
+
+  btn.disabled = true;
+  btn.classList.add("is-loading");
+  btn.innerHTML = `<span class="btn-spinner"></span> ${label || "Please wait…"}`;
+
+  try {
+    return await fn();
+  } finally {
+    btn.disabled = originalDisabled;
+    btn.classList.remove("is-loading");
+    btn.innerHTML = originalText;
+  }
+}
+
+/**
+ * Wraps an async function with the full-screen overlay loader.
+ * Always hides the loader, even when fn throws.
+ */
+async function withLoader(label, fn) {
+  showLoader(label);
+  try {
+    return await fn();
+  } finally {
+    hideLoader();
+  }
+}

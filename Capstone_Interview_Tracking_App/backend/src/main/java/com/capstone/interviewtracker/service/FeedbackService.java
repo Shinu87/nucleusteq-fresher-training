@@ -18,7 +18,7 @@ public interface FeedbackService {
      * @param request feedback request containing ratings, comments, and details
      * @return submitted feedback response DTO
      */
-    FeedbackResponseDTO submitFeedback(FeedbackRequestDTO request);
+    FeedbackResponseDTO submitFeedback(FeedbackRequestDTO request, String email);
 
     /**
      * Retrieves all feedback submitted for a specific interview.

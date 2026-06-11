@@ -3,6 +3,7 @@ package com.capstone.interviewtracker.service;
 import java.util.List;
 
 import com.capstone.interviewtracker.dto.Request.CandidateRequestDTO;
+import com.capstone.interviewtracker.dto.Request.CandidateUpdateRequestDTO;
 import com.capstone.interviewtracker.dto.Response.ApplicationStatusDTO;
 import com.capstone.interviewtracker.dto.Response.CandidateResponseDTO;
 
@@ -82,4 +83,25 @@ public interface CandidateService {
      * @return updated candidate response DTO
      */
     CandidateResponseDTO rejectCandidate(Long candidateId);
+
+    /**
+     * Returns the full candidate record for the logged-in candidate
+     * identified by their email. Used by GET /api/candidates/me.
+     *
+     * @param email logged-in candidate email
+     * @return candidate response DTO, or null if no candidate found
+     */
+    CandidateResponseDTO getMyCandidate(String email);
+
+    /**
+     * Updates the editable fields of the logged-in candidate's own
+     * application. Email, jobId, status, stage and DOB cannot be
+     * changed through this API.
+     *
+     * @param email   logged-in candidate email (ownership key)
+     * @param request editable candidate fields
+     * @return updated candidate response DTO
+     */
+    CandidateResponseDTO updateMyCandidate(String email,
+            CandidateUpdateRequestDTO request);
 }

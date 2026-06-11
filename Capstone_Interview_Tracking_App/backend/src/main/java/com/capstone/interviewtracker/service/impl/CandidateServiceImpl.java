@@ -17,6 +17,7 @@ import com.capstone.interviewtracker.constants.messages.InterviewMessages;
 import com.capstone.interviewtracker.constants.messages.JobMessages;
 import com.capstone.interviewtracker.constants.messages.ValidationMessages;
 import com.capstone.interviewtracker.dto.Request.CandidateRequestDTO;
+import com.capstone.interviewtracker.dto.Request.CandidateUpdateRequestDTO;
 import com.capstone.interviewtracker.dto.Response.ApplicationStatusDTO;
 import com.capstone.interviewtracker.dto.Response.ApplicationStatusDTO.InterviewSummary;
 import com.capstone.interviewtracker.dto.Response.CandidateResponseDTO;
@@ -853,6 +854,90 @@ public class CandidateServiceImpl implements CandidateService {
                 response.setJobTitle(candidate.getJobDescription().getTitle());
 
                 return response;
+        }
+
+        /**
+         * Returns the candidate record for the logged-in candidate.
+         * Returns null when no candidate exists for this email so the
+         * controller can return 404.
+         *
+         * @param email logged-in candidate email
+         * @return candidate response DTO or null
+         */
+        @Override
+        public CandidateResponseDTO getMyCandidate(String email) {
+
+                logger.info("Fetch own candidate request received for email: {}", email);
+
+                Candidate candidate = candidateRepository
+                                .findByEmail(email.trim().toLowerCase())
+                                .orElse(null);
+
+                if (candidate == null) {
+                        logger.warn("No candidate record found for email: {}", email);
+                        return null;
+                }
+
+                logger.debug("Candidate found for email: {} - id: {}", email, candidate.getId());
+                return mapToResponse(candidate);
+        }
+
+        /**
+         * Updates only the editable fields of the logged-in candidate's
+         * own application. Email, jobId, status, stage and DOB are NOT
+         * modified to preserve workflow integrity.
+         *
+         * @param email   logged-in candidate email
+         * @param request editable candidate fields
+         * @return updated candidate response DTO
+         */
+        @Override
+        public CandidateResponseDTO updateMyCandidate(String email,
+                        CandidateUpdateRequestDTO request) {
+
+                logger.info("Update own candidate request received for email: {}", email);
+
+                Candidate candidate = candidateRepository
+                                .findByEmail(email.trim().toLowerCase())
+                                .orElseThrow(() -> {
+                                        logger.warn("Update failed - no candidate for email: {}", email);
+                                        return new ResourceNotFoundException(
+                                                        CandidateMessages.CANDIDATE_NOT_FOUND + ": " + email);
+                                });
+
+                /* Block edits once the candidate is REJECTED or SELECTED */
+                if (candidate.getStatus() == CandidateStatus.REJECTED
+                                || candidate.getStatus() == CandidateStatus.SELECTED) {
+                        logger.warn("Update blocked - candidate status is {} for id: {}",
+                                        candidate.getStatus(), candidate.getId());
+                        throw new BadRequestException(
+                                        "Application cannot be edited in current status: "
+                                                        + candidate.getStatus());
+                }
+
+                /* Relevant experience must not exceed total experience */
+                if (request.getTotalExperience() != null
+                                && request.getRelevantExperience() != null
+                                && request.getRelevantExperience() > request.getTotalExperience()) {
+                        throw new BadRequestException(
+                                        "Relevant experience cannot exceed total experience.");
+                }
+
+                candidate.setName(request.getName().trim());
+                candidate.setPhone(request.getPhone().trim());
+                candidate.setCurrentOrganization(request.getCurrentOrganization());
+                candidate.setTotalExperience(request.getTotalExperience());
+                candidate.setRelevantExperience(request.getRelevantExperience());
+                candidate.setCurrentCTC(request.getCurrentCTC());
+                candidate.setExpectedCTC(request.getExpectedCTC());
+                candidate.setNoticePeriod(request.getNoticePeriod());
+                candidate.setPreferredLocation(request.getPreferredLocation());
+                candidate.setSource(request.getSource());
+
+                Candidate saved = candidateRepository.save(candidate);
+                logger.info("Candidate updated by self - id: {}", saved.getId());
+
+                return mapToResponse(saved);
         }
 
 }

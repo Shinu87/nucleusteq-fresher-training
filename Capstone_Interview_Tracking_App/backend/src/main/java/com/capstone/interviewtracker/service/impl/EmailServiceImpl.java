@@ -1,5 +1,6 @@
 package com.capstone.interviewtracker.service.impl;
 
+import com.capstone.interviewtracker.model.Candidate;
 import com.capstone.interviewtracker.model.Interview;
 import com.capstone.interviewtracker.model.Panel;
 import com.capstone.interviewtracker.service.EmailService;
@@ -285,6 +286,68 @@ public class EmailServiceImpl implements EmailService {
                         logger.error(
                                         "Failed to send onboarding email to {}",
                                         candidateEmail,
+                                        e);
+                }
+        }
+
+        /**
+         * Sends interview scheduled notification email to the candidate.
+         *
+         * @param candidate candidate details
+         * @param interview interview details
+         */
+        @Override
+        public void sendInterviewScheduledEmail(Candidate candidate, Interview interview) {
+
+                try {
+
+                        String stage = interview.getStage().name();
+                        String scheduledAt = interview.getScheduledAt().format(FORMATTER);
+                        String focusArea = interview.getFocusArea() != null
+                                        ? interview.getFocusArea()
+                                        : "General";
+
+                        String meetingUrl = interview.getMeetingUrl();
+                        String meetingLine = (meetingUrl != null && !meetingUrl.isBlank())
+                                        ? "Meeting URL   : " + meetingUrl + "\n"
+                                        : "Meeting URL   : (Will be shared by HR)\n";
+
+                        String panelNames = interview.getPanels()
+                                        .stream()
+                                        .map(Panel::getName)
+                                        .reduce((a, b) -> a + ", " + b)
+                                        .orElse("TBD");
+
+                        String jobTitle = candidate.getJobDescription().getTitle();
+
+                        String subject = "Interview Scheduled: " + stage + " Round – " + jobTitle;
+
+                        String body = "Dear " + candidate.getName() + ",\n\n"
+                                        + "Your interview has been scheduled. Please find the details below:\n\n"
+                                        + "------------------------------\n"
+                                        + "Job Role      : " + jobTitle + "\n"
+                                        + "Stage         : " + stage + "\n"
+                                        + "Scheduled At  : " + scheduledAt + "\n"
+                                        + "Focus Area    : " + focusArea + "\n"
+                                        + "Interviewer(s): " + panelNames + "\n"
+                                        + meetingLine
+                                        + "------------------------------\n\n"
+                                        + "Please be available 5 minutes before the scheduled time.\n\n"
+                                        + "Regards,\n"
+                                        + "Interview Tracking System";
+
+                        sendPlainEmail(candidate.getEmail(), subject, body);
+
+                        logger.info(
+                                        "Interview scheduled email sent to candidate {} for interview {}",
+                                        candidate.getEmail(),
+                                        interview.getId());
+
+                } catch (Exception e) {
+
+                        logger.error(
+                                        "Failed to send interview scheduled email to candidate {}",
+                                        candidate.getEmail(),
                                         e);
                 }
         }

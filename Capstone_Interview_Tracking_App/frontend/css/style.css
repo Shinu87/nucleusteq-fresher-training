@@ -325,6 +325,7 @@ body {
 }
 
 @media (max-width: 900px) {
+
   .grid-2,
   .grid-3 {
     grid-template-columns: 1fr;
@@ -1091,7 +1092,7 @@ tbody td {
 
 /* the password-wrapper splits input + eye icon into a row,
    so the error message must follow the wrapper, not the input */
-.password-wrapper + .field-error {
+.password-wrapper+.field-error {
   margin-top: 5px;
 }
 
@@ -1140,4 +1141,81 @@ tbody td {
 /* greys-out un-pickable options (already passed / skipped ahead) */
 .stage-advance-select option:disabled {
   color: #9ca3af;
+}
+
+/*
+   GLOBAL LOADER OVERLAY & BUTTON LOADERS
+   Used for slow operations like sending emails, scheduling interviews,
+   loading dashboard data, etc. Keeps UX smooth and prevents
+   accidental double-submits.
+*/
+
+.app-loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 12, 35, 0.55);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.app-loader-overlay.active {
+  display: flex;
+}
+
+.app-loader-box {
+  background: #fff;
+  color: var(--text-dark);
+  border-radius: var(--radius);
+  padding: 22px 28px;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app-loader-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e5e7ff;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: app-spin 0.85s linear infinite;
+  flex-shrink: 0;
+}
+
+.app-loader-text {
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+@keyframes app-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inline button spinner (used by withButtonLoader) */
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-top-color: #fff;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 6px;
+  animation: app-spin 0.7s linear infinite;
+}
+
+button.is-loading,
+.btn.is-loading {
+  opacity: 0.75;
+  cursor: not-allowed !important;
+  pointer-events: none;
 }

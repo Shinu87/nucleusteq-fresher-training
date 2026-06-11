@@ -34,6 +34,16 @@
           >
             <span class="icon">📊</span> My Progress
           </a>
+          <!-- view / edit submitted application -->
+          <a
+            class="nav-item"
+            onclick="
+              showSection('myApp', this);
+              loadMyApplication();
+            "
+          >
+            <span class="icon">📝</span> My Application
+          </a>
         </nav>
         <div class="sidebar-footer">
           <div class="sidebar-user">
@@ -267,6 +277,62 @@
               <div class="empty-state">
                 <div class="empty-icon">&#x23F3;</div>
                 <p>Loading your application status&#x2026;</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!--  MY APPLICATION (VIEW / EDIT)  -->
+        <section id="section-myApp" class="page-section">
+          <div class="page-header">
+            <h2>My Application</h2>
+            <p>
+              View your submitted application or edit the details you can
+              change. Email, applied job, status and stage are managed by HR and
+              cannot be modified here.
+            </p>
+          </div>
+
+          <div class="card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+              "
+            >
+              <div class="card-title" style="margin: 0">
+                📝 Application Details
+              </div>
+              <div style="display: flex; gap: 8px">
+                <button
+                  class="btn"
+                  style="font-size: 12px; padding: 6px 14px"
+                  onclick="loadMyApplication()"
+                >
+                  &#x1F504; Refresh
+                </button>
+                <button
+                  id="myAppEditBtn"
+                  class="btn"
+                  style="
+                    font-size: 12px;
+                    padding: 6px 14px;
+                    display: none;
+                    background: var(--primary);
+                    color: #fff;
+                  "
+                  onclick="enterEditMode()"
+                >
+                  ✏️ Edit
+                </button>
+              </div>
+            </div>
+
+            <div id="myAppContent">
+              <div class="empty-state">
+                <div class="empty-icon">&#x23F3;</div>
+                <p>Loading your application&#x2026;</p>
               </div>
             </div>
           </div>

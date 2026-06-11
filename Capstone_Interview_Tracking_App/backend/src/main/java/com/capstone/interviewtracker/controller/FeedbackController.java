@@ -40,14 +40,26 @@ public class FeedbackController {
      * @param request feedback request data
      * @return created feedback response
      */
-    @PreAuthorize("hasAnyRole('HR','PANEL')")
+    // @PreAuthorize("hasAnyRole('HR','PANEL')")
+    // @PostMapping
+    // public ResponseEntity<FeedbackResponseDTO> submitFeedback(
+    // @Valid @RequestBody final FeedbackRequestDTO request) {
+
+    // FeedbackResponseDTO response = feedbackService.submitFeedback(request);
+
+    // return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    // }
+    @PreAuthorize("hasAnyRole('HR', 'PANEL')")
     @PostMapping
     public ResponseEntity<FeedbackResponseDTO> submitFeedback(
             @Valid @RequestBody final FeedbackRequestDTO request) {
 
-        FeedbackResponseDTO response = feedbackService.submitFeedback(request);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        String email = auth.getName();
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(feedbackService.submitFeedback(request, email));
     }
 
     /**

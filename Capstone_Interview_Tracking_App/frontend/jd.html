@@ -2,62 +2,183 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Job Descriptions</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Descriptions – Interview Tracker</title>
     <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* jd.html specific – keeps the old floating layout */
+      body {
+        align-items: center;
+        padding: 24px;
+      }
+      .jd-page-wrap {
+        width: 100%;
+        max-width: 820px;
+      }
+      #jd-form {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        border-radius: 18px;
+        padding: 28px;
+        margin-bottom: 28px;
+      }
+      #jd-form h2 {
+        color: #fff;
+        font-size: 20px;
+        margin-bottom: 18px;
+      }
+      #jd-form input,
+      #jd-form textarea,
+      #jd-form select {
+        width: 100%;
+        padding: 10px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.88);
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 12px;
+        outline: none;
+      }
+      #jd-form .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      #jd-list {
+        width: 100%;
+      }
+      .jd-card .btn-apply {
+        margin-top: 12px;
+        width: 100%;
+        padding: 9px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .jd-card .btn-apply:hover {
+        opacity: 0.9;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 20px;
+      }
+    </style>
   </head>
-
   <body>
-    <h1>Job Descriptions</h1>
+    <div class="jd-page-wrap">
+      <h1>💼 Job Descriptions</h1>
 
-    <!-- HR FORM (visible only for HR, i will hide later for candidates) -->
-    <div id="jd-form">
-      <h2>Create Job Description</h2>
+      <!-- HR FORM -->
+      <div id="jd-form">
+        <h2>➕ Create Job Description</h2>
+        <input type="text" id="title" placeholder="Job Title *" />
+        <textarea
+          id="description"
+          placeholder="Job Description *"
+          rows="3"
+        ></textarea>
 
-      <input type="text" id="title" placeholder="Job Title" />
-      <br />
-      <textarea id="description" placeholder="Job Description"></textarea>
-      <br />
+        <div class="row">
+          <input
+            type="number"
+            id="minExp"
+            placeholder="Min Experience (yrs) *"
+          />
+          <input
+            type="number"
+            id="maxExp"
+            placeholder="Max Experience (yrs) *"
+          />
+        </div>
+        <div class="row">
+          <input
+            type="number"
+            id="minSalary"
+            placeholder="Min Salary (LPA) *"
+          />
+          <input
+            type="number"
+            id="maxSalary"
+            placeholder="Max Salary (LPA) *"
+          />
+        </div>
+        <input type="text" id="location" placeholder="Location *" />
+        <select id="jobType">
+          <option value="FULL_TIME">Full Time</option>
+          <option value="CONTRACT">Contract</option>
+          <option value="REMOTE">Remote</option>
+        </select>
 
-      <label>Select Skills:</label>
-      <div id="skills-container"></div>
+        <label
+          style="
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 13px;
+            display: block;
+            margin-bottom: 8px;
+          "
+          >Select Skills:</label
+        >
+        <div id="skills-container" class="skills-grid"></div>
 
-      <div class="row">
-        <input type="number" id="minExp" placeholder="Min Exp" />
-        <input type="number" id="maxExp" placeholder="Max Exp" />
+        <button
+          style="
+            margin-top: 16px;
+            width: 100%;
+            padding: 11px;
+            background: #fff;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+          "
+          onclick="createJD()"
+        >
+          Create JD
+        </button>
       </div>
 
-      <div class="row">
-        <input type="number" id="minSalary" placeholder="Min Salary" />
-        <input type="number" id="maxSalary" placeholder="Max Salary" />
+      <hr
+        style="border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 24px"
+      />
+
+      <!-- JD LIST -->
+      <div id="jd-list">
+        <h2 style="font-size: 22px; margin-bottom: 16px">📋 Available Jobs</h2>
       </div>
 
-      <input type="text" id="location" placeholder="Location" />
-
-      <button onclick="createJD()">Create JD</button>
+      <p
+        style="
+          text-align: center;
+          margin-top: 24px;
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+        "
+      >
+        <a href="dashboard.html" style="color: #fff">← Go to HR Dashboard</a>
+      </p>
     </div>
 
-    <hr />
-
-    <!-- JD LIST -->
-    <div id="jd-list">
-      <h2>Available Jobs</h2>
-    </div>
-
-    <!-- JS FILE -->
     <script src="js/jd.js"></script>
-
     <script>
       window.onload = function () {
         loadSkills();
         loadJobs();
       };
-      const user = JSON.parse(localStorage.getItem("user"));
+      const user = JSON.parse(localStorage.getItem("user") || "null");
       if (!user) {
         alert("Please login first");
         window.location.href = "login.html";
       }
-      if (user.role !== "HR") {
+      if (user && user.role !== "HR") {
         document.getElementById("jd-form").style.display = "none";
       }
     </script>

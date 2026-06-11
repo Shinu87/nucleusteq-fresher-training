@@ -47,7 +47,7 @@ public class SecurityConfig {
 
                         /* Resume upload download */
                         .requestMatchers(HttpMethod.GET, "/api/resumes/download")
-                        .hasAnyRole("HR", "PANEL")
+                        .hasAnyRole("HR", "PANEL", "CANDIDATE")
 
                         /* Test endpoints */
                         .requestMatchers("/test/**").permitAll()

@@ -281,11 +281,15 @@ async function submitApplication() {
   };
 
   try {
-    const result = await apiPost("/candidates", body);
+    const result = await withLoader("Submitting application…", async () => {
+      return await apiPost("/candidates", body);
+    });
 
     // upload resume after candidate row is created
     if (resumeFile) {
-      await uploadResume(result.id, resumeFile, msgEl);
+      await withLoader("Uploading resume…", async () => {
+        await uploadResume(result.id, resumeFile, msgEl);
+      });
     } else {
       showMsg(
         msgEl,
@@ -359,10 +363,12 @@ async function uploadResumeFromProfile(candidateId) {
 
   // Same uploadResume function used by the apply flow only the
   // user facing message wording is tailored for the profile page.
-  const ok = await uploadResume(candidateId, file, msgEl, {
-    successMsg: "✅ Resume uploaded successfully!",
-    errorPrefix: "⚠️ Resume upload failed",
-    errorLevel: "error",
+  const ok = await withLoader("Uploading resume…", async () => {
+    return await uploadResume(candidateId, file, msgEl, {
+      successMsg: "✅ Resume uploaded successfully!",
+      errorPrefix: "⚠️ Resume upload failed",
+      errorLevel: "error",
+    });
   });
 
   if (ok) {
@@ -540,6 +546,18 @@ function renderProgress(data) {
           <div class="di-value">
             <div style="margin-bottom:6px;">
               ${data.resumeUploaded ? "✅ Uploaded" : "❌ Not uploaded"}
+              ${
+                data.resumeUploaded
+                  ? ` &nbsp;
+                      <button class="btn-link-style"
+                              onclick="viewMyResume()"
+                              style="background:none;border:none;color:#5b21b6;
+                                     text-decoration:underline;font-weight:600;
+                                     cursor:pointer;padding:0;font-size:13px;">
+                        View Resume
+                      </button>`
+                  : ""
+              }
             </div>
             <!-- Reuses the existing POST /api/candidates/{id}/resume
                  endpoint via uploadResumeFromProfile(). Same backend,
@@ -594,4 +612,353 @@ function showMsg(el, type, text) {
   el.style.display = "block";
   el.className = `msg ${type}`;
   el.textContent = text;
+}
+
+/*
+   MY APPLICATION — VIEW / EDIT
+*/
+let _myAppCurrent = null;
+
+/* Per-field validation rules for the edit form */
+const myAppRules = [
+  { id: "eName", label: "Full Name", required: true, minLength: 2 },
+  { id: "ePhone", label: "Phone", required: true, type: "phone" },
+  {
+    id: "eTotalExp",
+    label: "Total Experience",
+    required: true,
+    type: "number",
+    min: 0,
+    max: 60,
+  },
+  {
+    id: "eRelExp",
+    label: "Relevant Experience",
+    type: "number",
+    min: 0,
+    max: 60,
+    watches: ["eTotalExp"],
+    custom: (value) => {
+      if (value === "") return null;
+      const total = parseInt(document.getElementById("eTotalExp").value, 10);
+      const rel = parseInt(value, 10);
+      if (!Number.isNaN(total) && !Number.isNaN(rel) && rel > total) {
+        return "Relevant experience cannot exceed total experience.";
+      }
+      return null;
+    },
+  },
+  { id: "eCurCTC", label: "Current CTC", type: "number", min: 0, max: 1000 },
+  { id: "eExpCTC", label: "Expected CTC", type: "number", min: 0, max: 1000 },
+];
+
+/* Load the candidate's own application and render in VIEW mode. */
+async function loadMyApplication() {
+  const container = document.getElementById("myAppContent");
+  if (!container) return;
+
+  container.innerHTML =
+    '<div class="empty-state"><div class="empty-icon">⏳</div>' +
+    "<p>Loading your application…</p></div>";
+
+  try {
+    const data = await withLoader("Loading your application…", async () => {
+      const res = await fetch(`${BASE_URL}/candidates/me`, {
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeader(),
+        },
+      });
+      if (res.status === 404) {
+        return { _notFound: true };
+      }
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || "Failed to load application");
+      }
+      return await res.json();
+    });
+
+    if (data && data._notFound) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>You haven't submitted an application yet.</p>
+          <button class="btn" style="margin-top:12px;"
+                  onclick="goToBrowseJobsForReapply()">Browse Jobs →</button>
+        </div>`;
+      document.getElementById("myAppEditBtn").style.display = "none";
+      return;
+    }
+
+    _myAppCurrent = data;
+    renderMyApplicationView(data);
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div>
+       <p>Could not load application: ${e.message || "unknown error"}</p></div>`;
+  }
+}
+
+/* Build the read-only details grid. */
+function renderMyApplicationView(c) {
+  const container = document.getElementById("myAppContent");
+  const editBtn = document.getElementById("myAppEditBtn");
+
+  // Only allow editing while the application is IN_PROGRESS
+  const editable = c.status === "IN_PROGRESS";
+  editBtn.style.display = editable ? "inline-block" : "none";
+
+  const resumeLink = c.resumeUrl
+    ? `<button onclick="viewMyResume()"
+              style="background:none;border:none;color:#5b21b6;
+                     font-weight:600;text-decoration:underline;
+                     cursor:pointer;padding:0;font-size:14px;">
+         📄 View Resume
+       </button>`
+    : '<span style="color:#aaa;">No resume uploaded</span>';
+
+  container.innerHTML = `
+    <div class="detail-section">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span style="font-weight:600;color:#666;">Status:</span>
+        ${statusBadge(c.status)}
+        <span style="font-weight:600;color:#666;margin-left:8px;">Stage:</span>
+        ${stageBadge(c.currentStage)}
+      </div>
+      ${
+        !editable
+          ? `<div style="background:#fef3c7;border:1.5px solid #fcd34d;color:#92400e;
+                       padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;">
+               ⚠️ This application is <b>${c.status}</b> and can no longer be edited.
+             </div>`
+          : ""
+      }
+    </div>
+
+    <div class="detail-section">
+      <h4>Personal Info</h4>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="di-label">Name</div><div class="di-value">${c.name || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Email</div><div class="di-value">${c.email || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Phone</div><div class="di-value">${c.phone || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Date of Birth</div><div class="di-value">${c.dateOfBirth || "—"}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Professional Info</h4>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="di-label">Current Organization</div><div class="di-value">${c.currentOrganization || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Total Experience</div><div class="di-value">${c.totalExperience ?? "—"} yrs</div></div>
+        <div class="detail-item"><div class="di-label">Relevant Experience</div><div class="di-value">${c.relevantExperience ?? "—"} yrs</div></div>
+        <div class="detail-item"><div class="di-label">Current CTC</div><div class="di-value">${c.currentCTC != null ? "₹" + c.currentCTC + " LPA" : "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Expected CTC</div><div class="di-value">${c.expectedCTC != null ? "₹" + c.expectedCTC + " LPA" : "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Notice Period</div><div class="di-value">${c.noticePeriod || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Preferred Location</div><div class="di-value">${c.preferredLocation || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Source</div><div class="di-value">${c.source || "—"}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Applied Job</h4>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="di-label">Job Title</div><div class="di-value">${c.jobTitle || "—"}</div></div>
+        <div class="detail-item"><div class="di-label">Job ID</div><div class="di-value">${c.jobId ?? "—"}</div></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Resume</h4>
+      <p style="margin-bottom:8px;">${resumeLink}</p>
+    </div>
+  `;
+}
+
+/* Swap the view for an editable form pre-loaded with current values. */
+function enterEditMode() {
+  const c = _myAppCurrent;
+  if (!c) return;
+
+  const container = document.getElementById("myAppContent");
+  document.getElementById("myAppEditBtn").style.display = "none";
+
+  container.innerHTML = `
+    <div class="detail-section" style="margin-bottom:8px;">
+      <div style="background:#eef2ff;border:1.5px solid #c7d2fe;color:#3730a3;
+                  padding:10px 14px;border-radius:8px;font-size:13px;">
+        ℹ️ You can update your personal and professional info. Email,
+        applied job, status, stage and date of birth are read-only.
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Full Name *</label>
+        <input type="text" id="eName" value="${escapeAttr(c.name)}"/>
+      </div>
+      <div class="form-group">
+        <label>Email (read-only)</label>
+        <input type="email" value="${escapeAttr(c.email)}" readonly
+               style="background:#f3f4f6;cursor:not-allowed;"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Phone *</label>
+        <input type="text" id="ePhone" maxlength="10" value="${escapeAttr(c.phone)}"/>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth (read-only)</label>
+        <input type="text" value="${escapeAttr(c.dateOfBirth || "—")}" readonly
+               style="background:#f3f4f6;cursor:not-allowed;"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Current Organization</label>
+        <input type="text" id="eOrg" value="${escapeAttr(c.currentOrganization || "")}"/>
+      </div>
+      <div class="form-group">
+        <label>Total Experience (yrs) *</label>
+        <input type="number" id="eTotalExp" min="0" value="${c.totalExperience ?? ""}"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Relevant Experience (yrs)</label>
+        <input type="number" id="eRelExp" min="0" value="${c.relevantExperience ?? ""}"/>
+      </div>
+      <div class="form-group">
+        <label>Current CTC (LPA)</label>
+        <input type="number" step="0.1" id="eCurCTC" min="0" value="${c.currentCTC ?? ""}"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Expected CTC (LPA)</label>
+        <input type="number" step="0.1" id="eExpCTC" min="0" value="${c.expectedCTC ?? ""}"/>
+      </div>
+      <div class="form-group">
+        <label>Notice Period</label>
+        <input type="text" id="eNotice" value="${escapeAttr(c.noticePeriod || "")}"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Preferred Location</label>
+        <input type="text" id="ePrefLoc" value="${escapeAttr(c.preferredLocation || "")}"/>
+      </div>
+      <div class="form-group">
+        <label>Source</label>
+        <input type="text" id="eSource" value="${escapeAttr(c.source || "")}"/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button class="btn btn-submit" id="saveMyAppBtn" onclick="saveMyApplication()">
+        💾 Save Changes
+      </button>
+      <button class="btn" style="background:#e0e0ee;color:#333;"
+              onclick="cancelEditMode()">
+        Cancel
+      </button>
+    </div>
+    <div id="myAppMsg" class="msg" style="display:none;margin-top:10px;"></div>
+  `;
+
+  wireFieldValidation(myAppRules);
+}
+
+/* Return to read-only view, dropping any in-form edits. */
+function cancelEditMode() {
+  if (_myAppCurrent) {
+    renderMyApplicationView(_myAppCurrent);
+  } else {
+    loadMyApplication();
+  }
+}
+
+/* Send PUT /api/candidates/me with the edited fields. */
+async function saveMyApplication() {
+  const msgEl = document.getElementById("myAppMsg");
+
+  if (!validateAll(myAppRules)) {
+    showMsg(msgEl, "error", "Please fix the highlighted fields.");
+    return;
+  }
+
+  const body = {
+    name: document.getElementById("eName").value.trim(),
+    phone: document.getElementById("ePhone").value.trim(),
+    currentOrganization: document.getElementById("eOrg").value.trim(),
+    totalExperience: parseInt(document.getElementById("eTotalExp").value, 10),
+    relevantExperience:
+      parseInt(document.getElementById("eRelExp").value, 10) || 0,
+    currentCTC: parseFloat(document.getElementById("eCurCTC").value) || null,
+    expectedCTC: parseFloat(document.getElementById("eExpCTC").value) || null,
+    noticePeriod: document.getElementById("eNotice").value.trim(),
+    preferredLocation: document.getElementById("ePrefLoc").value.trim(),
+    source: document.getElementById("eSource").value.trim(),
+  };
+
+  try {
+    const updated = await withLoader("Saving application…", async () => {
+      return await apiPut("/candidates/me", body);
+    });
+    _myAppCurrent = updated;
+    showToast("✅ Application updated successfully.", "success");
+    renderMyApplicationView(updated);
+    loadMyProgress();
+  } catch (e) {
+    showMsg(msgEl, "error", e.message || "Failed to update application.");
+  }
+}
+
+/* Tiny helper to make user input safe inside attribute values. */
+function escapeAttr(v) {
+  if (v === null || v === undefined) return "";
+  return String(v)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/* Fetch and open the logged-in candidate's resume. */
+async function viewMyResume() {
+  try {
+    let resumePath =
+      _myAppCurrent && _myAppCurrent.resumeUrl ? _myAppCurrent.resumeUrl : null;
+
+    if (!resumePath) {
+      const me = await apiGet("/candidates/me", { silent: true });
+      _myAppCurrent = me;
+      resumePath = me.resumeUrl;
+    }
+
+    if (!resumePath) {
+      showToast("No resume found on file.", "error");
+      return;
+    }
+
+    await withLoader("Opening resume…", async () => {
+      const res = await fetch(
+        `${BASE_URL}/resumes/download?path=${encodeURIComponent(resumePath)}`,
+        { headers: { ...getAuthHeader() } },
+      );
+      if (!res.ok) throw new Error("Resume could not be opened");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, "_blank", "noopener");
+      // free the blob URL after a minute - the new tab will have loaded by then
+      setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+    });
+  } catch (e) {
+    showToast(e.message || "Failed to open resume.", "error");
+  }
 }

@@ -1,5 +1,6 @@
 package com.capstone.interviewtracker.service;
 
+import com.capstone.interviewtracker.model.Candidate;
 import com.capstone.interviewtracker.model.Interview;
 import com.capstone.interviewtracker.model.Panel;
 
@@ -50,4 +51,6 @@ public interface EmailService {
          */
         void sendCandidateOnboardingEmail(String candidateEmail, String candidateName,
                         String setPasswordLink);
+
+        void sendInterviewScheduledEmail(Candidate candidate, Interview interview);
 }

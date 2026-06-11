@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capstone.interviewtracker.constants.api.CandidateApiConstants;
 import com.capstone.interviewtracker.dto.Request.CandidateRequestDTO;
+import com.capstone.interviewtracker.dto.Request.CandidateUpdateRequestDTO;
 import com.capstone.interviewtracker.dto.Response.ApplicationStatusDTO;
 import com.capstone.interviewtracker.dto.Response.CandidateResponseDTO;
 import com.capstone.interviewtracker.service.CandidateService;
@@ -100,7 +101,54 @@ public class CandidateController {
     }
 
     /**
-     * Uploads resume for a candidate.
+     * Returns the full candidate record for the logged-in candidate.
+     * Used by the candidate portal "View / Edit My Application" screen.
+     *
+     * @return candidate response or 404 if no application exists
+     */
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @GetMapping(CandidateApiConstants.ME)
+    public ResponseEntity<CandidateResponseDTO> getMyCandidate() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = auth != null ? auth.getName() : null;
+
+        if (loggedInEmail == null || loggedInEmail.isBlank()) {
+            return ResponseEntity.status(403).build();
+        }
+
+        CandidateResponseDTO dto = candidateService.getMyCandidate(loggedInEmail);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * Updates editable fields of the logged-in candidate's own
+     * application. Email, jobId, status, stage and DOB are not
+     * editable here on purpose.
+     *
+     * @param request editable candidate fields
+     * @return updated candidate response
+     */
+    @PreAuthorize("hasRole('CANDIDATE')")
+    @PutMapping(CandidateApiConstants.ME)
+    public ResponseEntity<CandidateResponseDTO> updateMyCandidate(
+            @Valid @RequestBody CandidateUpdateRequestDTO request) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = auth != null ? auth.getName() : null;
+
+        if (loggedInEmail == null || loggedInEmail.isBlank()) {
+            return ResponseEntity.status(403).build();
+        }
+
+        CandidateResponseDTO dto = candidateService.updateMyCandidate(loggedInEmail, request);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
      * File is stored and path is updated in database.
      * 
      * @param id   candidate id

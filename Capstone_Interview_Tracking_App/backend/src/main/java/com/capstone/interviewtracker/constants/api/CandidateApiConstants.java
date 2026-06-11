@@ -17,6 +17,13 @@ public final class CandidateApiConstants {
     public static final String ME_APPLICATION = "/me/application";
 
     /**
+     * Endpoint for logged-in candidate to view OR update their own full
+     * candidate record. GET returns CandidateResponseDTO,
+     * PUT accepts CandidateUpdateRequestDTO.
+     */
+    public static final String ME = "/me";
+
+    /**
      * Endpoint to fetch candidate by id.
      */
     public static final String BY_ID = "/{id}";

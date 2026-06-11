@@ -290,6 +290,12 @@ public class InterviewServiceImpl implements InterviewService {
                                         saved.getId());
                 }
 
+                logger.info("Sending interview scheduled email to candidate {} for interviewId: {}",
+                                candidate.getEmail(), saved.getId());
+                emailService.sendInterviewScheduledEmail(candidate, saved);
+                logger.debug("Interview scheduled email sent to candidate: {} for interviewId: {}",
+                                candidate.getEmail(), saved.getId());
+
                 return mapToResponse(saved);
         }
 
