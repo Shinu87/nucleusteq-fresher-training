@@ -11,6 +11,8 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from backend.config import get_settings
+from backend.models.user import User
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,7 @@ async def connect_to_mongo() -> None:
     global client
 
     document_models: list = [
+        User,
     ]
 
     client = AsyncIOMotorClient(settings.mongo_uri)

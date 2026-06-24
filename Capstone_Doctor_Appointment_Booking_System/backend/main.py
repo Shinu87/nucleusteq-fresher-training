@@ -1,3 +1,8 @@
+"""
+This is the entry point of our FastAPI app. It creates the app, sets up
+CORS so the React frontend can talk to it, connects to MongoDB on
+startup, and registers our routers.
+"""
 import logging
 from contextlib import asynccontextmanager
 
@@ -6,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_settings
 from backend.database.connection import close_mongo_connection, connect_to_mongo
+from backend.routers.auth_router import router as auth_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,6 +47,8 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.include_router(auth_router, prefix=settings.api_v1_prefix)
 
     @app.get("/", tags=["Health"])
     async def root():
