@@ -66,3 +66,28 @@ async def get_current_user(
         email=payload["email"],
         role=payload["role"],
     )
+
+def require_role(*allowed_roles: Role):
+    """
+    Role based access control dependency.
+
+    Usage:
+        @router.get("/admin-only-thing")
+        async def admin_only_thing(
+            current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+        ):
+            ...
+    """
+
+    async def role_checker(
+        current_user: CurrentUser = Depends(get_current_user),
+    ) -> CurrentUser:
+        if current_user.role not in allowed_roles:
+            allowed_names = ", ".join(role.value for role in allowed_roles)
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"This action requires one of these roles: {allowed_names}",
+            )
+        return current_user
+
+    return role_checker
