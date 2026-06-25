@@ -74,3 +74,7 @@ class PatientRegisterRequest(_BaseRegisterRequest):
 class DoctorRegisterRequest(_BaseRegisterRequest):
     # doctors only need the shared fields at registration time
     pass
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
