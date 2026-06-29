@@ -8,6 +8,7 @@ import logging
 from beanie import init_beanie
 from pymongo import AsyncMongoClient
 
+from appointment_service.models.availability_slot import AvailabilitySlot
 from appointment_service.config import get_settings
 from appointment_service.models.doctor import Doctor
 
@@ -24,6 +25,7 @@ async def connect_to_mongo() -> None:
 
     document_models: list = [
         Doctor,
+        AvailabilitySlot,
     ]
 
     client = AsyncMongoClient(settings.mongo_uri)

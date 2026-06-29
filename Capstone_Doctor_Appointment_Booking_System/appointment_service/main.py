@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from appointment_service.config import get_settings
 from appointment_service.database.connection import close_mongo_connection, connect_to_mongo
 from appointment_service.routers.internal_router import router as internal_router
+from appointment_service.routers.availability_router import router as availability_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(internal_router)
+    app.include_router(availability_router, prefix=settings.api_v1_prefix)
 
     @app.get("/health", tags=["Health"])
     async def health_check():
