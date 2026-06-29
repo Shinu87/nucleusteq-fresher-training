@@ -39,4 +39,7 @@ class Doctor(Document):
         indexes = [
             IndexModel("specialization"),
             IndexModel("is_active"),
-        ]
+            # text index so GET /doctors can search by name or specialization
+            # in one query
+            IndexModel([("full_name", "text"), ("specialization", "text")]),
+]
