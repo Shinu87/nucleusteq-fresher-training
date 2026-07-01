@@ -11,6 +11,7 @@ from pymongo import AsyncMongoClient
 from appointment_service.models.availability_slot import AvailabilitySlot
 from appointment_service.config import get_settings
 from appointment_service.models.doctor import Doctor
+from appointment_service.models.appointment import Appointment
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,7 @@ async def connect_to_mongo() -> None:
     document_models: list = [
         Doctor,
         AvailabilitySlot,
+        Appointment,
     ]
 
     client = AsyncMongoClient(settings.mongo_uri)

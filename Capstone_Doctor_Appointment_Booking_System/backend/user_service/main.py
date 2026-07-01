@@ -13,6 +13,7 @@ from user_service.config import get_settings
 from user_service.database.connection import close_mongo_connection, connect_to_mongo
 from user_service.routers.admin_router import router as admin_router
 from user_service.routers.auth_router import router as auth_router
+from user_service.routers.internal_router import router as internal_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -51,6 +52,7 @@ def create_app() -> FastAPI:
 
     app.include_router(auth_router, prefix=settings.api_v1_prefix)
     app.include_router(admin_router, prefix=settings.api_v1_prefix)
+    app.include_router(internal_router)
 
     @app.get("/", tags=["Health"])
     async def root():

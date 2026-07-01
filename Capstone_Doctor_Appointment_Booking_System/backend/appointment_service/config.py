@@ -26,7 +26,9 @@ class Settings(BaseSettings):
     jwt_algorithm: str = Field(default="HS256")
 
     internal_api_key: str = Field(default="internal-dev-key")
-
+    notification_service_url: str = Field(default="http://localhost:8002")
+    user_service_url: str = Field(default="http://localhost:8000")
+    
     cors_origins: List[str] = Field(default=["http://localhost:3000"])
 
     model_config = SettingsConfigDict(
