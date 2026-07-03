@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.config import get_settings
 from backend.database.connection import close_mongo_connection, connect_to_mongo
+from backend.exceptions.global_exception_handler import register_exception_handlers
 from backend.routers.admin_router import router as admin_router
 from backend.routers.appointment_router import router as appointment_router
 from backend.routers.auth_router import router as auth_router
@@ -48,6 +49,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Centralized exception handling
+    register_exception_handlers(app)
 
     # All routes live under /api/v1 - same URLs as before
     app.include_router(auth_router, prefix=settings.api_v1_prefix)

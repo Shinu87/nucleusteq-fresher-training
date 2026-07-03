@@ -8,17 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr, field_validator
 
-# name should only be letters and spaces, at least 2 characters long
-NAME_REGEX = re.compile(r"^[A-Za-z\s]{2,}$")
-
-# phone number must be exactly 10 digits, nothing else
-PHONE_REGEX = re.compile(r"^\d{10}$")
-
-# password must be 8-12 characters, with at least one uppercase letter
-# and at least one special character
-PASSWORD_REGEX = re.compile(
-    r'^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,12}$'
-)
+from backend.constants.validation_constants import ValidationMessages, ValidationPatterns
 
 
 class _BaseRegisterRequest(BaseModel):
@@ -37,29 +27,24 @@ class _BaseRegisterRequest(BaseModel):
     def validate_full_name(cls, value: str) -> str:
         value = value.strip()
         # checking the name only has letters/spaces and is long enough
-        if not NAME_REGEX.match(value):
-            raise ValueError(
-                "Full name must be at least 2 characters long and contain only letters and spaces"
-            )        
+        if not ValidationPatterns.NAME_REGEX.match(value):
+            raise ValueError(ValidationMessages.FULL_NAME_INVALID)      
         return value
 
     @field_validator("phone_number")
     @classmethod
     def validate_phone_number(cls, value: str) -> str:
         # checking the phone number is exactly 10 digits
-        if not PHONE_REGEX.match(value):
-            raise ValueError("Phone number must be exactly 10 digits")
+        if not ValidationPatterns.PHONE_REGEX.match(value):
+            raise ValueError(ValidationMessages.PHONE_NUMBER_INVALID)
         return value
 
     @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
         # checking the password meets the length and complexity rules
-        if not PASSWORD_REGEX.match(value):
-            raise ValueError(
-                "Password must be 8-12 characters long and include at least "
-                "one uppercase letter and one special character"
-            )
+        if not ValidationPatterns.PASSWORD_REGEX.match(value):
+            raise ValueError(ValidationMessages.PASSWORD_INVALID)
         return value
 
 
@@ -86,11 +71,8 @@ class SetPasswordRequest(BaseModel):
     def validate_new_password(cls, value: str) -> str:
         # same complexity rule as registration, so a doctor can't set a
         # weaker password than a patient/admin would be allowed to have
-        if not PASSWORD_REGEX.match(value):
-            raise ValueError(
-                "Password must be 8-12 characters long and include at least "
-                "one uppercase letter and one special character"
-            )
+        if not ValidationPatterns.PASSWORD_REGEX.match(value):
+            raise ValueError(ValidationMessages.PASSWORD_INVALID)
         return value
 
 

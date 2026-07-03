@@ -10,6 +10,7 @@ from backend.constants.roles import Role
 from backend.database.connection import close_mongo_connection, connect_to_mongo
 from backend.models.user import User
 from backend.utils.security import hash_password
+from backend.exceptions.user_exception import EmailAlreadyRegisteredException
 
 
 async def create_admin(full_name: str, email: str, password: str, phone_number: str) -> User:
@@ -18,10 +19,7 @@ async def create_admin(full_name: str, email: str, password: str, phone_number: 
     """
     existing_user = await User.find_one(User.email == email)
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already registered",
-        )
+        raise EmailAlreadyRegisteredException()
 
     admin_user = User(
         full_name=full_name,

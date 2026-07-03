@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from backend.constants.roles import Role
 from backend.utils.jwt_handler import decode_access_token
+from backend.exceptions.auth_exception import InsufficientRoleException, InvalidTokenException, TokenExpiredException
 
 # This makes Swagger show the little "Authorize" lock icon and lets us
 # pull the raw Bearer token out of the Authorization header.
@@ -42,17 +43,9 @@ async def get_current_user(
     try:
         payload = decode_access_token(token)
     except jwt.ExpiredSignatureError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Your session has expired. Please log in again.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise TokenExpiredException()
     except jwt.InvalidTokenError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication token.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise InvalidTokenException()
 
     return CurrentUser(
         id=payload["sub"],
@@ -77,10 +70,7 @@ def require_role(*allowed_roles: Role):
     ) -> CurrentUser:
         if current_user.role not in allowed_roles:
             allowed_names = ", ".join(role.value for role in allowed_roles)
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"This action requires one of these roles: {allowed_names}",
-            )
+            raise InsufficientRoleException(allowed_names)
         return current_user
 
     return role_checker

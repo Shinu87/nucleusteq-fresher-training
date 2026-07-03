@@ -7,7 +7,7 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 
-SETUP_TOKEN_VALID_HOURS = 24
+from backend.constants.validation_constants import ValidationLimits
 
 
 def generate_setup_token() -> str:
@@ -22,7 +22,7 @@ def hash_setup_token(raw_token: str) -> str:
 
 def get_setup_token_expiry() -> datetime:
     """Setup links expire after SETUP_TOKEN_VALID_HOURS hours."""
-    return datetime.now(timezone.utc) + timedelta(hours=SETUP_TOKEN_VALID_HOURS)
+    return datetime.now(timezone.utc) + timedelta(hours=ValidationLimits.SETUP_TOKEN_VALID_HOURS)
 
 
 def is_setup_token_expired(expiry: datetime) -> bool:

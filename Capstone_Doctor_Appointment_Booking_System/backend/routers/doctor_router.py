@@ -6,6 +6,7 @@ a doctor's profile.
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, Query
 
+from backend.constants.api_constants import APIPrefixes, APITags
 from backend.middleware.auth import CurrentUser, get_current_user
 from backend.schemas.response.appt_doctor_response import (
     AvailableSlotSummary,
@@ -14,7 +15,7 @@ from backend.schemas.response.appt_doctor_response import (
 )
 from backend.services import doctor_search_service
 
-router = APIRouter(prefix="/doctors", tags=["Doctor Search"])
+router = APIRouter(prefix=APIPrefixes.DOCTORS, tags=[APITags.DOCTOR_SEARCH])
 
 
 def _to_summary_response(doctor) -> DoctorSummaryResponse:

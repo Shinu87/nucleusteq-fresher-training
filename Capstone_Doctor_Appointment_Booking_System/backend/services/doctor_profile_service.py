@@ -27,6 +27,14 @@ from backend.utils.token_utils import (
     hash_setup_token,
 )
 from backend.config import get_settings
+from backend.constants.email_constants import EmailLinkPaths
+from backend.exceptions.doctor_exception import (
+    ApplicationAlreadyReviewedException,
+    DoctorApplicationNotFoundException,
+    DuplicateLicenseException,
+)
+from backend.exceptions.user_exception import EmailAlreadyRegisteredException, UserNotFoundException
+from backend.constants.message_constants import DoctorMessages
 
 settings = get_settings()
 
@@ -39,19 +47,13 @@ async def submit_doctor_application(payload: DoctorRegisterRequest) -> tuple[Use
     """
     existing_user = await User.find_one(User.email == payload.email)
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already registered",
-        )
+        raise EmailAlreadyRegisteredException()
 
     existing_license = await DoctorProfile.find_one(
         DoctorProfile.license_number == payload.license_number
     )
     if existing_license:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This license number is already registered",
-        )
+        raise DuplicateLicenseException()
 
     new_user = User(
         full_name=payload.full_name,
@@ -100,11 +102,11 @@ async def list_doctor_applications(approval_status: ApprovalStatus | None = None
 async def _get_profile_and_user(doctor_profile_id) -> tuple[DoctorProfile, User]:
     profile = await DoctorProfile.get(doctor_profile_id)
     if profile is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor application not found")
+        raise DoctorApplicationNotFoundException()
 
     user = await User.get(profile.user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Linked user account not found")
+        raise UserNotFoundException(DoctorMessages.LINKED_USER_NOT_FOUND)
 
     return profile, user
 
@@ -116,10 +118,7 @@ async def approve_doctor(doctor_profile_id, admin_id) -> tuple[User, DoctorProfi
     profile, user = await _get_profile_and_user(doctor_profile_id)
 
     if profile.approval_status != ApprovalStatus.PENDING_APPROVAL:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"This application has already been {profile.approval_status.value.lower()}",
-        )
+        raise ApplicationAlreadyReviewedException(profile.approval_status.value.lower())
 
     raw_token = generate_setup_token()
     profile.approval_status = ApprovalStatus.APPROVED
@@ -156,10 +155,7 @@ async def reject_doctor(doctor_profile_id, admin_id, reason: str | None) -> tupl
     profile, user = await _get_profile_and_user(doctor_profile_id)
 
     if profile.approval_status != ApprovalStatus.PENDING_APPROVAL:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"This application has already been {profile.approval_status.value.lower()}",
-        )
+        raise ApplicationAlreadyReviewedException(profile.approval_status.value.lower())
 
     profile.approval_status = ApprovalStatus.REJECTED
     profile.reviewed_by = admin_id

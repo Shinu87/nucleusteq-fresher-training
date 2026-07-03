@@ -17,6 +17,13 @@ from backend.schemas.request.auth_request import (
 )
 from backend.utils.security import hash_password, verify_password
 from backend.utils.token_utils import hash_setup_token, is_setup_token_expired
+from backend.exceptions.auth_exception import (
+    AccountInactiveException,
+    InvalidCredentialsException,
+    InvalidSetupTokenException,
+    SetupTokenExpiredException,
+)
+from backend.exceptions.user_exception import EmailAlreadyRegisteredException, UserNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +31,7 @@ async def register_patient(payload: PatientRegisterRequest) -> User:
     # here we are checking if the email is already taken before creating the account
     existing_user = await User.find_one(User.email == payload.email)
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email is already registered",
-        )
+        raise EmailAlreadyRegisteredException()
 
     # we hash the password here so the plain password never gets saved
     new_user = User(
@@ -49,17 +53,11 @@ async def authenticate_user(payload: LoginRequest) -> User:
 
     if not user or not verify_password(payload.password, user.password_hash):
         logger.warning("Failed login attempt for email: %s", payload.email)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
-        )
+        raise InvalidCredentialsException()
 
     if not user.is_active:
         logger.warning("Login attempt on inactive account: %s", payload.email)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This account is not active. Please contact support.",
-        )
+        raise AccountInactiveException()
 
     logger.info("User logged in successfully: %s", payload.email)
     return user
@@ -75,20 +73,14 @@ async def set_password(token: str, new_password: str) -> User:
     profile = await DoctorProfile.find_one(DoctorProfile.setup_token_hash == token_hash)
 
     if profile is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This setup link is invalid or has already been used",
-        )
+        raise InvalidSetupTokenException()
 
     if profile.setup_token_expiry is None or is_setup_token_expired(profile.setup_token_expiry):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="This setup link has expired. Please ask an admin to re-approve your application.",
-        )
+        raise SetupTokenExpiredException()
 
     user = await User.get(profile.user_id)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise UserNotFoundException()
 
     user.password_hash = hash_password(new_password)
     user.account_status = AccountStatus.ACTIVE

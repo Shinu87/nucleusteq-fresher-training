@@ -10,6 +10,8 @@ from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, HTTPException, status
 from beanie import PydanticObjectId
 
+from backend.constants.api_constants import APIPrefixes, APITags, TokenType
+from backend.exceptions.user_exception import UserNotFoundException
 from backend.middleware.auth import CurrentUser, get_current_user
 from backend.models.user import User
 from backend.schemas.request.auth_request import (
@@ -27,7 +29,7 @@ from backend.services import auth_service, doctor_profile_service
 from backend.utils.jwt_handler import create_access_token
 from backend.config import get_settings
 
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix=APIPrefixes.AUTH, tags=[APITags.AUTHENTICATION])
 settings = get_settings()
 
 def _to_profile_response(user: User) -> UserProfileResponse:
@@ -97,6 +99,6 @@ async def get_my_profile(current_user: CurrentUser = Depends(get_current_user)):
     if user is None:
         # this would only happen if the user's account was deleted after
         # their token was issued
-        raise HTTPException(status_code=404, detail="User not found")
+        raise UserNotFoundException()
 
     return _to_profile_response(user)

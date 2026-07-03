@@ -11,6 +11,8 @@ from backend.models.notification import (
 )
 from backend.schemas.request.internal_request import SendNotificationRequest
 from backend.utils.mailer import build_setup_password_email_html, send_email
+from backend.constants.email_constants import EmailSubjects
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +32,7 @@ async def send_notification(payload: SendNotificationRequest) -> Notification:
         try:
             await send_email(
                 recipient_email=payload.recipient_email,
-                subject="Doctor Account Approved",
+                subject=EmailSubjects.DOCTOR_ACCOUNT_APPROVED,
                 html_body=html_body,
             )
             logger.info("Setup password email sent to %s", payload.recipient_email)

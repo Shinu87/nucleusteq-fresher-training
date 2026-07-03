@@ -12,6 +12,15 @@ from backend.constants.slot_status import SlotStatus
 from backend.models.doctor import Doctor
 from backend.models.availability_slot import AvailabilitySlot
 from backend.schemas.request.slot_request import CreateSlotRequest, UpdateSlotRequest
+from backend.exceptions.appointment_exception import (
+    DuplicateSlotException,
+    InvalidSlotTimeRangeException,
+    SlotNotDeletableException,
+    SlotNotEditableException,
+    SlotNotFoundException,
+    SlotOwnershipException,
+)
+from backend.exceptions.doctor_exception import DoctorProfileSyncMissingException
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +31,7 @@ async def _ensure_doctor_exists(doctor_id: PydanticObjectId) -> None:
     """
     doctor = await Doctor.get(doctor_id)
     if doctor is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Your doctor profile was not found in Appointment Service. "
-            "Please contact an admin - the approval sync may have failed.",
-        )
-
+        raise DoctorProfileSyncMissingException()
 
 async def create_slot(doctor_id: PydanticObjectId, payload: CreateSlotRequest) -> AvailabilitySlot:
     await _ensure_doctor_exists(doctor_id)
@@ -44,10 +48,7 @@ async def create_slot(doctor_id: PydanticObjectId, payload: CreateSlotRequest) -
         await new_slot.insert()
     except DuplicateKeyError:
         # the unique index on (doctor_id, slot_date, start_time) caught a duplicate
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You already have a slot starting at this date and time",
-        )
+        raise DuplicateSlotException()
 
     logger.info("Doctor %s created slot %s %s-%s", doctor_id, payload.slot_date,
                 payload.start_time, payload.end_time)
@@ -63,15 +64,12 @@ async def list_my_slots(doctor_id: PydanticObjectId) -> list[AvailabilitySlot]:
 async def _get_owned_slot(doctor_id: PydanticObjectId, slot_id: PydanticObjectId) -> AvailabilitySlot:
     slot = await AvailabilitySlot.get(slot_id)
     if slot is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Slot not found")
+        raise SlotNotFoundException()
 
     if slot.doctor_id != doctor_id:
         # a doctor should never be able to touch another doctor's slot,
         # even if they somehow guess the slot's id
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You can only manage your own availability slots",
-        )
+        raise SlotOwnershipException()
 
     return slot
 
@@ -82,10 +80,8 @@ async def update_slot(
     slot = await _get_owned_slot(doctor_id, slot_id)
 
     if slot.status != SlotStatus.AVAILABLE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A booked slot cannot be edited",
-        )
+        raise SlotNotEditableException()
+
 
     if payload.slot_date is not None:
         slot.slot_date = payload.slot_date
@@ -95,18 +91,12 @@ async def update_slot(
         slot.end_time = payload.end_time
 
     if slot.end_time <= slot.start_time:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="end_time must be after start_time",
-        )
+        raise InvalidSlotTimeRangeException()
 
     try:
         await slot.save()
     except DuplicateKeyError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You already have a slot starting at this date and time",
-        )
+        raise DuplicateSlotException()
 
     logger.info("Doctor %s updated slot %s", doctor_id, slot_id)
     return slot
@@ -117,10 +107,7 @@ async def delete_slot(doctor_id: PydanticObjectId, slot_id: PydanticObjectId) ->
 
     if slot.status != SlotStatus.AVAILABLE:
         # booked slots cannot be deleted
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A booked slot cannot be deleted",
-        )
+        raise SlotNotDeletableException()
 
     await slot.delete()
     logger.info("Doctor %s deleted slot %s", doctor_id, slot_id)

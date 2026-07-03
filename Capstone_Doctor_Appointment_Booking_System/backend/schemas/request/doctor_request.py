@@ -6,6 +6,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from backend.constants.validation_constants import ValidationLimits, ValidationMessages
 from backend.schemas.request.auth_request import _BaseRegisterRequest
 
 
@@ -20,9 +21,11 @@ class DoctorRegisterRequest(_BaseRegisterRequest):
 
     qualification: str
     specialization: str
-    experience_years: int = Field(ge=0, le=70)
+    experience_years: int = Field(
+        ge=ValidationLimits.MIN_EXPERIENCE_YEARS, le=ValidationLimits.MAX_EXPERIENCE_YEARS
+    )
     license_number: str
-    consultation_fee: float = Field(gt=0)
+    consultation_fee: float = Field(gt=ValidationLimits.MIN_CONSULTATION_FEE_EXCLUSIVE)
     clinic_address: str
 
     @field_validator("qualification", "specialization", "license_number", "clinic_address")
@@ -30,7 +33,7 @@ class DoctorRegisterRequest(_BaseRegisterRequest):
     def validate_not_blank(cls, value: str) -> str:
         value = value.strip()
         if not value:
-            raise ValueError("This field cannot be blank")
+            raise ValueError(ValidationMessages.FIELD_CANNOT_BE_BLANK)
         return value
 
 

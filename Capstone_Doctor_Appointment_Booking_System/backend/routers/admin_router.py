@@ -10,6 +10,7 @@ from typing import Optional
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, Query
 
+from backend.constants.api_constants import APIPrefixes, APITags
 from backend.constants.approval_status import ApprovalStatus
 from backend.constants.roles import Role
 from backend.middleware.auth import CurrentUser, require_role
@@ -20,8 +21,7 @@ from backend.schemas.response.doctor_response import (
 )
 from backend.services import doctor_profile_service
 
-router = APIRouter(prefix="/admin", tags=["Admin - Doctor Approval"])
-
+router = APIRouter(prefix=APIPrefixes.ADMIN, tags=[APITags.ADMIN_DOCTOR_APPROVAL])
 
 @router.get("/doctors", response_model=list[DoctorProfileResponse])
 async def list_doctor_applications(

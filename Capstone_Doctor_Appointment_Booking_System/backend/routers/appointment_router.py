@@ -7,6 +7,7 @@ from typing import Optional
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, Query
 
+from backend.constants.api_constants import APIPrefixes, APITags
 from backend.constants.appointment_status import AppointmentStatus
 from backend.constants.roles import Role
 from backend.middleware.auth import CurrentUser, require_role
@@ -14,7 +15,7 @@ from backend.schemas.request.booking_request import BookAppointmentRequest
 from backend.schemas.response.appointment_response import AppointmentResponse
 from backend.services import booking_service
 
-router = APIRouter(prefix="/appointments", tags=["Appointments"])
+router = APIRouter(prefix=APIPrefixes.APPOINTMENTS, tags=[APITags.APPOINTMENTS])
 
 
 def _to_response(appointment) -> AppointmentResponse:

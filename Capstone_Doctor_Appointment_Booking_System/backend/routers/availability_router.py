@@ -8,13 +8,14 @@ patient or admin token gets a 403.
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, status
 
+from backend.constants.api_constants import APIPrefixes, APITags
 from backend.constants.roles import Role
 from backend.middleware.auth import CurrentUser, require_role
 from backend.schemas.request.slot_request import CreateSlotRequest, UpdateSlotRequest
 from backend.schemas.response.slot_response import SlotResponse
 from backend.services import availability_service
 
-router = APIRouter(prefix="/doctors/me/slots", tags=["Availability Slots"])
+router = APIRouter(prefix=APIPrefixes.AVAILABILITY_SLOTS, tags=[APITags.AVAILABILITY_SLOTS])
 
 
 def _to_slot_response(slot) -> SlotResponse:

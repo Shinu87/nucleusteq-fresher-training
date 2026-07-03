@@ -12,6 +12,7 @@ from fastapi import HTTPException, status
 from backend.constants.slot_status import SlotStatus
 from backend.models.availability_slot import AvailabilitySlot
 from backend.models.doctor import Doctor
+from backend.exceptions.doctor_exception import DoctorNotFoundException
 
 
 async def search_doctors(
@@ -51,7 +52,7 @@ async def get_doctor_detail(doctor_id: PydanticObjectId) -> tuple[Doctor, list[A
     """
     doctor = await Doctor.get(doctor_id)
     if doctor is None or not doctor.is_active:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor not found")
+        raise DoctorNotFoundException()
 
     available_slots = await AvailabilitySlot.find(
         AvailabilitySlot.doctor_id == doctor_id,

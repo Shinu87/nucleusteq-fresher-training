@@ -25,6 +25,14 @@ from backend.models.notification import NotificationType
 from backend.models.user import User
 from backend.schemas.request.internal_request import SendNotificationRequest
 from backend.services.notification_service import send_notification
+from backend.exceptions.appointment_exception import (
+    AppointmentAlreadyBookedException,
+    SlotInPastException,
+    SlotNotAvailableException,
+    SlotNotFoundException,
+)
+from backend.exceptions.doctor_exception import DoctorNotFoundException
+from backend.exceptions.user_exception import UserNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -39,25 +47,19 @@ async def book_appointment(
 
     patient = await User.get(PydanticObjectId(current_user.id))
     if patient is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+        raise UserNotFoundException(UserMessages.PATIENT_NOT_FOUND)
     
     # basic validation
     slot = await AvailabilitySlot.get(slot_id)
     if slot is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Slot not found")
+        raise SlotNotFoundException()
 
     if slot.slot_date < date.today():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot book a slot that is already in the past",
-        )
+        raise SlotInPastException()
 
     doctor = await Doctor.get(slot.doctor_id)
     if doctor is None or not doctor.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="The doctor for this slot was not found or is no longer active",
-        )
+        raise DoctorNotFoundException(DoctorMessages.DOCTOR_INACTIVE_OR_NOT_FOUND)
 
     """
     Atomically updates the slot from AVAILABLE to BOOKED.
@@ -69,10 +71,7 @@ async def book_appointment(
         {"$set": {"status": SlotStatus.BOOKED}},
     )
     if updated_slot is None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This slot has already been booked. Please choose another slot.",
-        )
+        raise SlotNotAvailableException()
 
     """
     Creates the appointment after the slot is reserved.
@@ -104,10 +103,7 @@ async def book_appointment(
             {"_id": slot_id},
             {"$set": {"status": SlotStatus.AVAILABLE}},
         )
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="This slot has already been booked. Please choose another slot.",
-        )
+        raise AppointmentAlreadyBookedException()
 
     logger.info(
         "Appointment booked: patient=%s doctor=%s slot=%s date=%s",
