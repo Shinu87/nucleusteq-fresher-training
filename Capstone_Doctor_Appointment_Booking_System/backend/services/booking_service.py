@@ -1,11 +1,9 @@
 """
-Business logic for appointment booking.
+Reserve the slot using an atomic MongoDB update.
 
-To prevent double-booking, we first atomically update the slot from
-AVAILABLE to BOOKED. If the slot is already booked, we return 409 Conflict.
-
-After that, we create the appointment. A unique index on slot_id acts as
-an extra safety check and raises 409 if a duplicate booking is attempted.
+The slot is booked only if it is AVAILABLE, preventing race conditions.
+A unique index on slot_id provides an extra safety check to ensure
+only one appointment can be created for the slot.
 """
 
 import logging
@@ -15,6 +13,7 @@ from beanie import PydanticObjectId
 from fastapi import HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
+from backend.constants.message_constants import DoctorMessages, UserMessages
 from backend.constants.appointment_status import AppointmentStatus, PaymentStatus
 from backend.constants.slot_status import SlotStatus
 from backend.middleware.auth import CurrentUser
@@ -71,6 +70,11 @@ async def book_appointment(
         {"$set": {"status": SlotStatus.BOOKED}},
     )
     if updated_slot is None:
+        logger.warning(
+            "Double booking prevented. patient=%s slot=%s",
+            current_user.id,
+            slot_id,
+        )
         raise SlotNotAvailableException()
 
     """
@@ -95,14 +99,21 @@ async def book_appointment(
     try:
         await appointment.insert()
     except DuplicateKeyError:
-        """
-        If appointment creation fails due to a duplicate booking,
-        revert the slot back to AVAILABLE to keep the data consistent.
-        """
+        logger.warning(
+            "Duplicate appointment detected. Rolling back slot reservation. slot=%s",
+            slot_id,
+        )
+
         await AvailabilitySlot.get_motor_collection().update_one(
             {"_id": slot_id},
             {"$set": {"status": SlotStatus.AVAILABLE}},
         )
+
+        logger.info(
+            "Slot reverted to AVAILABLE after duplicate booking attempt. slot=%s",
+            slot_id,
+        )
+
         raise AppointmentAlreadyBookedException()
 
     logger.info(
