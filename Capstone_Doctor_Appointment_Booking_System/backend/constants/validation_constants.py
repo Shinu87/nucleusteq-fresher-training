@@ -33,6 +33,13 @@ class ValidationLimits:
     # doctor "set password" links expire after this many hours
     SETUP_TOKEN_VALID_HOURS = 24
 
+    # bounds for the consultation duration used by automatic slot generation
+    MIN_SLOT_DURATION_MINUTES = 5
+    MAX_SLOT_DURATION_MINUTES = 120
+
+    # a BOOKED appointment can only be cancelled this many hours before its scheduled start time
+    CANCELLATION_WINDOW_HOURS = 2
+
 
 class ValidationMessages:
     FULL_NAME_INVALID = (
@@ -47,3 +54,4 @@ class ValidationMessages:
     SLOT_DATE_IN_PAST = "slot_date cannot be in the past"
     END_TIME_BEFORE_START = "end_time must be after start_time"
     FIELD_CANNOT_BE_BLANK = "This field cannot be blank"
+    DURATION_OUT_OF_RANGE = "duration_minutes must be between {min} and {max} minutes"

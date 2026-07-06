@@ -62,6 +62,12 @@ class DuplicateSlotException(DuplicateResourceException):
     def __init__(self, message: str = SlotMessages.DUPLICATE_SLOT):
         super().__init__(message)
 
+class NoSlotsGeneratedException(InvalidOperationException):
+    
+    error_code = ErrorCode.NO_SLOTS_GENERATED
+
+    def __init__(self, message: str = SlotMessages.NO_SLOTS_GENERATED):
+        super().__init__(message)
 
 class SlotInPastException(InvalidOperationException):
 

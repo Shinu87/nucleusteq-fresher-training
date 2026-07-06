@@ -49,11 +49,25 @@ class SlotMessages:
     SLOT_NOT_DELETABLE = "A booked slot cannot be deleted"
     DUPLICATE_SLOT = "You already have a slot starting at this date and time"
     INVALID_TIME_RANGE = "end_time must be after start_time"
+    NO_SLOTS_GENERATED = (
+        "The selected time range is too short to fit even one slot of the requested duration"
+    )
 
 
 class AppointmentMessages:
     SLOT_IN_PAST = "Cannot book a slot that is already in the past"
     SLOT_UNAVAILABLE = "This slot has already been booked. Please choose another slot."
+    APPOINTMENT_OWNERSHIP_VIOLATION = "You can only manage your own appointments"
+    NOT_CANCELLABLE = "Only a BOOKED appointment can be cancelled"
+    CANCELLATION_WINDOW_PASSED = (
+        "Appointments can only be cancelled at least {hours} hour(s) "
+        "before the scheduled time"
+    )
+    NOT_COMPLETABLE = "Only a BOOKED appointment can be marked as completed or no-show"
+    TIME_NOT_PASSED = (
+        "Cannot mark an appointment as completed or no-show before its "
+        "scheduled time has passed"
+    )
 
 
 class EmailMessages:
