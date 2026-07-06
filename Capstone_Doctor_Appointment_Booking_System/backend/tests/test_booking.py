@@ -95,6 +95,7 @@ async def test_book_appointment_success(mocker):
 
     assert appointment.status == AppointmentStatus.BOOKED
     assert appointment.payment_status == PaymentStatus.MOCK_PAID
+    assert appointment.consultation_fee == 800
     assert appointment.patient_name == "Atharv Gokhale"
     assert appointment.patient_email == "atharv.gokhale@example.com"
     assert appointment.doctor_name == "Dr. Aniruddh Kulkarni"
@@ -159,6 +160,8 @@ async def test_get_my_appointments_returns_only_own_appointments():
         appointment_date=TOMORROW,
         start_time="09:00",
         end_time="09:30",
+        consultation_fee=doctor.consultation_fee,
+
     )
     await my_appointment.insert()
 
@@ -174,6 +177,7 @@ async def test_get_my_appointments_returns_only_own_appointments():
         appointment_date=TOMORROW,
         start_time="10:00",
         end_time="10:30",
+        consultation_fee=doctor.consultation_fee,
     )
     await other_appointment.insert()
 
