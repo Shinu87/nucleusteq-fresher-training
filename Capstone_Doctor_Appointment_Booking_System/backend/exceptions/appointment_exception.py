@@ -63,7 +63,7 @@ class DuplicateSlotException(DuplicateResourceException):
         super().__init__(message)
 
 class NoSlotsGeneratedException(InvalidOperationException):
-    
+
     error_code = ErrorCode.NO_SLOTS_GENERATED
 
     def __init__(self, message: str = SlotMessages.NO_SLOTS_GENERATED):
@@ -100,4 +100,45 @@ class AppointmentNotFoundException(ResourceNotFoundException):
     error_code = ErrorCode.APPOINTMENT_NOT_FOUND
 
     def __init__(self, message: str = "Appointment not found"):
+        super().__init__(message)
+
+
+class AppointmentOwnershipException(ForbiddenAccessException):
+
+    error_code = ErrorCode.FORBIDDEN_ACCESS
+
+    def __init__(self, message: str = AppointmentMessages.APPOINTMENT_OWNERSHIP_VIOLATION):
+        super().__init__(message)
+
+
+class AppointmentNotCancellableException(InvalidOperationException):
+
+    error_code = ErrorCode.APPOINTMENT_NOT_CANCELLABLE
+
+    def __init__(self, message: str = AppointmentMessages.NOT_CANCELLABLE):
+        super().__init__(message)
+
+
+class CancellationWindowPassedException(InvalidOperationException):
+
+    error_code = ErrorCode.CANCELLATION_WINDOW_PASSED
+
+    def __init__(self, hours: int):
+        message = AppointmentMessages.CANCELLATION_WINDOW_PASSED.format(hours=hours)
+        super().__init__(message)
+
+
+class AppointmentNotCompletableException(InvalidOperationException):
+
+    error_code = ErrorCode.APPOINTMENT_NOT_COMPLETABLE
+
+    def __init__(self, message: str = AppointmentMessages.NOT_COMPLETABLE):
+        super().__init__(message)
+
+
+class AppointmentTimeNotPassedException(InvalidOperationException):
+
+    error_code = ErrorCode.APPOINTMENT_TIME_NOT_PASSED
+
+    def __init__(self, message: str = AppointmentMessages.TIME_NOT_PASSED):
         super().__init__(message)
