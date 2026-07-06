@@ -32,6 +32,7 @@ def _to_response(appointment) -> AppointmentResponse:
         end_time=appointment.end_time,
         status=appointment.status,
         payment_status=appointment.payment_status,
+        consultation_fee=appointment.consultation_fee,
         booked_at=appointment.booked_at,
         cancelled_at=appointment.cancelled_at,
         completed_at=appointment.completed_at,

@@ -32,6 +32,7 @@ class Appointment(Document):
 
     status: AppointmentStatus = Field(default=AppointmentStatus.BOOKED)
     payment_status: PaymentStatus = Field(default=PaymentStatus.MOCK_PAID)
+    consultation_fee: float
 
     booked_at: datetime = Field(default_factory=_utc_now)
     cancelled_at: Optional[datetime] = None

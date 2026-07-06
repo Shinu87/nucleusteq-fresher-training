@@ -22,6 +22,7 @@ class AppointmentResponse(BaseModel):
     end_time: str
     status: AppointmentStatus
     payment_status: PaymentStatus
+    consultation_fee: float
     booked_at: datetime
     cancelled_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
