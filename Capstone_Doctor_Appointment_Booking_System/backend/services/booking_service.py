@@ -93,19 +93,20 @@ async def book_appointment(
     A unique index on slot_id provides an extra safeguard against duplicate bookings.
     """
     appointment = Appointment(
-        patient_id=PydanticObjectId(current_user.id),
-        patient_name=patient.full_name,
-        patient_email=patient.email,
-        patient_phone=patient.phone_number,
-        doctor_id=slot.doctor_id,
-        doctor_name=doctor.full_name,
-        slot_id=slot_id,
-        appointment_date=slot.slot_date,
-        start_time=slot.start_time,
-        end_time=slot.end_time,
-        status=AppointmentStatus.BOOKED,
-        payment_status=PaymentStatus.MOCK_PAID,
-    )
+            patient_id=PydanticObjectId(current_user.id),
+            patient_name=patient.full_name,
+            patient_email=patient.email,
+            patient_phone=patient.phone_number,
+            doctor_id=slot.doctor_id,
+            doctor_name=doctor.full_name,
+            slot_id=slot_id,
+            appointment_date=slot.slot_date,
+            start_time=slot.start_time,
+            end_time=slot.end_time,
+            status=AppointmentStatus.BOOKED,
+            payment_status=PaymentStatus.MOCK_PAID,
+            consultation_fee=doctor.consultation_fee,
+        )
 
     try:
         await appointment.insert()
@@ -141,6 +142,8 @@ async def book_appointment(
             "doctor_name": doctor.full_name,
             "appointment_date": str(slot.slot_date),
             "start_time": slot.start_time,
+            "payment_status": PaymentStatus.MOCK_PAID.value,
+            "consultation_fee": doctor.consultation_fee,
         },
     ))
 
