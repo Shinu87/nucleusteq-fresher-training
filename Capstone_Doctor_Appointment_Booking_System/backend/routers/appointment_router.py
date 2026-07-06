@@ -1,5 +1,6 @@
 """
-Routes for patients booking and viewing their own appointments.
+Routes for patients booking and viewing their own appointments, plus a
+doctors view of and lifecycle actions on those same appointments.
 """
 
 from typing import Optional
@@ -66,3 +67,72 @@ async def get_my_appointments(
         status_filter=appointment_status,
     )
     return [_to_response(appt) for appt in appointments]
+
+
+@router.patch("/{appointment_id}/cancel", response_model=AppointmentResponse)
+async def cancel_appointment(
+    appointment_id: PydanticObjectId,
+    current_user: CurrentUser = Depends(require_role(Role.PATIENT)),
+):
+    """
+    Cancels the logged-in patient's own BOOKED appointment. Only
+    allowed at least 2 hours before the scheduled slot.
+    """
+    appointment = await booking_service.cancel_appointment(
+        patient_id=PydanticObjectId(current_user.id),
+        appointment_id=appointment_id,
+    )
+    return _to_response(appointment)
+
+
+@router.get("/doctor/me", response_model=list[AppointmentResponse])
+async def get_doctor_appointments(
+    appointment_status: Optional[AppointmentStatus] = Query(
+        default=None, description="Filter by status: BOOKED, CANCELLED, COMPLETED, NO_SHOW"
+    ),
+    sort: str = Query(
+        default="asc", pattern="^(asc|desc)$", description="Sort by date/time: asc or desc"
+    ),
+    current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+):
+    """
+    Returns the logged-in doctor's own appointments, sortable by
+    appointment date/time.
+    """
+    appointments = await booking_service.get_doctor_appointments(
+        doctor_id=PydanticObjectId(current_user.id),
+        status_filter=appointment_status,
+        sort_order=sort,
+    )
+    return [_to_response(appt) for appt in appointments]
+
+
+@router.patch("/{appointment_id}/complete", response_model=AppointmentResponse)
+async def complete_appointment(
+    appointment_id: PydanticObjectId,
+    current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+):
+    """
+    Marks the doctor's own BOOKED appointment as COMPLETED.
+    Blocked until the scheduled appointment time has passed.
+    """
+    appointment = await booking_service.complete_appointment(
+        doctor_id=PydanticObjectId(current_user.id),
+        appointment_id=appointment_id,
+    )
+    return _to_response(appointment)
+
+
+@router.patch("/{appointment_id}/no-show", response_model=AppointmentResponse)
+async def mark_appointment_no_show(
+    appointment_id: PydanticObjectId,
+    current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+):
+    """
+    Marks the doctor's own BOOKED appointment as NO_SHOW.
+    """
+    appointment = await booking_service.mark_appointment_no_show(
+        doctor_id=PydanticObjectId(current_user.id),
+        appointment_id=appointment_id,
+    )
+    return _to_response(appointment)
