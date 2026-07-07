@@ -12,8 +12,10 @@ from backend.schemas.response.appt_doctor_response import (
     DoctorDetailResponse,
     DoctorSummaryResponse,
 )
-from backend.services import doctor_search_service
-
+from backend.services.doctor_search_service import (
+    DoctorSearchService,
+    get_doctor_search_service,
+)
 router = APIRouter(prefix=APIPrefixes.DOCTORS, tags=[APITags.DOCTOR_SEARCH])
 
 
@@ -36,6 +38,7 @@ async def search_doctors(
     min_experience: int | None = Query(default=None, ge=0),
     max_fee: float | None = Query(default=None, gt=0),
     current_user: CurrentUser = Depends(get_current_user),
+    doctor_search_service: DoctorSearchService = Depends(get_doctor_search_service),
 ):
     doctors = await doctor_search_service.search_doctors(
         search=search,
@@ -50,6 +53,7 @@ async def search_doctors(
 async def get_doctor_detail(
     doctor_id: PydanticObjectId,
     current_user: CurrentUser = Depends(get_current_user),
+    doctor_search_service: DoctorSearchService = Depends(get_doctor_search_service),
 ):
     doctor, available_slots = await doctor_search_service.get_doctor_detail(doctor_id)
 
