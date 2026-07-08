@@ -23,19 +23,18 @@ from backend.schemas.request.auth_request import (
 )
 from backend.utils.security import hash_password, verify_password
 from backend.utils.token_utils import hash_setup_token, is_setup_token_expired
-from backend.exceptions.auth_exception import (
+from backend.exceptions.custom_exceptions import (
     AccountInactiveException,
     InvalidCredentialsException,
     InvalidSetupTokenException,
     SetupTokenExpiredException,
 )
-from backend.exceptions.user_exception import EmailAlreadyRegisteredException, UserNotFoundException
+from backend.exceptions.custom_exceptions import EmailAlreadyRegisteredException, UserNotFoundException
 
 logger = logging.getLogger(__name__)
 
 
 class AuthService:
-    """Business logic for registration, login, and the password-setup flow."""
 
     def __init__(self, user_repository: UserRepository, doctor_profile_repository: DoctorProfileRepository):
         self._user_repository = user_repository
@@ -74,10 +73,7 @@ class AuthService:
 
     async def set_password(self, token: str, new_password: str) -> User:
         """
-        Doctor approval workflow: a doctor clicks
-        the link from their email and sets their password here. This is what
-        actually flips their account_status to ACTIVE - simply being approved
-        is not enough to log in.
+        Set password from the email link to activate the doctor account.
         """
         token_hash = hash_setup_token(token)
         profile = await self._doctor_profile_repository.find_by_setup_token_hash(token_hash)
@@ -96,7 +92,6 @@ class AuthService:
         user.account_status = AccountStatus.ACTIVE
         await self._user_repository.save(user)
 
-        # the token is single-use - clear it so it can never be reused
         profile.setup_token_hash = None
         profile.setup_token_expiry = None
         await self._doctor_profile_repository.save(profile)
@@ -115,5 +110,4 @@ def get_auth_service(
     user_repository: UserRepository = Depends(get_user_repository),
     doctor_profile_repository: DoctorProfileRepository = Depends(get_doctor_profile_repository),
 ) -> AuthService:
-    """FastAPI dependency provider for AuthService."""
     return AuthService(user_repository, doctor_profile_repository)

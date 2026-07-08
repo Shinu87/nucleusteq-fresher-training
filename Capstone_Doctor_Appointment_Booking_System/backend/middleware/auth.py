@@ -9,16 +9,12 @@ from pydantic import BaseModel
 
 from backend.constants.roles import Role
 from backend.utils.jwt_handler import decode_access_token
-from backend.exceptions.auth_exception import InsufficientRoleException, InvalidTokenException, TokenExpiredException
+from backend.exceptions.custom_exceptions import InsufficientRoleException, InvalidTokenException, TokenExpiredException
 
 bearer_scheme = HTTPBearer()
 
 
 class CurrentUser(BaseModel):
-    """
-    A lightweight stand-in for "the logged in user", built straight from
-    the JWT claims instead of a database lookup.
-    """
 
     id: str
     email: str
@@ -30,11 +26,6 @@ async def get_current_user(
 ) -> CurrentUser:
     """
     Dependency to attach to any route that requires a logged in user.
-
-    Usage:
-        @router.get("/something")
-        async def something(current_user: CurrentUser = Depends(get_current_user)):
-            ...
     """
     token = credentials.credentials
 
@@ -54,13 +45,6 @@ async def get_current_user(
 def require_role(*allowed_roles: Role):
     """
     Role based access control dependency.
-
-    Usage:
-        @router.get("/admin-only-thing")
-        async def admin_only_thing(
-            current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
-        ):
-            ...
     """
 
     async def role_checker(

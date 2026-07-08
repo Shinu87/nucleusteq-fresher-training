@@ -10,7 +10,6 @@ from backend.models.user import User
 
 
 class UserRepository:
-    """Data access for the `users` collection."""
 
     async def find_by_email(self, email: str) -> Optional[User]:
         return await User.find_one(User.email == email)
@@ -28,5 +27,4 @@ class UserRepository:
 
 
 def get_user_repository() -> UserRepository:
-    """FastAPI dependency provider for UserRepository."""
     return UserRepository()

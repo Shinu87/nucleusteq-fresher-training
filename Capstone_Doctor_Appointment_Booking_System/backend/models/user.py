@@ -14,7 +14,6 @@ from backend.constants.roles import Role
 
 
 def _utc_now() -> datetime:
-    # helper so we always store timestamps in UTC, not local time
     return datetime.now(timezone.utc)
 
 
@@ -25,7 +24,6 @@ class User(Document):
     phone_number: str
     role: Role
 
-    # gender and date of birth only make sense for patients, so they are optional
     gender: Optional[str] = None
     date_of_birth: Optional[date] = None
 

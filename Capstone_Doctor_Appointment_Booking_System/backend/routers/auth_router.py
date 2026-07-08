@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from beanie import PydanticObjectId
 
 from backend.constants.api_constants import APIPrefixes, APITags, TokenType
-from backend.exceptions.user_exception import UserNotFoundException
+from backend.exceptions.custom_exceptions import UserNotFoundException
 from backend.middleware.auth import CurrentUser, get_current_user
 from backend.models.user import User
 from backend.schemas.request.auth_request import (
@@ -31,7 +31,6 @@ router = APIRouter(prefix=APIPrefixes.AUTH, tags=[APITags.AUTHENTICATION])
 settings = get_settings()
 
 def _to_profile_response(user: User) -> UserProfileResponse:
-    # this just maps our Mongo document
     return UserProfileResponse(
         id=str(user.id),
         full_name=user.full_name,
@@ -51,7 +50,6 @@ def _to_profile_response(user: User) -> UserProfileResponse:
     status_code=status.HTTP_201_CREATED,
 )
 async def register_patient(payload: PatientRegisterRequest):
-    # creates a new patient account
     user = await auth_service.register_patient(payload)
     return _to_profile_response(user)
 
@@ -84,12 +82,10 @@ async def login(payload: LoginRequest):
         user=_to_profile_response(user),
     )
 
-@router.get("/me", response_model=UserProfileResponse)
+@router.get("/my-profile", response_model=UserProfileResponse)
 async def get_my_profile(current_user: CurrentUser = Depends(get_current_user)):
     user = await User.get(PydanticObjectId(current_user.id))
     if user is None:
-        # this would only happen if the user's account was deleted after
-        # their token was issued
         raise UserNotFoundException()
 
     return _to_profile_response(user)

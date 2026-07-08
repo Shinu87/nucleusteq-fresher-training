@@ -11,17 +11,14 @@ from backend.constants.validation_constants import ValidationLimits
 
 
 def generate_setup_token() -> str:
-    """Generates a long, random, URL-safe token to put in the email link."""
     return secrets.token_urlsafe(32)
 
 
 def hash_setup_token(raw_token: str) -> str:
-    """Turns the raw token into the value we actually store in MongoDB."""
     return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
 
 
 def get_setup_token_expiry() -> datetime:
-    """Setup links expire after SETUP_TOKEN_VALID_HOURS hours."""
     return datetime.now(timezone.utc) + timedelta(hours=ValidationLimits.SETUP_TOKEN_VALID_HOURS)
 
 

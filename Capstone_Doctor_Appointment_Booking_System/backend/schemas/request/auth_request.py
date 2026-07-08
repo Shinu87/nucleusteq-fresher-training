@@ -12,10 +12,6 @@ from backend.constants.validation_constants import ValidationMessages, Validatio
 
 
 class _BaseRegisterRequest(BaseModel):
-    """
-    Both patient and doctor registration share these four fields, so i
-    keep the checks here once instead of repeating them in both classes.
-    """
 
     full_name: str
     email: EmailStr
@@ -46,13 +42,11 @@ class _BaseRegisterRequest(BaseModel):
 
 
 class PatientRegisterRequest(_BaseRegisterRequest):
-    # patients also need to provide these two extra fields
     gender: Literal["MALE", "FEMALE", "OTHER"]
     date_of_birth: date
 
 
 class DoctorRegisterRequest(_BaseRegisterRequest):
-    # doctors only need the shared fields at registration time
     pass
 
 class LoginRequest(BaseModel):
