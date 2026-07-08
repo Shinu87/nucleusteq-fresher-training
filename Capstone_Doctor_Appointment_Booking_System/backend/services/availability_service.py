@@ -22,7 +22,7 @@ from backend.schemas.request.slot_request import (
     UpdateSlotRequest,
 )
 from backend.schemas.response.slot_response import SlotTimeRange
-from backend.exceptions.slot_exception import (
+from backend.exceptions.custom_exceptions import (
     DuplicateSlotException,
     InvalidSlotTimeRangeException,
     NoSlotsGeneratedException,
@@ -30,8 +30,8 @@ from backend.exceptions.slot_exception import (
     SlotNotEditableException,
     SlotNotFoundException,
     SlotOwnershipException,
+    DoctorProfileSyncMissingException,
 )
-from backend.exceptions.doctor_exception import DoctorProfileSyncMissingException
 
 logger = logging.getLogger(__name__)
 

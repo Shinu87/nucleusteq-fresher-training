@@ -19,8 +19,10 @@ from backend.schemas.response.slot_response import (
     GenerateSlotsResponse,
     SlotResponse,
 )
-from backend.services import availability_service
-
+from backend.services.availability_service import (
+    AvailabilityService,
+    get_availability_service,
+)
 router = APIRouter(prefix=APIPrefixes.AVAILABILITY_SLOTS, tags=[APITags.AVAILABILITY_SLOTS])
 
 
@@ -40,6 +42,7 @@ def _to_slot_response(slot) -> SlotResponse:
 async def create_slot(
     payload: CreateSlotRequest,
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     slot = await availability_service.create_slot(PydanticObjectId(current_user.id), payload)
     return _to_slot_response(slot)
@@ -49,6 +52,7 @@ async def create_slot(
 async def generate_slots(
     payload: GenerateSlotsRequest,
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     created, skipped, total_requested = await availability_service.generate_slots(
         PydanticObjectId(current_user.id), payload
@@ -66,6 +70,7 @@ async def generate_slots(
 async def block_range(
     payload: BlockRangeRequest,
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     total_found, blocked, skipped = await availability_service.block_range(
         PydanticObjectId(current_user.id), payload
@@ -82,6 +87,7 @@ async def block_range(
 @router.get("", response_model=list[SlotResponse])
 async def list_my_slots(
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     slots = await availability_service.list_my_slots(PydanticObjectId(current_user.id))
     return [_to_slot_response(slot) for slot in slots]
@@ -92,6 +98,7 @@ async def update_slot(
     slot_id: PydanticObjectId,
     payload: UpdateSlotRequest,
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     slot = await availability_service.update_slot(
         PydanticObjectId(current_user.id), slot_id, payload
@@ -103,5 +110,6 @@ async def update_slot(
 async def delete_slot(
     slot_id: PydanticObjectId,
     current_user: CurrentUser = Depends(require_role(Role.DOCTOR)),
+    availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     await availability_service.delete_slot(PydanticObjectId(current_user.id), slot_id)
