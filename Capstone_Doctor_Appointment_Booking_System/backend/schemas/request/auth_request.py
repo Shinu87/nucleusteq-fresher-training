@@ -51,6 +51,13 @@ class PatientRegisterRequest(_BaseRegisterRequest):
     gender: Gender
     date_of_birth: date
 
+    @field_validator("date_of_birth")
+    @classmethod
+    def validate_date_of_birth(cls, value: date) -> date:
+        if value > date.today():
+            raise ValueError("Date of birth cannot be in the future.")
+        return value
+
 
 class DoctorRegisterRequest(_BaseRegisterRequest):
     pass
