@@ -44,7 +44,7 @@ class AdminService:
         doctor_profile_id: PydanticObjectId,
         admin_id: PydanticObjectId,
     ):
-        profile, user = await self._doctor_profile_service.get_profile_and_user(
+        profile, user = await self._doctor_profile_service._get_profile_and_user(
             doctor_profile_id
         )
 

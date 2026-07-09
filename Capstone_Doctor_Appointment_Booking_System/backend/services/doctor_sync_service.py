@@ -19,6 +19,20 @@ class DoctorSyncService:
     def __init__(self, doctor_repository: DoctorRepository):
         self._doctor_repository = doctor_repository
 
+    async def sync_doctor(self,user,profile,is_active: bool,) -> None:
+        payload = DoctorSyncRequest(
+            doctor_id=str(user.id),
+            full_name=user.full_name,
+            specialization=profile.specialization,
+            qualification=profile.qualification,
+            experience_years=profile.experience_years,
+            consultation_fee=profile.consultation_fee,
+            clinic_address=profile.clinic_address,
+            is_active=is_active,
+        )
+
+        await self.upsert_doctor(payload)
+
     async def upsert_doctor(self, payload: DoctorSyncRequest) -> Doctor:
 
         doctor_id = PydanticObjectId(payload.doctor_id)
