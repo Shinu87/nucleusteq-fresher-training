@@ -10,6 +10,7 @@ from beanie import Document, PydanticObjectId
 from pydantic import Field
 from pymongo import IndexModel
 
+from backend.constants.specialization import Specialization
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -19,7 +20,7 @@ class Doctor(Document):
     id: PydanticObjectId
 
     full_name: str
-    specialization: str
+    specialization: Specialization
     qualification: str
     experience_years: int
     consultation_fee: float

@@ -14,6 +14,7 @@ from backend.repositories.availability_repository import (
     AvailabilityRepository,
     get_availability_repository,
 )
+from backend.constants.specialization import Specialization
 from backend.repositories.doctor_repository import DoctorRepository, get_doctor_repository
 from backend.exceptions.doctor_exception import DoctorNotFoundException
 
@@ -31,7 +32,7 @@ class DoctorSearchService:
     async def search_doctors(
         self,
         search: str | None,
-        specialization: str | None,
+        specialization: Specialization | None,
         min_experience: int | None,
         max_fee: float | None,
     ) -> list[Doctor]:

@@ -12,6 +12,7 @@ from pydantic import Field
 from pymongo import IndexModel
 
 from backend.constants.approval_status import ApprovalStatus
+from backend.constants.specialization import Specialization
 
 
 def _utc_now() -> datetime:
@@ -22,7 +23,7 @@ class DoctorProfile(Document):
     user_id: PydanticObjectId
 
     qualification: str
-    specialization: str
+    specialization: Specialization
     experience_years: int
     license_number: str
     consultation_fee: float

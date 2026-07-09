@@ -12,7 +12,7 @@ from fastapi import Depends
 
 from backend.constants.account_status import AccountStatus
 from backend.constants.approval_status import ApprovalStatus
-from backend.constants.doctor_messages import DoctorMessages
+from backend.constants.doctor_messages import LINKED_USER_NOT_FOUND
 from backend.constants.roles import Role
 from backend.models.doctor_profile import DoctorProfile
 from backend.models.notification import NotificationType
@@ -32,13 +32,13 @@ from backend.utils.token_utils import (
     hash_setup_token,
 )
 from backend.config import get_settings
-from backend.exceptions.doctor_exception import (
+from backend.exceptions.custom_exceptions import (
     ApplicationAlreadyReviewedException,
     DoctorApplicationNotFoundException,
     DuplicateLicenseException,
+    EmailAlreadyRegisteredException,
+    UserNotFoundException,
 )
-from backend.exceptions.user_exception import EmailAlreadyRegisteredException, UserNotFoundException
-
 settings = get_settings()
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,7 @@ class DoctorProfileService:
             password_hash=None, 
             phone_number=payload.phone_number,
             role=Role.DOCTOR,
+            gender=payload.gender,
             account_status=AccountStatus.PENDING_APPROVAL,
         )
         await self._user_repository.insert(new_user)
@@ -114,7 +115,7 @@ class DoctorProfileService:
 
         user = await self._user_repository.get_by_id(profile.user_id)
         if user is None:
-            raise UserNotFoundException(DoctorMessages.LINKED_USER_NOT_FOUND)
+            raise UserNotFoundException(LINKED_USER_NOT_FOUND)
 
         return profile, user
 

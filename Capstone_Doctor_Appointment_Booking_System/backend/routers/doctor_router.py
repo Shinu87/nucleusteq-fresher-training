@@ -16,6 +16,8 @@ from backend.services.doctor_search_service import (
     DoctorSearchService,
     get_doctor_search_service,
 )
+from backend.constants.specialization import Specialization
+
 router = APIRouter(prefix=APIPrefixes.DOCTORS, tags=[APITags.DOCTOR_SEARCH])
 
 
@@ -34,7 +36,7 @@ def _to_summary_response(doctor) -> DoctorSummaryResponse:
 @router.get("", response_model=list[DoctorSummaryResponse])
 async def search_doctors(
     search: str | None = Query(default=None, description="Matches doctor name or specialization"),
-    specialization: str | None = Query(default=None, description="Exact specialization, e.g. Cardiologist"),
+    specialization: Specialization | None = Query(default=None, description="Exact specialization, e.g. Cardiologist"),
     min_experience: int | None = Query(default=None, ge=0),
     max_fee: float | None = Query(default=None, gt=0),
     current_user: CurrentUser = Depends(get_current_user),

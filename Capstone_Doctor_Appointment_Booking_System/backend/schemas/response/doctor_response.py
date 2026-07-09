@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from backend.constants.account_status import AccountStatus
 from backend.constants.approval_status import ApprovalStatus
+from backend.constants.specialization import Specialization
 
 
 class DoctorProfileResponse(BaseModel):
@@ -19,7 +20,7 @@ class DoctorProfileResponse(BaseModel):
     account_status: AccountStatus
 
     qualification: str
-    specialization: str
+    specialization: Specialization
     experience_years: int
     license_number: str
     consultation_fee: float
