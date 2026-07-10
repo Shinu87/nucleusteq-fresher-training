@@ -23,6 +23,9 @@ class AppointmentRepository:
         await appointment.save()
         return appointment
 
+    async def find_by_slot_id(self, slot_id: PydanticObjectId) -> Optional[Appointment]:
+        return await Appointment.find_one(Appointment.slot_id == slot_id)
+    
     async def find_by_patient(
         self,
         patient_id: PydanticObjectId,

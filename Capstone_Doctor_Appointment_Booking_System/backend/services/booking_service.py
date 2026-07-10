@@ -9,8 +9,8 @@ from beanie import PydanticObjectId
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
 
-from backend.constants.doctor_messages import DoctorMessages
-from backend.constants.user_messages import UserMessages
+from backend.constants.doctor_messages import DOCTOR_INACTIVE_OR_NOT_FOUND
+from backend.constants.user_messages import PATIENT_NOT_FOUND
 from backend.constants.appointment_status import AppointmentStatus, PaymentStatus
 from backend.constants.validation_constants import ValidationLimits
 from backend.middleware.auth import CurrentUser
@@ -38,12 +38,12 @@ from backend.exceptions.appointment_exception import (
     CancellationWindowPassedException,
     SlotInPastException,
 )
-from backend.exceptions.slot_exception import (
+from backend.exceptions.custom_exceptions import (
     SlotNotAvailableException,
     SlotNotFoundException
 )
-from backend.exceptions.doctor_exception import DoctorNotFoundException
-from backend.exceptions.user_exception import UserNotFoundException
+from backend.exceptions.custom_exceptions import DoctorNotFoundException
+from backend.exceptions.custom_exceptions import UserNotFoundException
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class BookingService:
 
         patient = await self._user_repository.get_by_id(PydanticObjectId(current_user.id))
         if patient is None:
-            raise UserNotFoundException(UserMessages.PATIENT_NOT_FOUND)
+            raise UserNotFoundException(PATIENT_NOT_FOUND)
 
         # basic validation
         slot = await self._availability_repository.get_by_id(slot_id)
@@ -88,7 +88,7 @@ class BookingService:
 
         doctor = await self._doctor_repository.get_by_id(slot.doctor_id)
         if doctor is None or not doctor.is_active:
-            raise DoctorNotFoundException(DoctorMessages.DOCTOR_INACTIVE_OR_NOT_FOUND)
+            raise DoctorNotFoundException(DOCTOR_INACTIVE_OR_NOT_FOUND)
 
         updated_slot = await self._availability_repository.atomic_book_if_available(slot_id)
         if updated_slot is None:
