@@ -16,6 +16,8 @@ from backend.routers.appointment_router import router as appointment_router
 from backend.routers.auth_router import router as auth_router
 from backend.routers.availability_router import router as availability_router
 from backend.routers.doctor_router import router as doctor_router
+from backend.routers.doctor_self_service_router import router as doctor_self_service_router
+from backend.routers.admin_router import leave_request_router as admin_leave_request_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -56,8 +58,10 @@ def create_app() -> FastAPI:
     # All routes live under /api/v1 - same URLs as before
     app.include_router(auth_router, prefix=settings.api_v1_prefix)
     app.include_router(admin_router, prefix=settings.api_v1_prefix)
+    app.include_router(admin_leave_request_router, prefix=settings.api_v1_prefix)
     app.include_router(availability_router, prefix=settings.api_v1_prefix)
     app.include_router(doctor_router, prefix=settings.api_v1_prefix)
+    app.include_router(doctor_self_service_router, prefix=settings.api_v1_prefix)
     app.include_router(appointment_router, prefix=settings.api_v1_prefix)
 
     @app.get("/health", tags=["Health"])

@@ -10,9 +10,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.constants.common_errors import CommonErrorCode
-from backend.constants.common_messages import GeneralMessages
-from backend.exceptions.base_exception import AppException
+from backend.constants.common_errors import INTERNAL_SERVER_ERROR, VALIDATION_ERROR
+from backend.constants.common_messages import INTERNAL_SERVER_ERROR as INTERNAL_SERVER_ERROR_MESSAGE
+from backend.constants.common_messages import VALIDATION_FAILED
+from backend.exceptions.custom_exceptions import AppException
 
 logger = logging.getLogger(__name__)
 
@@ -37,17 +38,28 @@ def register_exception_handlers(app: FastAPI) -> None:
             exc.message,
         )
         return _error_response(exc.status_code, exc.error_code, exc.message, headers=exc.headers)
-
+    
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
-        logger.info("Validation error | %s %s -> %s", request.method, request.url.path, exc.errors())
+        logger.info(
+            "Validation error | %s %s -> %s",
+            request.method,
+            request.url.path,
+            exc.errors(),
+        )
+
+        errors = []
+        for error in exc.errors():
+            error.pop("ctx", None) 
+            errors.append(error)
+
         return _error_response(
-            status.HTTP_422_UNPROCESSABLE_CONTENT,
-            CommonErrorCode.VALIDATION_ERROR,
-            GeneralMessages.VALIDATION_FAILED,
-            details=exc.errors(),
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            VALIDATION_ERROR,
+            VALIDATION_FAILED,
+            details=errors,
         )
 
     @app.exception_handler(StarletteHTTPException)
@@ -63,7 +75,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return _error_response(
             exc.status_code,
-            CommonErrorCode.INTERNAL_SERVER_ERROR if exc.status_code >= 500 else CommonErrorCode.VALIDATION_ERROR,
+            INTERNAL_SERVER_ERROR if exc.status_code >= 500 else VALIDATION_ERROR,
             str(exc.detail),
             headers=exc.headers,
         )
@@ -75,6 +87,6 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return _error_response(
             status.HTTP_500_INTERNAL_SERVER_ERROR,
-            CommonErrorCode.INTERNAL_SERVER_ERROR,
-            GeneralMessages.INTERNAL_SERVER_ERROR,
+            INTERNAL_SERVER_ERROR,
+            INTERNAL_SERVER_ERROR_MESSAGE,
         )

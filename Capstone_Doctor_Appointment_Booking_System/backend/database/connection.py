@@ -13,6 +13,7 @@ from backend.models.appointment import Appointment
 from backend.models.availability_slot import AvailabilitySlot
 from backend.models.doctor import Doctor
 from backend.models.doctor_profile import DoctorProfile
+from backend.models.leave_request import LeaveRequest
 from backend.models.notification import Notification
 from backend.models.user import User
 
@@ -34,6 +35,7 @@ async def connect_to_mongo() -> None:
         AvailabilitySlot,
         Appointment,
         Notification,
+        LeaveRequest,
     ]
 
     client = AsyncMongoClient(settings.mongo_uri)
