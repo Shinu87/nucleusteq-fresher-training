@@ -9,6 +9,7 @@ from typing import Optional
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Depends, Query
 
+from backend.constants.leave_request_status import LeaveRequestStatus
 from backend.constants.account_status import AccountStatus
 from backend.constants.api_constants import APIPrefixes, APITags
 from backend.constants.approval_status import ApprovalStatus
@@ -32,6 +33,16 @@ from backend.services.admin_service import (
     AdminService,
     get_admin_service,
 )
+from backend.schemas.response.leave_request_response import (
+    LeaveRequestResponse,
+    to_leave_request_response,
+)
+from backend.schemas.request.leave_request_request import RejectLeaveRequest
+from backend.services.leave_request_service import (
+    LeaveRequestService,
+    get_leave_request_service,
+)
+
 router = APIRouter(prefix=APIPrefixes.ADMIN, tags=[APITags.ADMIN_DOCTOR_APPROVAL])
 
 @router.get("/doctors", response_model=list[DoctorProfileResponse])
@@ -74,31 +85,7 @@ async def get_doctor(
     current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
     doctor_profile_service: DoctorProfileService = Depends(get_doctor_profile_service),
 ):
-    profile, user = await doctor_profile_service.get_profile_and_user(doctor_profile_id)
-    return to_doctor_profile_response(user, profile)
-
-
-@router.patch("/doctors/{doctor_profile_id}/activate", response_model=DoctorProfileResponse)
-async def activate_doctor(
-    doctor_profile_id: PydanticObjectId,
-    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
-    admin_service: AdminService = Depends(get_admin_service),
-):
-    user, profile = await admin_service.activate_doctor(
-        doctor_profile_id, PydanticObjectId(current_user.id)
-    )
-    return to_doctor_profile_response(user, profile)
-
-
-@router.patch("/doctors/{doctor_profile_id}/deactivate", response_model=DoctorProfileResponse)
-async def deactivate_doctor(
-    doctor_profile_id: PydanticObjectId,
-    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
-    admin_service: AdminService = Depends(get_admin_service),
-):
-    user, profile = await admin_service.deactivate_doctor(
-        doctor_profile_id, PydanticObjectId(current_user.id)
-    )
+    profile, user = await doctor_profile_service._get_profile_and_user(doctor_profile_id)
     return to_doctor_profile_response(user, profile)
 
 
@@ -120,3 +107,50 @@ async def get_platform_stats(
     admin_service: AdminService = Depends(get_admin_service),
 ):
     return await admin_service.get_platform_stats()
+
+
+leave_request_router = APIRouter(
+    prefix=APIPrefixes.ADMIN, tags=[APITags.ADMIN_LEAVE_REQUESTS]
+)
+
+
+@leave_request_router.get("/leave-requests", response_model=list[LeaveRequestResponse])
+async def list_leave_requests(
+    request_status: Optional[LeaveRequestStatus] = Query(
+        default=LeaveRequestStatus.PENDING,
+        description="Filter by status; defaults to PENDING. Pass no value to see all.",
+    ),
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+    leave_request_service: LeaveRequestService = Depends(get_leave_request_service),
+):
+    requests = await leave_request_service.list_requests(request_status)
+    return [to_leave_request_response(item) for item in requests]
+
+
+@leave_request_router.patch(
+    "/leave-requests/{leave_request_id}/approve", response_model=LeaveRequestResponse
+)
+async def approve_leave_request(
+    leave_request_id: PydanticObjectId,
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+    leave_request_service: LeaveRequestService = Depends(get_leave_request_service),
+):
+    leave_request, _cancelled_count = await leave_request_service.approve_leave(
+        leave_request_id, PydanticObjectId(current_user.id)
+    )
+    return to_leave_request_response(leave_request)
+
+
+@leave_request_router.patch(
+    "/leave-requests/{leave_request_id}/reject", response_model=LeaveRequestResponse
+)
+async def reject_leave_request(
+    leave_request_id: PydanticObjectId,
+    payload: RejectLeaveRequest,
+    current_user: CurrentUser = Depends(require_role(Role.ADMIN)),
+    leave_request_service: LeaveRequestService = Depends(get_leave_request_service),
+):
+    leave_request = await leave_request_service.reject_leave(
+        leave_request_id, PydanticObjectId(current_user.id), payload.rejection_reason
+    )
+    return to_leave_request_response(leave_request)

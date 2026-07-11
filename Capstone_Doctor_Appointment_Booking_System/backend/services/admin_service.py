@@ -10,7 +10,7 @@ from fastapi import Depends
 from backend.constants.account_status import AccountStatus
 from backend.constants.approval_status import ApprovalStatus
 from backend.constants.roles import Role
-from backend.exceptions.doctor_exception import DoctorNotApprovedException
+from backend.exceptions.custom_exceptions import DoctorNotApprovedException
 from backend.repositories.admin_repository import (
     AdminRepository,
     get_admin_repository,
@@ -44,14 +44,13 @@ class AdminService:
         doctor_profile_id: PydanticObjectId,
         admin_id: PydanticObjectId,
     ):
-        profile, user = await self._doctor_profile_service.get_profile_and_user(
+        profile, user = await self._doctor_profile_service._get_profile_and_user(
             doctor_profile_id
         )
 
         if profile.approval_status != ApprovalStatus.APPROVED:
             raise DoctorNotApprovedException()
 
-        user.is_active = True
         user.account_status = AccountStatus.ACTIVE
         await self._admin_repository.save_user(user)
 
@@ -76,8 +75,7 @@ class AdminService:
         if profile.approval_status != ApprovalStatus.APPROVED:
             raise DoctorNotApprovedException()
 
-        user.is_active = False
-        user.account_status = AccountStatus.DEACTIVATED
+        user.account_status = AccountStatus.INACTIVE
         await self._admin_repository.save_user(user)
 
         await self._doctor_sync_service.sync_doctor(
