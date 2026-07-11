@@ -1,0 +1,28 @@
+"""
+Helpers for the one-time "set your password" token a doctor gets emailed
+after an admin approves them.
+"""
+
+import hashlib
+import secrets
+from datetime import datetime, timedelta, timezone
+
+from backend.constants.validation_constants import ValidationLimits
+
+
+def generate_setup_token() -> str:
+    return secrets.token_urlsafe(32)
+
+
+def hash_setup_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+
+def get_setup_token_expiry() -> datetime:
+    return datetime.now(timezone.utc) + timedelta(hours=ValidationLimits.SETUP_TOKEN_VALID_HOURS)
+
+
+def is_setup_token_expired(expiry: datetime) -> bool:
+    if expiry.tzinfo is None:
+        expiry = expiry.replace(tzinfo=timezone.utc)
+    return datetime.now(timezone.utc) > expiry
