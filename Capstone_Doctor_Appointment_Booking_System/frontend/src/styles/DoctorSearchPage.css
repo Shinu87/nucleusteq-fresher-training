@@ -1,0 +1,166 @@
+.pageContainer {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+    font-family: "Inter", sans-serif;
+    color: #1b2430;
+    background: #faf7f2;
+}
+
+/*  Header  */
+.pageHeader {
+    margin-bottom: 2rem;
+}
+
+.pageEyebrow {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8c2f39;
+    margin-bottom: 0.4rem;
+}
+
+.pageTitle {
+    font-family: "Lora", serif;
+    font-weight: 600;
+    font-size: 2rem;
+    margin: 0;
+    color: #1b2430;
+}
+
+/*  Filter bar  */
+.filterBar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.25rem;
+    align-items: end;
+    background: #ffffff;
+    border: 1px solid #dcd8ce;
+    border-top: 3px solid #8c2f39;
+    padding: 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2.5rem;
+}
+
+.filterField {
+    grid-column: span 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.filterFieldWide {
+    grid-column: span 2;
+}
+
+.filterFieldAction {
+    align-self: end;
+}
+
+.filterField label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5b6472;
+}
+
+.filterInput {
+    border: 1px solid #dcd8ce;
+    border-radius: 3px;
+    padding: 0.6rem 0.7rem;
+    font-family: "Inter", sans-serif;
+    font-size: 0.9rem;
+    background: #faf7f2;
+    color: #1b2430;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.filterInput:focus {
+    outline: none;
+    border-color: #8c2f39;
+    background: #ffffff;
+}
+
+.filterInput::placeholder {
+    color: #a3a9b3;
+}
+
+.clearButton {
+    width: 100%;
+    border: 1px solid #dcd8ce;
+    background: transparent;
+    color: #5b6472;
+    font-family: "Inter", sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clearButton:hover:not(:disabled) {
+    border-color: #8c2f39;
+    color: #8c2f39;
+}
+
+.clearButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/*  Results  */
+.statusMessage {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85rem;
+    color: #5b6472;
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 1px dashed #dcd8ce;
+    border-radius: 4px;
+}
+
+.statusMessageLoading {
+    color: #8c2f39;
+}
+
+.statusMessageError {
+    color: #8c2f39;
+    border-color: #8c2f39;
+    background: #f3e4e1;
+}
+
+.doctorGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem 1.5rem;
+    margin-top: 0.5rem;
+}
+
+/*  Responsive  */
+@media (max-width: 900px) {
+    .filterBar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filterFieldWide {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 520px) {
+    .pageTitle {
+        font-size: 1.6rem;
+    }
+
+    .filterBar {
+        grid-template-columns: 1fr;
+    }
+
+    .filterFieldWide {
+        grid-column: span 1;
+    }
+}
