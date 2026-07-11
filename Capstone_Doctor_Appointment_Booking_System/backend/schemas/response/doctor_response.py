@@ -11,8 +11,9 @@ from backend.constants.account_status import AccountStatus
 from backend.constants.approval_status import ApprovalStatus
 from backend.constants.specialization import Specialization
 
-
 class DoctorProfileResponse(BaseModel):
+
+    doctor_profile_id: str
     user_id: str
     full_name: str
     email: str
@@ -32,7 +33,9 @@ class DoctorProfileResponse(BaseModel):
 
 
 def to_doctor_profile_response(user, profile) -> "DoctorProfileResponse":
+    
     return DoctorProfileResponse(
+        doctor_profile_id=str(profile.id),
         user_id=str(user.id),
         full_name=user.full_name,
         email=user.email,

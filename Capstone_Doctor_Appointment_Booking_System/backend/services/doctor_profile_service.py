@@ -7,6 +7,7 @@ Business logic for the doctor profile and approval workflow:
 
 import logging
 from datetime import datetime, timezone
+from beanie import PydanticObjectId
 
 from fastapi import Depends
 
@@ -35,6 +36,7 @@ from backend.config import get_settings
 from backend.exceptions.custom_exceptions import (
     ApplicationAlreadyReviewedException,
     DoctorApplicationNotFoundException,
+    DoctorNotApprovedException,
     DuplicateLicenseException,
     EmailAlreadyRegisteredException,
     UserNotFoundException,
@@ -72,11 +74,11 @@ class DoctorProfileService:
         new_user = User(
             full_name=payload.full_name,
             email=payload.email,
-            password_hash=None, 
+            password_hash=None,  
             phone_number=payload.phone_number,
             role=Role.DOCTOR,
             gender=payload.gender,
-            account_status=AccountStatus.PENDING_APPROVAL,
+            account_status=AccountStatus.INACTIVE,
         )
         await self._user_repository.insert(new_user)
 
@@ -88,7 +90,7 @@ class DoctorProfileService:
             license_number=payload.license_number,
             consultation_fee=payload.consultation_fee,
             clinic_address=payload.clinic_address,
-            approval_status=ApprovalStatus.PENDING_APPROVAL,
+            approval_status=ApprovalStatus.PENDING,
         )
         await self._doctor_profile_repository.insert(new_profile)
 
@@ -122,7 +124,7 @@ class DoctorProfileService:
     async def approve_doctor(self, doctor_profile_id, admin_id) -> tuple[User, DoctorProfile]:
         profile, user = await self._get_profile_and_user(doctor_profile_id)
 
-        if profile.approval_status != ApprovalStatus.PENDING_APPROVAL:
+        if profile.approval_status != ApprovalStatus.PENDING:
             raise ApplicationAlreadyReviewedException(profile.approval_status.value.lower())
 
         raw_token = generate_setup_token()
@@ -147,7 +149,7 @@ class DoctorProfileService:
             experience_years=profile.experience_years,
             consultation_fee=profile.consultation_fee,
             clinic_address=profile.clinic_address,
-            is_active=user.is_active,
+            is_active=user.account_status == AccountStatus.ACTIVE,
         ))
         logger.info("Doctor application approved: %s", user.email)
         return user, profile
@@ -155,7 +157,7 @@ class DoctorProfileService:
     async def reject_doctor(self, doctor_profile_id, admin_id, reason: str | None) -> tuple[User, DoctorProfile]:
         profile, user = await self._get_profile_and_user(doctor_profile_id)
 
-        if profile.approval_status != ApprovalStatus.PENDING_APPROVAL:
+        if profile.approval_status != ApprovalStatus.PENDING:
             raise ApplicationAlreadyReviewedException(profile.approval_status.value.lower())
 
         profile.approval_status = ApprovalStatus.REJECTED
@@ -163,11 +165,43 @@ class DoctorProfileService:
         profile.reviewed_at = datetime.now(timezone.utc)
         await self._doctor_profile_repository.save(profile)
 
-        user.account_status = AccountStatus.REJECTED
-        await self._user_repository.save(user)
+        if user.account_status != AccountStatus.INACTIVE:
+            user.account_status = AccountStatus.INACTIVE
+            await self._user_repository.save(user)
 
         logger.info("Doctor application rejected: %s (reason: %s)", user.email, reason)
         return user, profile
+
+
+    async def set_own_account_status(
+        self, doctor_user_id: PydanticObjectId, new_status: AccountStatus
+    ) -> tuple[User, DoctorProfile]:
+
+        profile = await self._doctor_profile_repository.find_by_user_id(doctor_user_id)
+        if profile is None:
+            raise DoctorApplicationNotFoundException()
+
+        if profile.approval_status != ApprovalStatus.APPROVED:
+            raise DoctorNotApprovedException()
+
+        user = await self._user_repository.get_by_id(doctor_user_id)
+        if user is None:
+            raise UserNotFoundException()
+
+        user.account_status = new_status
+        await self._user_repository.save(user)
+
+        await self._doctor_sync_service.sync_doctor(
+            user=user,
+            profile=profile,
+            is_active=new_status == AccountStatus.ACTIVE,
+        )
+
+        logger.info(
+            "Doctor %s switched their own account_status to %s", user.email, new_status.value
+        )
+        return user, profile
+
 
 
 def get_doctor_profile_service(

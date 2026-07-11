@@ -6,13 +6,15 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from backend.constants.account_status import AccountStatus
 from backend.constants.gender import Gender
 from backend.constants.specialization import Specialization
 from backend.constants.validation_constants import FIELD_CANNOT_BE_BLANK, ValidationLimits
 from backend.schemas.request.auth_request import _BaseRegisterRequest
+from backend.schemas.request.auth_request import _ContactFields
 
 
-class DoctorRegisterRequest(_BaseRegisterRequest):
+class DoctorRegisterRequest(_ContactFields):
 
     qualification: str
     specialization: Specialization
@@ -35,3 +37,6 @@ class DoctorRegisterRequest(_BaseRegisterRequest):
 
 class RejectDoctorRequest(BaseModel):
     reason: Optional[str] = None
+
+class UpdateAccountStatusRequest(BaseModel):
+    account_status: AccountStatus
