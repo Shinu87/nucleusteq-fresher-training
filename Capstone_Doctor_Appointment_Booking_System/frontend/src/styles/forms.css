@@ -1,0 +1,22 @@
+.auth-card {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+.auth-card.wide {
+  max-width: 640px;
+}
+
+.field-error {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.form-label {
+  font-weight: 500;
+}
