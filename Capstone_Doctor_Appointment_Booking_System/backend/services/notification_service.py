@@ -16,7 +16,11 @@ from backend.repositories.notification_repository import (
     get_notification_repository,
 )
 from backend.schemas.request.internal_request import SendNotificationRequest
-from backend.utils.mailer import build_setup_password_email_html, send_email
+from backend.utils.mailer import (
+    build_appointment_cancellation_email_html,
+    build_setup_password_email_html,
+    send_email,
+)
 from backend.constants.email_constants import EmailSubjects
 
 
@@ -50,6 +54,30 @@ class NotificationService:
             except Exception as error:
                 logger.error(
                     "Failed to send setup password email to %s: %s", payload.recipient_email, error
+                )
+                notification.status = NotificationStatus.FAILED
+
+        elif payload.type == NotificationType.APPOINTMENT_CANCELLATION:
+            html_body = build_appointment_cancellation_email_html(
+                patient_name=payload.payload.get("patient_name", ""),
+                doctor_name=payload.payload.get("doctor_name", ""),
+                appointment_date=payload.payload.get("appointment_date", ""),
+                start_time=payload.payload.get("start_time", ""),
+                reason=payload.payload.get("reason"),
+            )
+
+            try:
+                await send_email(
+                    recipient_email=payload.recipient_email,
+                    subject=EmailSubjects.APPOINTMENT_CANCELLED,
+                    html_body=html_body,
+                )
+                logger.info("Appointment cancellation email sent to %s", payload.recipient_email)
+            except Exception as error:
+                logger.error(
+                    "Failed to send appointment cancellation email to %s: %s",
+                    payload.recipient_email,
+                    error,
                 )
                 notification.status = NotificationStatus.FAILED
         else:

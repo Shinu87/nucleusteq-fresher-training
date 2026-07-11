@@ -49,6 +49,39 @@ def build_setup_password_email_html(setup_link: str) -> str:
     """
 
 
+def build_appointment_cancellation_email_html(
+    patient_name: str,
+    doctor_name: str,
+    appointment_date: str,
+    start_time: str,
+    reason: str | None = None,
+) -> str:
+    """
+    Builds the HTML body for an appointment cancellation email.
+    """
+    reason_block = f"<p><strong>Reason:</strong> {reason}</p>" if reason else ""
+    rebook_block = (
+        "<p>We're sorry for the inconvenience. Please book another available "
+        "appointment at your convenience.</p>"
+        if reason
+        else ""
+    )
+
+    return f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; color: #333333;">
+            <h2>Appointment Cancelled</h2>
+            <p>Dear {patient_name},</p>
+            <p>Your appointment with <strong>Dr. {doctor_name}</strong> on
+               <strong>{appointment_date}</strong> at <strong>{start_time}</strong>
+               has been cancelled.</p>
+            {reason_block}
+            {rebook_block}
+        </body>
+    </html>
+    """
+
+
 async def send_email(recipient_email: str, subject: str, html_body: str) -> None:
     message = MessageSchema(
         subject=subject,
