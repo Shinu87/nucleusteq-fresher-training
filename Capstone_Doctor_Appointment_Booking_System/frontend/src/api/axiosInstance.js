@@ -21,6 +21,7 @@ axiosInstance.interceptors.response.use(
     if (errorCode === "TOKEN_EXPIRED" || errorCode === "INVALID_TOKEN") {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      window.dispatchEvent(new Event("auth:logout"));
       window.location.href = "/login";
     }
     return Promise.reject(error);

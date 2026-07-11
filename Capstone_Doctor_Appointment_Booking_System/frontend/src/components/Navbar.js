@@ -1,16 +1,16 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ROUTES } from "../constants/routes";
 import { ROLES } from "../constants/roles";
 
 function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
-  const navigate = useNavigate();
 
   // navbar links per role
   function handleLogout() {
     logout();
-    navigate(ROUTES.LOGIN);
+    // full page reload so no stale cached data
+    window.location.href = ROUTES.HOME;
   }
 
   return (

@@ -1,6 +1,6 @@
 // Context for managing user authentication across the application.
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   getToken,
   getStoredUser,
@@ -25,6 +25,12 @@ export function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
   }
+
+  // axiosInstance dispatches this when the token expires
+  useEffect(() => {
+    window.addEventListener("auth:logout", logout);
+    return () => window.removeEventListener("auth:logout", logout);
+  }, []);
 
   const value = {
     token,

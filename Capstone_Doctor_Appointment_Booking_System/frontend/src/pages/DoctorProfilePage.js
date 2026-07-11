@@ -29,8 +29,13 @@ function DoctorProfilePage() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <p>Loading doctor profile...</p>
+      <div className="page-container d-flex flex-column align-items-center justify-content-center py-5">
+        <div
+          className="spinner-border text-primary mb-3"
+          role="status"
+          aria-hidden="true"
+        ></div>
+        <p className="text-muted mb-0">Loading doctor profile...</p>
       </div>
     );
   }

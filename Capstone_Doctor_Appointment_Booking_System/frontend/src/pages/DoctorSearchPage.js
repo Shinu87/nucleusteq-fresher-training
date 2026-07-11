@@ -5,6 +5,8 @@ import { SPECIALIZATIONS } from "../constants/specializations";
 import DoctorCard from "../components/DoctorCard";
 import "../styles/DoctorSearchPage.css";
 
+const PAGE_SIZE = 10;
+
 function DoctorSearchPage() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +17,10 @@ function DoctorSearchPage() {
   const [minExperience, setMinExperience] = useState("");
   const [maxFee, setMaxFee] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
+    setCurrentPage(1);
     fetchDoctors();
   }, [search, specialization, minExperience, maxFee]);
 
@@ -46,6 +51,12 @@ function DoctorSearchPage() {
   }
 
   const hasActiveFilters = search || specialization || minExperience || maxFee;
+
+  const totalPages = Math.max(1, Math.ceil(doctors.length / PAGE_SIZE));
+  const pagedDoctors = doctors.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   return (
     <div className="pageContainer">
@@ -112,31 +123,57 @@ function DoctorSearchPage() {
             onClick={clearFilters}
             disabled={!hasActiveFilters}
           >
-            Clear
+            Clear Filters
           </button>
         </div>
       </div>
 
       <div className="resultsSection">
         {loading && (
-          <p className="statusMessage statusMessageLoading">
-            Retrieving records…
-          </p>
+          <p className="statusMessage statusMessageLoading">Loading records…</p>
         )}
 
         {!loading && error && (
-          <p className="statusMessage statusMessageError">{error}</p>
+          <div className="text-danger">
+            <p className="mb-2">{error}</p>
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={fetchDoctors}
+            >
+              Retry
+            </button>
+          </div>
         )}
 
         {!loading && !error && doctors.length === 0 && (
-          <p className="statusMessage">No matching records.</p>
+          <p className="statusMessage">No doctors match your filters.</p>
         )}
 
-        {!loading && !error && doctors.length > 0 && (
-          <div className="doctorGrid">
-            {doctors.map((doctor) => (
-              <DoctorCard key={doctor.id} doctor={doctor} />
-            ))}
+        {!loading &&
+          !error &&
+          pagedDoctors.map((doctor) => (
+            <DoctorCard key={doctor.id} doctor={doctor} />
+          ))}
+
+        {!loading && !error && totalPages >= 1 && (
+          <div className="d-flex justify-content-center align-items-center gap-3 mt-3">
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((page) => page - 1)}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="btn btn-outline-secondary btn-sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((page) => page + 1)}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>
