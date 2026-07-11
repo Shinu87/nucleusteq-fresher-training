@@ -7,19 +7,14 @@ import re
 
 
 class ValidationPatterns:
-    # name should only be letters and spaces, at least 2 characters long
     NAME_REGEX = re.compile(r"^[A-Za-z\s]{2,}$")
 
-    # phone number must be exactly 10 digits, nothing else
     PHONE_REGEX = re.compile(r"^\d{10}$")
 
-    # password must be 8-12 characters, with at least one uppercase letter
-    # and at least one special character
     PASSWORD_REGEX = re.compile(
         r'^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,12}$'
     )
 
-    # matches a 24-hour HH:MM time like "09:00" or "17:30"
     TIME_REGEX = re.compile(r"^([01]\d|2[0-3]):([0-5]\d)$")
 
 
@@ -27,17 +22,13 @@ class ValidationLimits:
     MIN_EXPERIENCE_YEARS = 0
     MAX_EXPERIENCE_YEARS = 70
 
-    # consultation_fee must be strictly greater than this
     MIN_CONSULTATION_FEE_EXCLUSIVE = 0
 
-    # doctor "set password" links expire after this many hours
     SETUP_TOKEN_VALID_HOURS = 24
 
-    # bounds for the consultation duration used by automatic slot generation
     MIN_SLOT_DURATION_MINUTES = 5
     MAX_SLOT_DURATION_MINUTES = 120
 
-    # a BOOKED appointment can only be cancelled this many hours before its scheduled start time
     CANCELLATION_WINDOW_HOURS = 2
 
 
