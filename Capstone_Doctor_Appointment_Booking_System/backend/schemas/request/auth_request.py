@@ -8,14 +8,15 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr, field_validator
 
+from backend.constants.gender import Gender
 from backend.constants.validation_constants import ValidationMessages, ValidationPatterns
 
 
-class _BaseRegisterRequest(BaseModel):
+
+class _ContactFields(BaseModel):
 
     full_name: str
     email: EmailStr
-    password: str
     phone_number: str
 
     @field_validator("full_name")
@@ -26,12 +27,24 @@ class _BaseRegisterRequest(BaseModel):
             raise ValueError(ValidationMessages.FULL_NAME_INVALID)      
         return value
 
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        if not ValidationPatterns.EMAIL_REGEX.match(value):
+            raise ValueError(ValidationMessages.EMAIL_INVALID)
+        return value
+    
     @field_validator("phone_number")
     @classmethod
     def validate_phone_number(cls, value: str) -> str:
         if not ValidationPatterns.PHONE_REGEX.match(value):
             raise ValueError(ValidationMessages.PHONE_NUMBER_INVALID)
         return value
+
+
+class _BaseRegisterRequest(_ContactFields):
+
+    password: str
 
     @field_validator("password")
     @classmethod
@@ -42,8 +55,15 @@ class _BaseRegisterRequest(BaseModel):
 
 
 class PatientRegisterRequest(_BaseRegisterRequest):
-    gender: Literal["MALE", "FEMALE", "OTHER"]
+    gender: Gender
     date_of_birth: date
+
+    @field_validator("date_of_birth")
+    @classmethod
+    def validate_date_of_birth(cls, value: date) -> date:
+        if value > date.today():
+            raise ValueError("Date of birth cannot be in the future.")
+        return value
 
 
 class DoctorRegisterRequest(_BaseRegisterRequest):

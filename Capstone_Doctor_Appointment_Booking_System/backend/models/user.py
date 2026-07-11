@@ -10,6 +10,7 @@ from pydantic import EmailStr, Field
 from pymongo import IndexModel
 
 from backend.constants.account_status import AccountStatus
+from backend.constants.gender import Gender
 from backend.constants.roles import Role
 
 
@@ -24,13 +25,10 @@ class User(Document):
     phone_number: str
     role: Role
 
-    gender: Optional[str] = None
+    gender:Optional[Gender] = None
     date_of_birth: Optional[date] = None
 
     account_status: AccountStatus = Field(default=AccountStatus.ACTIVE)
-
-    is_active: bool = True
-
     created_at: datetime = Field(default_factory=_utc_now)
     updated_at: datetime = Field(default_factory=_utc_now)
 

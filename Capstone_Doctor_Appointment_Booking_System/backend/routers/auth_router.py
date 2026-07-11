@@ -2,13 +2,10 @@
 API routes for registration and login. 
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from beanie import PydanticObjectId
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from beanie import PydanticObjectId
-
-from backend.constants.api_constants import APIPrefixes, APITags, TokenType
+from backend.constants.api_constants import APIPrefixes, APITags
 from backend.exceptions.custom_exceptions import UserNotFoundException
 from backend.middleware.auth import CurrentUser, get_current_user
 from backend.models.user import User
@@ -23,7 +20,11 @@ from backend.schemas.response.doctor_response import (
     DoctorProfileResponse,
     to_doctor_profile_response,
 )
-from backend.services import auth_service, doctor_profile_service
+from backend.services.auth_service import AuthService, get_auth_service
+from backend.services.doctor_profile_service import (
+    DoctorProfileService,
+    get_doctor_profile_service,
+)
 from backend.utils.jwt_handler import create_access_token
 from backend.config import get_settings
 
@@ -39,7 +40,7 @@ def _to_profile_response(user: User) -> UserProfileResponse:
         role=user.role,
         gender=user.gender,
         date_of_birth=user.date_of_birth,
-        is_active=user.is_active,
+        account_status=user.account_status,
         created_at=user.created_at,
     )
 
@@ -49,7 +50,10 @@ def _to_profile_response(user: User) -> UserProfileResponse:
     response_model=UserProfileResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def register_patient(payload: PatientRegisterRequest):
+async def register_patient(
+    payload: PatientRegisterRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
     user = await auth_service.register_patient(payload)
     return _to_profile_response(user)
 
@@ -59,19 +63,28 @@ async def register_patient(payload: PatientRegisterRequest):
     response_model=DoctorProfileResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def register_doctor(payload: DoctorRegisterRequest):
+async def register_doctor(
+    payload: DoctorRegisterRequest,
+    doctor_profile_service: DoctorProfileService = Depends(get_doctor_profile_service),
+):
     user, profile = await doctor_profile_service.submit_doctor_application(payload)
     return to_doctor_profile_response(user, profile)
 
 
 @router.post("/set-password", response_model=UserProfileResponse)
-async def set_password(payload: SetPasswordRequest):
+async def set_password(
+    payload: SetPasswordRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
     user = await auth_service.set_password(payload.token, payload.new_password)
     return _to_profile_response(user)
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(payload: LoginRequest):
+async def login(
+    payload: LoginRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
     user = await auth_service.authenticate_user(payload)
     access_token = create_access_token(user)
 
@@ -83,7 +96,9 @@ async def login(payload: LoginRequest):
     )
 
 @router.get("/my-profile", response_model=UserProfileResponse)
-async def get_my_profile(current_user: CurrentUser = Depends(get_current_user)):
+async def get_my_profile(
+    current_user: CurrentUser = Depends(get_current_user),
+):
     user = await User.get(PydanticObjectId(current_user.id))
     if user is None:
         raise UserNotFoundException()
