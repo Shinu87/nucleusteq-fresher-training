@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ROUTES } from "../constants/routes";
+import { ROLES } from "../constants/roles";
 
 function HomePage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <div>
@@ -34,12 +35,21 @@ function HomePage() {
 
           {isAuthenticated && (
             <div className="mt-4">
-              <Link
-                to={ROUTES.DOCTOR_SEARCH}
-                className="btn btn-primary btn-lg px-4"
-              >
-                Find a Doctor
-              </Link>
+              {user.role === ROLES.DOCTOR ? (
+                <Link
+                  to={ROUTES.DOCTOR_DASHBOARD}
+                  className="btn btn-primary btn-lg px-4"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to={ROUTES.DOCTOR_SEARCH}
+                  className="btn btn-primary btn-lg px-4"
+                >
+                  Find a Doctor
+                </Link>
+              )}
             </div>
           )}
         </div>

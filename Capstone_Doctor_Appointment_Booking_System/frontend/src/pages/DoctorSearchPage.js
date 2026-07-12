@@ -149,11 +149,19 @@ function DoctorSearchPage() {
           <p className="statusMessage">No doctors match your filters.</p>
         )}
 
-        {!loading &&
-          !error &&
-          pagedDoctors.map((doctor) => (
-            <DoctorCard key={doctor.id} doctor={doctor} />
-          ))}
+        <div className="row g-4">
+          {!loading &&
+            !error &&
+            pagedDoctors.map((doctor) => (
+              <div key={doctor.id} className="col-12 col-md-6 col-lg-4">
+                <div className="card shadow-sm border-0 rounded-4 h-100">
+                  <div className="card-body">
+                    <DoctorCard doctor={doctor} />
+                  </div>
+                </div>
+              </div>
+            ))}
+        </div>
 
         {!loading && !error && totalPages >= 1 && (
           <div className="d-flex justify-content-center align-items-center gap-3 mt-3">

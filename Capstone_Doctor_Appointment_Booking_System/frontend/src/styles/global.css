@@ -129,3 +129,26 @@ body {
   border-radius: 8px;
   margin: 40px 0;
 }
+
+.appointment-card {
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.appointment-info div {
+  font-size: 15px;
+}
+
+.appointment-card .badge {
+  font-size: 0.8rem;
+  padding: 8px 12px;
+}
+
+.appointment-card .btn {
+  font-weight: 600;
+}
