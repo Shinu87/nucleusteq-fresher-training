@@ -10,3 +10,5 @@ export const PASSWORD_REGEX =
 export const MIN_PATIENT_AGE = 15;
 export const MIN_EXPERIENCE_YEARS = 0;
 export const MAX_EXPERIENCE_YEARS = 70;
+export const MIN_SLOT_DURATION_MINUTES = 5;
+export const MAX_SLOT_DURATION_MINUTES = 120;
