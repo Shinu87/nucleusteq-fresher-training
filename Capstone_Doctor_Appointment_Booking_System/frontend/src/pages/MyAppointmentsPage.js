@@ -113,7 +113,9 @@ function MyAppointmentsPage() {
                             : "bg-secondary"
                       }`}
                     >
-                      {appt.status}
+                      {appt.status === "NO_SHOW"
+                        ? "Did Not Attend"
+                        : appt.status}{" "}
                     </span>
                   </div>
 

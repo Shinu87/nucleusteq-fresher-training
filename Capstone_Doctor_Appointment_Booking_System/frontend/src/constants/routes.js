@@ -14,4 +14,9 @@ export const ROUTES = {
   DOCTOR_APPOINTMENTS: "/doctor/appointments",
   DOCTOR_LEAVE_REQUESTS: "/doctor/leave-requests",
   BOOKING_CONFIRMATION: "/booking-confirmation",
+  ADMIN_DASHBOARD: "/admin/dashboard",
+  ADMIN_DOCTOR_APPROVALS: "/admin/doctor-approvals",
+  ADMIN_PATIENTS: "/admin/patients",
+  ADMIN_LEAVE_REQUESTS: "/admin/leave-requests",
+  PROFILE: "/profile",
 };

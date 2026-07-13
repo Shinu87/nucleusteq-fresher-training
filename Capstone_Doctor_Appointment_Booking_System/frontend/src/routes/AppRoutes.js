@@ -18,7 +18,11 @@ import DoctorAppointmentsPage from "../pages/DoctorAppointmentsPage";
 import { ROLES } from "../constants/roles";
 import DoctorLeaveRequestPage from "../pages/DoctorLeaveRequestPage";
 import BookingConfirmationPage from "../pages/BookingConfirmationPage";
-
+import AdminDashboardPage from "../pages/AdminDashboardPage";
+import AdminDoctorApprovalsPage from "../pages/AdminDoctorApprovalsPage";
+import AdminPatientsPage from "../pages/AdminPatientsPage";
+import AdminLeaveRequestsPage from "../pages/AdminLeaveRequestsPage";
+import ProfilePage from "../pages/ProfilePage";
 function AppRoutes() {
   return (
     <Routes>
@@ -98,7 +102,52 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      {/* only admins view the admin dashboard */}
+      <Route
+        path={ROUTES.ADMIN_DASHBOARD}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* only admins review doctor applications */}
+      <Route
+        path={ROUTES.ADMIN_DOCTOR_APPROVALS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminDoctorApprovalsPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* only admins view the patient list */}
+      <Route
+        path={ROUTES.ADMIN_PATIENTS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminPatientsPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFoundPage />} />
+      {/* only admins review doctor leave requests */}
+      <Route
+        path={ROUTES.ADMIN_LEAVE_REQUESTS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+            <AdminLeaveRequestsPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* any authenticated user (patient, doctor, admin) can view their own profile */}
+      <Route
+        path={ROUTES.PROFILE}
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
