@@ -16,21 +16,13 @@ from backend.services.doctor_search_service import (
     DoctorSearchService,
     get_doctor_search_service,
 )
+from backend.utils.doctor_mapper import (
+    to_detail_response,
+    to_summary_response,
+)
 from backend.constants.specialization import Specialization
 
 router = APIRouter(prefix=APIPrefixes.DOCTORS, tags=[APITags.DOCTOR_SEARCH])
-
-
-def _to_summary_response(doctor) -> DoctorSummaryResponse:
-    return DoctorSummaryResponse(
-        id=str(doctor.id),
-        full_name=doctor.full_name,
-        specialization=doctor.specialization,
-        qualification=doctor.qualification,
-        experience_years=doctor.experience_years,
-        consultation_fee=doctor.consultation_fee,
-        clinic_address=doctor.clinic_address,
-    )
 
 
 @router.get("", response_model=list[DoctorSummaryResponse])
@@ -48,7 +40,7 @@ async def search_doctors(
         min_experience=min_experience,
         max_fee=max_fee,
     )
-    return [_to_summary_response(doctor) for doctor in doctors]
+    return [to_summary_response(doctor) for doctor in doctors]
 
 
 @router.get("/{doctor_id}", response_model=DoctorDetailResponse)
@@ -59,21 +51,7 @@ async def get_doctor_detail(
 ):
     doctor, available_slots = await doctor_search_service.get_doctor_detail(doctor_id)
 
-    return DoctorDetailResponse(
-        id=str(doctor.id),
-        full_name=doctor.full_name,
-        specialization=doctor.specialization,
-        qualification=doctor.qualification,
-        experience_years=doctor.experience_years,
-        consultation_fee=doctor.consultation_fee,
-        clinic_address=doctor.clinic_address,
-        available_slots=[
-            AvailableSlotSummary(
-                id=str(slot.id),
-                slot_date=slot.slot_date,
-                start_time=slot.start_time,
-                end_time=slot.end_time,
-            )
-            for slot in available_slots
-        ],
+    return to_detail_response(
+    doctor,
+    available_slots,
     )
