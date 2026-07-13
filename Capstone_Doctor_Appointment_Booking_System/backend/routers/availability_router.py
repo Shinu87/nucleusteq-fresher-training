@@ -23,19 +23,8 @@ from backend.services.availability_service import (
     AvailabilityService,
     get_availability_service,
 )
+from backend.utils.slot_mapper import to_slot_response
 router = APIRouter(prefix=APIPrefixes.AVAILABILITY_SLOTS, tags=[APITags.AVAILABILITY_SLOTS])
-
-
-def _to_slot_response(slot) -> SlotResponse:
-    return SlotResponse(
-        id=str(slot.id),
-        doctor_id=str(slot.doctor_id),
-        slot_date=slot.slot_date,
-        start_time=slot.start_time,
-        end_time=slot.end_time,
-        status=slot.status,
-        created_at=slot.created_at,
-    )
 
 
 @router.post("", response_model=SlotResponse, status_code=status.HTTP_201_CREATED)
@@ -45,7 +34,7 @@ async def create_slot(
     availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     slot = await availability_service.create_slot(PydanticObjectId(current_user.id), payload)
-    return _to_slot_response(slot)
+    return to_slot_response(slot)
 
 
 @router.post("/generate", response_model=GenerateSlotsResponse, status_code=status.HTTP_201_CREATED)
@@ -61,7 +50,7 @@ async def generate_slots(
         total_slots_requested=total_requested,
         created_count=len(created),
         skipped_count=len(skipped),
-        created_slots=[_to_slot_response(slot) for slot in created],
+        created_slots=[to_slot_response(slot) for slot in created],
         skipped_slots=skipped,
     )
 
@@ -90,7 +79,7 @@ async def list_my_slots(
     availability_service: AvailabilityService = Depends(get_availability_service)
 ):
     slots = await availability_service.list_my_slots(PydanticObjectId(current_user.id))
-    return [_to_slot_response(slot) for slot in slots]
+    return [to_slot_response(slot) for slot in slots]
 
 
 @router.patch("/{slot_id}", response_model=SlotResponse)
@@ -103,7 +92,7 @@ async def update_slot(
     slot = await availability_service.update_slot(
         PydanticObjectId(current_user.id), slot_id, payload
     )
-    return _to_slot_response(slot)
+    return to_slot_response(slot)
 
 
 @router.delete("/{slot_id}", status_code=status.HTTP_204_NO_CONTENT)
