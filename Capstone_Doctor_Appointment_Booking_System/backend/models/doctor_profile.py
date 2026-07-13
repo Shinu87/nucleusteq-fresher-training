@@ -29,7 +29,7 @@ class DoctorProfile(Document):
     consultation_fee: float
     clinic_address: str
 
-    approval_status: ApprovalStatus = Field(default=ApprovalStatus.PENDING_APPROVAL)
+    approval_status: ApprovalStatus = Field(default=ApprovalStatus.PENDING)
     reviewed_by: Optional[PydanticObjectId] = None  
     reviewed_at: Optional[datetime] = None
 

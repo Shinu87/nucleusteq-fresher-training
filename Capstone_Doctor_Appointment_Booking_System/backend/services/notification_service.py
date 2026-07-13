@@ -16,9 +16,18 @@ from backend.repositories.notification_repository import (
     get_notification_repository,
 )
 from backend.schemas.request.internal_request import SendNotificationRequest
-from backend.utils.mailer import build_setup_password_email_html, send_email
-from backend.constants.email_constants import EmailSubjects
-
+from backend.utils.mailer import (
+    build_appointment_cancellation_email_html,
+    build_setup_password_email_html,
+    send_email,
+)
+from backend.constants.email_constants import DOCTOR_ACCOUNT_APPROVED,APPOINTMENT_CANCELLED,APPOINTMENT_CONFIRMED
+from backend.utils.mailer import (
+    build_appointment_cancellation_email_html,
+    build_appointment_confirmation_email_html,
+    build_setup_password_email_html,
+    send_email,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +52,7 @@ class NotificationService:
             try:
                 await send_email(
                     recipient_email=payload.recipient_email,
-                    subject=EmailSubjects.DOCTOR_ACCOUNT_APPROVED,
+                    subject=DOCTOR_ACCOUNT_APPROVED,
                     html_body=html_body,
                 )
                 logger.info("Setup password email sent to %s", payload.recipient_email)
@@ -53,6 +62,55 @@ class NotificationService:
                     "Failed to send setup password email to %s: %s", payload.recipient_email, error
                 )
                 notification.status = NotificationStatus.FAILED
+
+        elif payload.type == NotificationType.APPOINTMENT_CANCELLATION:
+            html_body = build_appointment_cancellation_email_html(
+                patient_name=payload.payload.get("patient_name", ""),
+                doctor_name=payload.payload.get("doctor_name", ""),
+                appointment_date=payload.payload.get("appointment_date", ""),
+                start_time=payload.payload.get("start_time", ""),
+                reason=payload.payload.get("reason"),
+            )
+
+            try:
+                await send_email(
+                    recipient_email=payload.recipient_email,
+                    subject=APPOINTMENT_CANCELLED,
+                    html_body=html_body,
+                )
+                logger.info("Appointment cancellation email sent to %s", payload.recipient_email)
+            except Exception as error:
+                logger.error(
+                    "Failed to send appointment cancellation email to %s: %s",
+                    payload.recipient_email,
+                    error,
+                )
+                notification.status = NotificationStatus.FAILED
+        elif payload.type == NotificationType.APPOINTMENT_CONFIRMATION:
+            html_body = build_appointment_confirmation_email_html(
+                patient_name=payload.payload.get("patient_name", ""),
+                doctor_name=payload.payload.get("doctor_name", ""),
+                appointment_date=payload.payload.get("appointment_date", ""),
+                start_time=payload.payload.get("start_time", ""),
+                payment_status=payload.payload.get("payment_status", ""),
+                consultation_fee=payload.payload.get("consultation_fee", ""),
+            )
+
+            try:
+                await send_email(
+                    recipient_email=payload.recipient_email,
+                    subject=APPOINTMENT_CONFIRMED,
+                    html_body=html_body,
+                )
+                logger.info("Appointment confirmation email sent to %s", payload.recipient_email)
+            except Exception as error:
+                logger.error(
+                    "Failed to send appointment confirmation email to %s: %s",
+                    payload.recipient_email,
+                    error,
+                )
+                notification.status = NotificationStatus.FAILED
+
         else:
             logger.info(
                 "Notification recorded (not yet wired to a real email) -> to=%s type=%s payload=%s",

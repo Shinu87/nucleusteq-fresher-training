@@ -18,28 +18,8 @@ from backend.services.booking_service import (
     BookingService,
     get_booking_service,
 )
+from backend.utils.appointment_mapper import to_appointment_response
 router = APIRouter(prefix=APIPrefixes.APPOINTMENTS, tags=[APITags.APPOINTMENTS])
-
-
-def _to_response(appointment) -> AppointmentResponse:
-    return AppointmentResponse(
-        id=str(appointment.id),
-        patient_id=str(appointment.patient_id),
-        patient_name=appointment.patient_name,
-        doctor_id=str(appointment.doctor_id),
-        doctor_name=appointment.doctor_name,
-        slot_id=str(appointment.slot_id),
-        appointment_date=appointment.appointment_date,
-        start_time=appointment.start_time,
-        end_time=appointment.end_time,
-        status=appointment.status,
-        payment_status=appointment.payment_status,
-        consultation_fee=appointment.consultation_fee,
-        booked_at=appointment.booked_at,
-        cancelled_at=appointment.cancelled_at,
-        completed_at=appointment.completed_at,
-    )
-
 
 @router.post("", response_model=AppointmentResponse)
 async def book_appointment(
@@ -51,7 +31,7 @@ async def book_appointment(
         current_user=current_user,
         slot_id=PydanticObjectId(payload.slot_id),
     )
-    return _to_response(appointment)
+    return to_appointment_response(appointment)
 
 
 @router.get("/my-appointments", response_model=list[AppointmentResponse])
@@ -66,7 +46,7 @@ async def get_my_appointments(
         patient_id=PydanticObjectId(current_user.id),
         status_filter=appointment_status,
     )
-    return [_to_response(appt) for appt in appointments]
+    return [to_appointment_response(appt) for appt in appointments]
 
 
 @router.patch("/{appointment_id}/cancel", response_model=AppointmentResponse)
@@ -79,7 +59,7 @@ async def cancel_appointment(
         patient_id=PydanticObjectId(current_user.id),
         appointment_id=appointment_id,
     )
-    return _to_response(appointment)
+    return to_appointment_response(appointment)
 
 
 @router.get("/doctor/appointments", response_model=list[AppointmentResponse])
@@ -98,7 +78,7 @@ async def get_doctor_appointments(
         status_filter=appointment_status,
         sort_order=sort,
     )
-    return [_to_response(appt) for appt in appointments]
+    return [to_appointment_response(appt) for appt in appointments]
 
 
 @router.patch("/{appointment_id}/complete", response_model=AppointmentResponse)
@@ -111,7 +91,7 @@ async def complete_appointment(
         doctor_id=PydanticObjectId(current_user.id),
         appointment_id=appointment_id,
     )
-    return _to_response(appointment)
+    return to_appointment_response(appointment)
 
 
 @router.patch("/{appointment_id}/no-show", response_model=AppointmentResponse)
@@ -124,4 +104,4 @@ async def mark_appointment_no_show(
         doctor_id=PydanticObjectId(current_user.id),
         appointment_id=appointment_id,
     )
-    return _to_response(appointment)
+    return to_appointment_response(appointment)

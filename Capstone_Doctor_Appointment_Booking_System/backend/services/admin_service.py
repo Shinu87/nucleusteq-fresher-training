@@ -51,7 +51,6 @@ class AdminService:
         if profile.approval_status != ApprovalStatus.APPROVED:
             raise DoctorNotApprovedException()
 
-        user.is_active = True
         user.account_status = AccountStatus.ACTIVE
         await self._admin_repository.save_user(user)
 
@@ -76,8 +75,7 @@ class AdminService:
         if profile.approval_status != ApprovalStatus.APPROVED:
             raise DoctorNotApprovedException()
 
-        user.is_active = False
-        user.account_status = AccountStatus.DEACTIVATED
+        user.account_status = AccountStatus.INACTIVE
         await self._admin_repository.save_user(user)
 
         await self._doctor_sync_service.sync_doctor(

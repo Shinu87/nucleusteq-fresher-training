@@ -2,10 +2,8 @@
 Constants used when building outbound emails (subjects, link paths).
 """
 
+DOCTOR_ACCOUNT_APPROVED = "Doctor Account Approved"
+APPOINTMENT_CANCELLED = "Your Appointment Has Been Cancelled"
+APPOINTMENT_CONFIRMED = "Your appointment is confirmed"
 
-class EmailSubjects:
-    DOCTOR_ACCOUNT_APPROVED = "Doctor Account Approved"
-
-
-class EmailLinkPaths:
-    SET_PASSWORD = "/set-password/{token}"
+SET_PASSWORD = "/set-password/{token}"

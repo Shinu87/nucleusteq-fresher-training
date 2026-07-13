@@ -8,6 +8,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from beanie import PydanticObjectId
 from fastapi import Depends, HTTPException, status
 from pymongo.errors import DuplicateKeyError
+from datetime import datetime
 
 from backend.constants.doctor_messages import DOCTOR_INACTIVE_OR_NOT_FOUND
 from backend.constants.user_messages import PATIENT_NOT_FOUND
@@ -82,7 +83,20 @@ class BookingService:
         slot = await self._availability_repository.get_by_id(slot_id)
         if slot is None:
             raise SlotNotFoundException()
+        
+        slot_datetime = datetime.combine(
+            slot.slot_date,
+            datetime.strptime(slot.start_time, "%H:%M").time(),
+        )
 
+        if slot_datetime < datetime.now():
+            raise SlotInPastException()
+
+        booking_deadline = slot_datetime - timedelta(hours=2)
+
+        if datetime.now() > booking_deadline:
+            raise SlotInPastException()
+                
         if slot.slot_date < date.today():
             raise SlotInPastException()
 

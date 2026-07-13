@@ -19,7 +19,6 @@ class DoctorProfileResponse(BaseModel):
     email: str
     phone_number: str
     account_status: AccountStatus
-    is_active: bool
 
     qualification: str
     specialization: Specialization
@@ -42,7 +41,6 @@ def to_doctor_profile_response(user, profile) -> "DoctorProfileResponse":
         email=user.email,
         phone_number=user.phone_number,
         account_status=user.account_status,
-        is_active=user.is_active,
         qualification=profile.qualification,
         specialization=profile.specialization,
         experience_years=profile.experience_years,

@@ -30,6 +30,7 @@ from backend.exceptions.custom_exceptions import (
     SlotNotEditableException,
     SlotNotFoundException,
     SlotOwnershipException,
+    DoctorAccountInactiveException
 )
 from backend.exceptions.custom_exceptions import DoctorProfileSyncMissingException
 
@@ -42,13 +43,15 @@ class AvailabilityService:
         self._availability_repository = availability_repository
         self._doctor_repository = doctor_repository
 
-    async def _ensure_doctor_exists(self, doctor_id: PydanticObjectId) -> None:
+    async def _ensure_doctor_can_manage_availability(self, doctor_id: PydanticObjectId) -> None:
         doctor = await self._doctor_repository.get_by_id(doctor_id)
         if doctor is None:
             raise DoctorProfileSyncMissingException()
+        if not doctor.is_active:
+            raise DoctorAccountInactiveException()
 
     async def create_slot(self, doctor_id: PydanticObjectId, payload: CreateSlotRequest) -> AvailabilitySlot:
-        await self._ensure_doctor_exists(doctor_id)
+        await self._ensure_doctor_can_manage_availability(doctor_id)
 
         if payload.end_time <= payload.start_time:
             raise InvalidSlotTimeRangeException()
@@ -86,6 +89,7 @@ class AvailabilityService:
     async def update_slot(
         self, doctor_id: PydanticObjectId, slot_id: PydanticObjectId, payload: UpdateSlotRequest
     ) -> AvailabilitySlot:
+        await self._ensure_doctor_can_manage_availability(doctor_id)
         slot = await self._get_owned_slot(doctor_id, slot_id)
 
         if slot.status != SlotStatus.AVAILABLE:
@@ -110,6 +114,7 @@ class AvailabilityService:
         return slot
 
     async def delete_slot(self, doctor_id: PydanticObjectId, slot_id: PydanticObjectId) -> None:
+        await self._ensure_doctor_can_manage_availability(doctor_id)
         slot = await self._get_owned_slot(doctor_id, slot_id)
 
         if slot.status != SlotStatus.AVAILABLE:
@@ -149,7 +154,7 @@ class AvailabilityService:
     async def generate_slots(
         self, doctor_id: PydanticObjectId, payload: GenerateSlotsRequest
     ) -> tuple[list[AvailabilitySlot], list[SlotTimeRange], int]:
-        await self._ensure_doctor_exists(doctor_id)
+        await self._ensure_doctor_can_manage_availability(doctor_id)
 
         time_pairs = self._build_slot_time_pairs(
             payload.start_time, payload.end_time, payload.duration_minutes
@@ -186,7 +191,7 @@ class AvailabilityService:
     async def block_range(
         self, doctor_id: PydanticObjectId, payload: BlockRangeRequest
     ) -> tuple[int, list[SlotTimeRange], list[SlotTimeRange]]:
-        await self._ensure_doctor_exists(doctor_id)
+        await self._ensure_doctor_can_manage_availability(doctor_id)
 
         slots_in_range = await self._availability_repository.find_in_time_range(
             doctor_id, payload.slot_date, payload.start_time, payload.end_time

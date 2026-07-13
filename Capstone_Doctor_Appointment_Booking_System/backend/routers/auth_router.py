@@ -42,7 +42,7 @@ def _to_profile_response(user: User) -> UserProfileResponse:
         role=user.role,
         gender=user.gender,
         date_of_birth=user.date_of_birth,
-        is_active=user.is_active,
+        account_status=user.account_status,
         created_at=user.created_at,
     )
 

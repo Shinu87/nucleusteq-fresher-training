@@ -29,9 +29,7 @@ class User(Document):
     date_of_birth: Optional[date] = None
 
     account_status: AccountStatus = Field(default=AccountStatus.ACTIVE)
-
-    is_active: bool = True
-
+    
     created_at: datetime = Field(default_factory=_utc_now)
     updated_at: datetime = Field(default_factory=_utc_now)
 

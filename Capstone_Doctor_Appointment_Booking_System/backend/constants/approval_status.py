@@ -7,6 +7,6 @@ from enum import Enum
 
 
 class ApprovalStatus(str, Enum):
-    PENDING_APPROVAL = "PENDING_APPROVAL"
+    PENDING = "PENDING"
     APPROVED = "APPROVED"
     REJECTED = "REJECTED"

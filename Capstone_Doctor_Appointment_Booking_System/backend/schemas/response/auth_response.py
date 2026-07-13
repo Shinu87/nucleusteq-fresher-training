@@ -7,6 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from backend.constants.account_status import AccountStatus
 from backend.constants.gender import Gender
 from backend.constants.roles import Role
 
@@ -19,7 +20,7 @@ class UserProfileResponse(BaseModel):
     role: Role
     gender: Optional[Gender] = None
     date_of_birth: Optional[date] = None
-    is_active: bool
+    account_status: AccountStatus
     created_at: datetime
 
 class TokenResponse(BaseModel):

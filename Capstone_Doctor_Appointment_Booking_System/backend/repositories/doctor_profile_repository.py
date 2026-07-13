@@ -18,6 +18,9 @@ class DoctorProfileRepository:
     async def find_by_license_number(self, license_number: str) -> Optional[DoctorProfile]:
         return await DoctorProfile.find_one(DoctorProfile.license_number == license_number)
 
+    async def find_by_user_id(self, user_id: PydanticObjectId) -> Optional[DoctorProfile]:
+        return await DoctorProfile.find_one(DoctorProfile.user_id == user_id)
+    
     async def get_by_id(self, doctor_profile_id: PydanticObjectId) -> Optional[DoctorProfile]:
         return await DoctorProfile.get(doctor_profile_id)
 

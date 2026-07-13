@@ -63,6 +63,7 @@ from backend.constants.doctor_errors import (
     DOCTOR_NOT_FOUND as DOCTOR_NOT_FOUND_CODE,
     DOCTOR_PROFILE_SYNC_MISSING as DOCTOR_PROFILE_SYNC_MISSING_CODE,
     DUPLICATE_LICENSE,
+    DOCTOR_ACCOUNT_INACTIVE,
 )
 from backend.constants.doctor_messages import (
     APPLICATION_ALREADY_REVIEWED as APPLICATION_ALREADY_REVIEWED_MESSAGE,
@@ -70,7 +71,23 @@ from backend.constants.doctor_messages import (
     DOCTOR_NOT_FOUND as DOCTOR_NOT_FOUND_MESSAGE,
     DOCTOR_PROFILE_SYNC_MISSING as DOCTOR_PROFILE_SYNC_MISSING_MESSAGE,
     LICENSE_ALREADY_REGISTERED,
+    DOCTOR_ACCOUNT_INACTIVE,
 )
+
+
+from backend.constants.leave_request_errors import (
+    INVALID_LEAVE_TIME_RANGE,
+    LEAVE_REJECTION_REASON_REQUIRED as LEAVE_REJECTION_REASON_REQUIRED_CODE,
+    LEAVE_REQUEST_ALREADY_REVIEWED as LEAVE_REQUEST_ALREADY_REVIEWED_CODE,
+    LEAVE_REQUEST_NOT_FOUND as LEAVE_REQUEST_NOT_FOUND_CODE,
+)
+from backend.constants.leave_request_messages import (
+    INVALID_LEAVE_TIME_RANGE as INVALID_LEAVE_TIME_RANGE_MESSAGE,
+    LEAVE_REJECTION_REASON_REQUIRED as LEAVE_REJECTION_REASON_REQUIRED_MESSAGE,
+    LEAVE_REQUEST_ALREADY_REVIEWED as LEAVE_REQUEST_ALREADY_REVIEWED_MESSAGE,
+    LEAVE_REQUEST_NOT_FOUND as LEAVE_REQUEST_NOT_FOUND_MESSAGE,
+)
+
 from backend.constants.slot_errors import (
     DUPLICATE_SLOT as DUPLICATE_SLOT_CODE,
     NO_SLOTS_GENERATED as NO_SLOTS_GENERATED_CODE,
@@ -303,6 +320,19 @@ class DoctorNotApprovedException(InvalidOperationException):
     def __init__(self, message: str = "This doctor's application has not been approved yet."):
         super().__init__(message)
 
+class DoctorAccountInactiveException(ForbiddenAccessException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This doctor is currently inactive and is not accepting appointments.",
+        )
+
+class DoctorAccountInactiveException(ForbiddenAccessException):
+
+    error_code = DOCTOR_ACCOUNT_INACTIVE
+
+    def __init__(self, message: str = DOCTOR_ACCOUNT_INACTIVE):
+        super().__init__(message)
 
 # Availability slot exceptions
 
@@ -423,6 +453,37 @@ class AppointmentTimeNotPassedException(InvalidOperationException):
     error_code = APPOINTMENT_TIME_NOT_PASSED
 
     def __init__(self, message: str = TIME_NOT_PASSED):
+        super().__init__(message)
+
+
+# Leave request exceptions
+
+
+class LeaveRequestNotFoundException(ResourceNotFoundException):
+    error_code = LEAVE_REQUEST_NOT_FOUND_CODE
+
+    def __init__(self, message: str = LEAVE_REQUEST_NOT_FOUND_MESSAGE):
+        super().__init__(message)
+
+
+class LeaveRequestAlreadyReviewedException(InvalidOperationException):
+    error_code = LEAVE_REQUEST_ALREADY_REVIEWED_CODE
+
+    def __init__(self, status_label: str):
+        super().__init__(LEAVE_REQUEST_ALREADY_REVIEWED_MESSAGE.format(status=status_label))
+
+
+class InvalidLeaveTimeRangeException(InvalidOperationException):
+    error_code = INVALID_LEAVE_TIME_RANGE
+
+    def __init__(self, message: str = INVALID_LEAVE_TIME_RANGE_MESSAGE):
+        super().__init__(message)
+
+
+class LeaveRejectionReasonRequiredException(InvalidOperationException):
+    error_code = LEAVE_REJECTION_REASON_REQUIRED_CODE
+
+    def __init__(self, message: str = LEAVE_REJECTION_REASON_REQUIRED_MESSAGE):
         super().__init__(message)
 
 

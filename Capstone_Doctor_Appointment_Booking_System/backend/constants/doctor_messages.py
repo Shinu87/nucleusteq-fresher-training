@@ -12,3 +12,8 @@ LICENSE_ALREADY_REGISTERED = "This license number is already registered"
 APPLICATION_NOT_FOUND = "Doctor application not found"
 LINKED_USER_NOT_FOUND = "Linked user account not found"
 APPLICATION_ALREADY_REVIEWED = "This application has already been {status}"
+DOCTOR_ACCOUNT_INACTIVE = (
+    "Your account is currently inactive. You cannot create, update, delete, "
+    "or otherwise modify availability slots while inactive. Existing "
+    "appointments can still be viewed and completed."
+)

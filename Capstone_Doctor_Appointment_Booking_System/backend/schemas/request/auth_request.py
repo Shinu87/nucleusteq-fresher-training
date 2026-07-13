@@ -27,6 +27,13 @@ class _ContactFields(BaseModel):
             raise ValueError(ValidationMessages.FULL_NAME_INVALID)      
         return value
 
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, value: str) -> str:
+        if not ValidationPatterns.EMAIL_REGEX.match(value):
+            raise ValueError(ValidationMessages.EMAIL_INVALID)
+        return value
+    
     @field_validator("phone_number")
     @classmethod
     def validate_phone_number(cls, value: str) -> str:

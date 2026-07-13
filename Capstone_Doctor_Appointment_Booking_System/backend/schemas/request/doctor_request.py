@@ -6,6 +6,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from backend.constants.account_status import AccountStatus
 from backend.constants.gender import Gender
 from backend.constants.specialization import Specialization
 from backend.constants.validation_constants import ValidationLimits, ValidationMessages
@@ -37,3 +38,8 @@ class DoctorRegisterRequest(_ContactFields):
 class RejectDoctorRequest(BaseModel):
 
     reason: Optional[str] = None
+
+class UpdateAccountStatusRequest(BaseModel):
+    """Body for PATCH /doctor/account-status - doctor self-service only."""
+
+    account_status: AccountStatus
