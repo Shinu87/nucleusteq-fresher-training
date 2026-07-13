@@ -7,6 +7,7 @@ import {
   FaSearch,
   FaClipboardList,
   FaTachometerAlt,
+  FaUserShield,
   FaUserCircle,
   FaSignOutAlt,
   FaSignInAlt,
@@ -65,37 +66,38 @@ function Navbar() {
               Dashboard
             </Link>
           )}
-
+          {isAuthenticated && user.role === ROLES.ADMIN && (
+            <Link
+              className="btn btn-outline-primary btn-sm rounded-pill px-3"
+              to={ROUTES.ADMIN_DASHBOARD}
+            >
+              <FaUserShield className="me-2" />
+              Admin Dashboard
+            </Link>
+          )}
           {isAuthenticated ? (
             <div className="dropdown">
               <button
-                className="btn bg-primary-subtle text-primary border border-primary-subtle btn-sm dropdown-toggle rounded-pill px-3"
+                className="btn btn-outline-secondary btn-sm dropdown-toggle d-flex align-items-center gap-2"
                 type="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <FaUserCircle className="me-2" />
+                <i className="bi bi-person-circle"></i>
                 {user.full_name}
               </button>
-
-              <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-4 mt-2">
+              <ul className="dropdown-menu dropdown-menu-end">
                 <li>
-                  <span className="dropdown-item-text text-muted small">
-                    {user.email}
-                  </span>
+                  <Link className="dropdown-item" to={ROUTES.PROFILE}>
+                    <i className="bi bi-person me-2"></i>Profile
+                  </Link>
                 </li>
-
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-
                 <li>
                   <button
                     className="dropdown-item text-danger"
                     onClick={handleLogout}
                   >
-                    <FaSignOutAlt className="me-2" />
-                    Logout
+                    <i className="bi bi-box-arrow-right me-2"></i>Logout
                   </button>
                 </li>
               </ul>
@@ -103,18 +105,16 @@ function Navbar() {
           ) : (
             <div className="d-flex align-items-center gap-2">
               <Link
-                className="btn btn-outline-success btn-sm rounded-pill px-3"
+                className="btn btn-outline-success btn-sm px-3"
                 to={ROUTES.LOGIN}
               >
-                <FaSignInAlt className="me-2" />
                 Login
               </Link>
 
               <Link
-                className="btn btn-success btn-sm rounded-pill px-3"
+                className="btn btn-success btn-sm px-3"
                 to={ROUTES.REGISTER_PATIENT}
               >
-                <FaUserPlus className="me-2" />
                 Register
               </Link>
             </div>
