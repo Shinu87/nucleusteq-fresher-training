@@ -1,53 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuth } from "../context/AuthContext";
-import { updateAccountStatus } from "../api/doctorApi";
+import { getDoctorAppointments } from "../api/appointmentApi";
+import { listMySlots } from "../api/availabilityApi";
+import { getMyLeaveRequests } from "../api/leaveRequestApi";
 import { handleApiError } from "../utils/handleApiError";
-import { ACCOUNT_STATUS } from "../constants/accountStatus";
+import { APPOINTMENT_STATUS } from "../constants/appointmentStatus";
+import { SLOT_STATUS } from "../constants/slotStatus";
+import { LEAVE_REQUEST_STATUS } from "../constants/leaveRequestStatus";
 import { ROUTES } from "../constants/routes";
 import {
   FaUserMd,
-  FaEnvelope,
-  FaPhone,
-  FaCheckCircle,
-  FaTimesCircle,
   FaCalendarAlt,
   FaClipboardList,
   FaPlaneDeparture,
+  FaCalendarCheck,
+  FaClock,
 } from "react-icons/fa";
 
+function todayString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function DoctorDashboardPage() {
-  const { user } = useAuth();
-  const [accountStatus, setAccountStatus] = useState(user.account_status);
-  const [updating, setUpdating] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+  const [slots, setSlots] = useState([]);
+  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  const isActive = accountStatus === ACCOUNT_STATUS.ACTIVE;
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
-  // toggle between ACTIVE and INACTIVE
-  async function handleToggleStatus() {
-    const nextStatus = isActive
-      ? ACCOUNT_STATUS.INACTIVE
-      : ACCOUNT_STATUS.ACTIVE;
-
-    if (nextStatus === ACCOUNT_STATUS.INACTIVE) {
-      const confirmed = window.confirm(
-        "Going inactive hides you from patient search. Continue?",
-      );
-      if (!confirmed) return;
-    }
-
-    setUpdating(true);
+  async function fetchStats() {
+    setStatsLoading(true);
     try {
-      const response = await updateAccountStatus(nextStatus);
-      setAccountStatus(response.data.account_status);
-      toast.success(`Account is now ${response.data.account_status}`);
+      const [appointmentsRes, slotsRes, leaveRequestsRes] = await Promise.all([
+        getDoctorAppointments("", "asc"),
+        listMySlots(),
+        getMyLeaveRequests(),
+      ]);
+      setAppointments(appointmentsRes.data);
+      setSlots(slotsRes.data);
+      setLeaveRequests(leaveRequestsRes.data);
     } catch (err) {
       toast.error(handleApiError(err));
     } finally {
-      setUpdating(false);
+      setStatsLoading(false);
     }
   }
+
+  const today = todayString();
+
+  const todaysAppointmentsCount = appointments.filter(
+    (a) =>
+      a.appointment_date === today && a.status === APPOINTMENT_STATUS.BOOKED,
+  ).length;
+
+  const upcomingAppointmentsCount = appointments.filter(
+    (a) => a.appointment_date > today && a.status === APPOINTMENT_STATUS.BOOKED,
+  ).length;
+
+  const availableSlotsCount = slots.filter(
+    (s) => s.status === SLOT_STATUS.AVAILABLE,
+  ).length;
+
+  const pendingLeaveCount = leaveRequests.filter(
+    (r) => r.request_status === LEAVE_REQUEST_STATUS.PENDING,
+  ).length;
 
   return (
     <div className="container py-4">
@@ -60,92 +80,101 @@ function DoctorDashboardPage() {
               Doctor Dashboard
             </h2>
             <p className="text-muted">
-              Welcome to your dashboard. Manage your profile, appointments and
-              availability.
+              Your appointments, availability and leave requests at a glance.
             </p>
           </div>
 
-          {/* Doctor Profile Card */}
-          <div className="card shadow border-0 rounded-4">
-            <div className="card-body p-4">
-              <div className="row align-items-center">
-                <div className="col-md-2 text-center mb-3 mb-md-0">
-                  <div
-                    className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center mx-auto"
-                    style={{
-                      width: "90px",
-                      height: "90px",
-                      fontSize: "40px",
-                    }}
-                  >
-                    <FaUserMd />
-                  </div>
+          {/* Quick Stats */}
+          <div className="row g-4 mb-4">
+            <div className="col-6 col-md-3">
+              <Link
+                to={ROUTES.DOCTOR_APPOINTMENTS}
+                className="card h-100 shadow-sm border-0 rounded-4 text-center text-decoration-none"
+              >
+                <div className="card-body p-4">
+                  <FaCalendarCheck className="text-primary mb-3" size={35} />
+                  <h3 className="fw-bold mb-0">
+                    {statsLoading ? "-" : todaysAppointmentsCount}
+                  </h3>
+                  <p className="text-muted mb-0">Today's Appointments</p>
                 </div>
+              </Link>
+            </div>
 
-                <div className="col-md-10">
-                  <h3 className="fw-bold mb-3">Dr. {user.full_name}</h3>
-
-                  <div className="row">
-                    <div className="col-md-6 mb-2">
-                      <FaEnvelope className="text-primary me-2" />
-                      {user.email}
-                    </div>
-
-                    <div className="col-md-6 mb-2">
-                      <FaPhone className="text-success me-2" />
-                      {user.phone_number}
-                    </div>
-                  </div>
-
-                  <div className="mt-3">
-                    <strong>Account Status : </strong>
-
-                    {isActive ? (
-                      <span className="badge bg-success fs-6">
-                        <FaCheckCircle className="me-1" />
-                        {accountStatus}
-                      </span>
-                    ) : (
-                      <span className="badge bg-danger fs-6">
-                        <FaTimesCircle className="me-1" />
-                        {accountStatus}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-4">
-                    <button
-                      className={`btn ${
-                        isActive ? "btn-outline-danger" : "btn-outline-success"
-                      } px-4`}
-                      disabled={updating}
-                      onClick={handleToggleStatus}
-                    >
-                      {updating
-                        ? "Updating..."
-                        : isActive
-                          ? "Go Inactive"
-                          : "Go Active"}
-                    </button>
-                  </div>
+            <div className="col-6 col-md-3">
+              <Link
+                to={ROUTES.DOCTOR_APPOINTMENTS}
+                className="card h-100 shadow-sm border-0 rounded-4 text-center text-decoration-none"
+              >
+                <div className="card-body p-4">
+                  <FaCalendarAlt className="text-primary mb-3" size={35} />
+                  <h3 className="fw-bold mb-0">
+                    {statsLoading ? "-" : upcomingAppointmentsCount}
+                  </h3>
+                  <p className="text-muted mb-0">Upcoming Appointments</p>
                 </div>
-              </div>
+              </Link>
+            </div>
+
+            <div className="col-6 col-md-3">
+              <Link
+                to={ROUTES.DOCTOR_AVAILABILITY}
+                className="card h-100 shadow-sm border-0 rounded-4 text-center text-decoration-none"
+              >
+                <div className="card-body p-4">
+                  <FaClock className="text-success mb-3" size={35} />
+                  <h3 className="fw-bold mb-0">
+                    {statsLoading ? "-" : availableSlotsCount}
+                  </h3>
+                  <p className="text-muted mb-0">Available Slots</p>
+                </div>
+              </Link>
+            </div>
+
+            <div className="col-6 col-md-3">
+              <Link
+                to={ROUTES.DOCTOR_LEAVE_REQUESTS}
+                className="card h-100 shadow-sm border-0 rounded-4 text-center text-decoration-none"
+              >
+                <div className="card-body p-4">
+                  <FaPlaneDeparture className="text-warning mb-3" size={35} />
+                  <h3 className="fw-bold mb-0">
+                    {statsLoading ? "-" : pendingLeaveCount}
+                  </h3>
+                  <p className="text-muted mb-0">Pending Leave Requests</p>
+                </div>
+              </Link>
             </div>
           </div>
 
           {/* Feature Cards */}
-          <div className="row mt-5 g-4">
-            <div className="col-md-4">
+          <div className="row g-4">
+            <div className="col-md-3">
+              <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
+                <div className="card-body p-4">
+                  <FaUserMd className="text-secondary mb-3" size={45} />
+                  <h5 className="fw-bold">My Profile</h5>
+                  <p className="text-muted">
+                    View your details and manage account status.
+                  </p>
+                  <Link
+                    to={ROUTES.PROFILE}
+                    className="btn btn-outline-secondary w-100"
+                  >
+                    View Profile
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
                 <div className="card-body p-4">
                   <FaCalendarAlt className="text-primary mb-3" size={45} />
-
                   <h5 className="fw-bold">Availability</h5>
-
                   <p className="text-muted">
                     Create, update and manage your available slots.
                   </p>
-
                   <Link
                     to={ROUTES.DOCTOR_AVAILABILITY}
                     className="btn btn-primary w-100"
@@ -156,17 +185,14 @@ function DoctorDashboardPage() {
               </div>
             </div>
 
-            <div className="col-md-4">
+            <div className="col-md-3">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
                 <div className="card-body p-4">
                   <FaClipboardList className="text-success mb-3" size={45} />
-
                   <h5 className="fw-bold">Appointments</h5>
-
                   <p className="text-muted">
                     View and manage all your booked appointments.
                   </p>
-
                   <Link
                     to={ROUTES.DOCTOR_APPOINTMENTS}
                     className="btn btn-success w-100"
@@ -177,17 +203,14 @@ function DoctorDashboardPage() {
               </div>
             </div>
 
-            <div className="col-md-4">
+            <div className="col-md-3">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
                 <div className="card-body p-4">
                   <FaPlaneDeparture className="text-warning mb-3" size={45} />
-
                   <h5 className="fw-bold">Leave Requests</h5>
-
                   <p className="text-muted">
                     Submit and track your emergency leave requests.
                   </p>
-
                   <Link
                     to={ROUTES.DOCTOR_LEAVE_REQUESTS}
                     className="btn btn-warning text-dark w-100"

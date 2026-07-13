@@ -61,7 +61,7 @@ const STATUS_THEME = {
     bg: "#f6eef2",
     border: "#a8557a",
     badgeClass: "bg-danger",
-    label: "No Show",
+    label: "Did Not Attend",
   },
   [APPOINTMENT_STATUS.CANCELLED]: {
     bg: "#f2f2f2",
