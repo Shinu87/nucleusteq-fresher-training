@@ -87,7 +87,7 @@ function DoctorCard({ doctor }) {
             fontWeight: "600",
           }}
         >
-          View Profile
+          Book Appointment{" "}
         </Link>
       </div>
     </div>

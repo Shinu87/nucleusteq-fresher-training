@@ -11,6 +11,13 @@ import DoctorRegisterPage from "../pages/DoctorRegisterPage";
 import SetPasswordPage from "../pages/SetPasswordPage";
 import DoctorSearchPage from "../pages/DoctorSearchPage";
 import DoctorProfilePage from "../pages/DoctorProfilePage";
+import MyAppointmentsPage from "../pages/MyAppointmentsPage";
+import DoctorDashboardPage from "../pages/DoctorDashboardPage";
+import DoctorAvailabilityPage from "../pages/DoctorAvailabilityPage";
+import DoctorAppointmentsPage from "../pages/DoctorAppointmentsPage";
+import { ROLES } from "../constants/roles";
+import DoctorLeaveRequestPage from "../pages/DoctorLeaveRequestPage";
+import BookingConfirmationPage from "../pages/BookingConfirmationPage";
 
 function AppRoutes() {
   return (
@@ -29,11 +36,65 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      /* only patients confirm payment and complete a booking */
+      <Route
+        path={ROUTES.BOOKING_CONFIRMATION}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+            <BookingConfirmationPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path={ROUTES.DOCTOR_DETAIL}
         element={
           <ProtectedRoute>
             <DoctorProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      /* only patients can view their own appointments */
+      <Route
+        path={ROUTES.MY_APPOINTMENTS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+            <MyAppointmentsPage />
+          </ProtectedRoute>
+        }
+      />
+      /* only doctors can view their dashboard */
+      <Route
+        path={ROUTES.DOCTOR_DASHBOARD}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <DoctorDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      /* only doctors manage their own availability */
+      <Route
+        path={ROUTES.DOCTOR_AVAILABILITY}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <DoctorAvailabilityPage />
+          </ProtectedRoute>
+        }
+      />
+      /* only doctors view/act on their own appointments */
+      <Route
+        path={ROUTES.DOCTOR_APPOINTMENTS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <DoctorAppointmentsPage />
+          </ProtectedRoute>
+        }
+      />
+      {/* only doctors request/view their own leave requests */}
+      <Route
+        path={ROUTES.DOCTOR_LEAVE_REQUESTS}
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+            <DoctorLeaveRequestPage />
           </ProtectedRoute>
         }
       />
