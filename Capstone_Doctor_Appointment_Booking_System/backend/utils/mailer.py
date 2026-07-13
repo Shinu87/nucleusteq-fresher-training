@@ -49,6 +49,32 @@ def build_setup_password_email_html(setup_link: str) -> str:
     """
 
 
+def build_appointment_confirmation_email_html(
+    patient_name: str,
+    doctor_name: str,
+    appointment_date: str,
+    start_time: str,
+    payment_status: str,
+    consultation_fee: float,
+) -> str:
+    return f"""
+    <html>
+      <body>
+        <h2>Appointment Confirmed</h2>
+        <p>Dear {patient_name},</p>
+        <p>Your appointment with <strong>Dr. {doctor_name}</strong> has been confirmed.</p>
+        <table>
+          <tr><td>Date:</td><td>{appointment_date}</td></tr>
+          <tr><td>Time:</td><td>{start_time}</td></tr>
+          <tr><td>Consultation Fee:</td><td>{consultation_fee}</td></tr>
+          <tr><td>Payment Status:</td><td>{payment_status}</td></tr>
+        </table>
+        <p>Thank you for booking with us.</p>
+      </body>
+    </html>
+    """
+
+
 def build_appointment_cancellation_email_html(
     patient_name: str,
     doctor_name: str,
