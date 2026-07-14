@@ -7,7 +7,7 @@ import { handleApiError } from "../utils/handleApiError";
 import { useAuth } from "../context/AuthContext";
 import { ROUTES } from "../constants/routes";
 import { emailRules } from "../validations/authValidation";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 function LoginPage() {
   const {
     register,
@@ -15,6 +15,7 @@ function LoginPage() {
     formState: { errors },
   } = useForm();
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -58,11 +59,28 @@ function LoginPage() {
 
           <div className="mb-3">
             <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              {...register("password", { required: "Password is required" })}
-            />
+
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                {...register("password", {
+                  required: "Password is required",
+                })}
+              />
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
+            </div>
+
             {errors.password && (
               <div className="field-error">{errors.password.message}</div>
             )}
@@ -76,12 +94,27 @@ function LoginPage() {
             {submitting ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="mt-3 mb-0">
-          New patient? <Link to={ROUTES.REGISTER_PATIENT}>Register here</Link>
-        </p>
-        <p className="mb-0">
-          Are you a doctor? <Link to={ROUTES.REGISTER_DOCTOR}>Apply here</Link>
-        </p>
+        <div className="mt-4 text-center">
+          <p className="text-muted mb-3">Don't have an account?</p>
+
+          <div className="d-grid gap-2">
+            <Link
+              to={ROUTES.REGISTER_PATIENT}
+              className="btn btn-outline-primary d-flex justify-content-center align-items-center py-2"
+            >
+              <i className="bi bi-person-plus-fill me-2"></i>
+              Register as Patient
+            </Link>
+
+            <Link
+              to={ROUTES.REGISTER_DOCTOR}
+              className="btn btn-outline-success d-flex justify-content-center align-items-center py-2"
+            >
+              <i className="bi bi-heart-pulse-fill me-2"></i>
+              Apply as Doctor
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
