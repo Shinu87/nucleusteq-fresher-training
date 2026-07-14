@@ -139,9 +139,13 @@ function PatientRegisterPage() {
             {submitting ? "Registering..." : "Register"}
           </button>
         </form>
-        <p className="mt-3 mb-0">
-          Already have an account? <Link to={ROUTES.LOGIN}>Login</Link>
-        </p>
+        <div className="mt-4 text-center">
+          <p className="text-muted mb-2">Already have an account?</p>
+
+          <Link to={ROUTES.LOGIN} className="btn btn-outline-primary w-100">
+            Login
+          </Link>
+        </div>
       </div>
     </div>
   );

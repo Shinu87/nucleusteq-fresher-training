@@ -116,18 +116,15 @@ function AdminDashboardPage() {
           <div className="row mt-5 g-4">
             <div className="col-md-4">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
-                <div className="card-body p-4">
+                <div className="card-body p-4 d-flex flex-column align-items-center">
                   <FaUserMd className="text-primary mb-3" size={45} />
-
                   <h5 className="fw-bold">Doctor Approvals</h5>
-
                   <p className="text-muted">
                     Review and approve pending doctor registrations.
                   </p>
-
                   <Link
                     to={ROUTES.ADMIN_DOCTOR_APPROVALS}
-                    className="btn btn-primary w-100"
+                    className="btn btn-primary w-100 mt-auto"
                   >
                     Doctor Approvals
                   </Link>
@@ -137,18 +134,13 @@ function AdminDashboardPage() {
 
             <div className="col-md-4">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
-                <div className="card-body p-4">
+                <div className="card-body p-4 d-flex flex-column align-items-center">
                   <FaUsers className="text-success mb-3" size={45} />
-
                   <h5 className="fw-bold">Patients</h5>
-
-                  <p className="text-muted">
-                    View and manage all registered patients.
-                  </p>
-
+                  <p className="text-muted">View all registered patients.</p>
                   <Link
                     to={ROUTES.ADMIN_PATIENTS}
-                    className="btn btn-success w-100"
+                    className="btn btn-success w-100 mt-auto"
                   >
                     Patients
                   </Link>
@@ -158,18 +150,15 @@ function AdminDashboardPage() {
 
             <div className="col-md-4">
               <div className="card h-100 shadow-sm border-0 rounded-4 text-center">
-                <div className="card-body p-4">
+                <div className="card-body p-4 d-flex flex-column align-items-center">
                   <FaPlaneDeparture className="text-warning mb-3" size={45} />
-
                   <h5 className="fw-bold">Leave Requests</h5>
-
                   <p className="text-muted">
                     Review doctor emergency leave requests.
                   </p>
-
                   <Link
                     to={ROUTES.ADMIN_LEAVE_REQUESTS}
-                    className="btn btn-warning text-dark w-100"
+                    className="btn btn-warning text-dark w-100 mt-auto"
                   >
                     Leave Requests
                   </Link>
