@@ -12,6 +12,7 @@ import {
   FaSignOutAlt,
   FaSignInAlt,
   FaUserPlus,
+  FaHome,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -38,6 +39,15 @@ function Navbar() {
         </Link>
 
         <div className="d-flex align-items-center gap-2">
+          {isAuthenticated && (
+            <Link
+              className="btn btn-outline-primary btn-sm rounded-pill px-3"
+              to={ROUTES.HOME}
+            >
+              <FaHome className="me-2" />
+              Home
+            </Link>
+          )}
           {isAuthenticated && user.role === ROLES.PATIENT && (
             <>
               <Link

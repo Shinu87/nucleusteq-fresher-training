@@ -94,12 +94,27 @@ function LoginPage() {
             {submitting ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="mt-3 mb-0">
-          New patient? <Link to={ROUTES.REGISTER_PATIENT}>Register here</Link>
-        </p>
-        <p className="mb-0">
-          Are you a doctor? <Link to={ROUTES.REGISTER_DOCTOR}>Apply here</Link>
-        </p>
+        <div className="mt-4 text-center">
+          <p className="text-muted mb-3">Don't have an account?</p>
+
+          <div className="d-grid gap-2">
+            <Link
+              to={ROUTES.REGISTER_PATIENT}
+              className="btn btn-outline-primary d-flex justify-content-center align-items-center py-2"
+            >
+              <i className="bi bi-person-plus-fill me-2"></i>
+              Register as Patient
+            </Link>
+
+            <Link
+              to={ROUTES.REGISTER_DOCTOR}
+              className="btn btn-outline-success d-flex justify-content-center align-items-center py-2"
+            >
+              <i className="bi bi-heart-pulse-fill me-2"></i>
+              Apply as Doctor
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
