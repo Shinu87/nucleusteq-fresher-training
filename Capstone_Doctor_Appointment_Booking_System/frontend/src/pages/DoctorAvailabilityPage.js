@@ -313,7 +313,7 @@ function DoctorAvailabilityPage() {
         {/*  Add New Slot  */}
         <div className="col-lg-4 col-md-6">
           <div className="card shadow-sm rounded-4 border border-primary-subtle bg-primary-subtle bg-opacity-25 h-100">
-            <div className="card-body p-4">
+            <div className="card-body p-4 d-flex flex-column">
               <div className="d-flex align-items-center mb-2">
                 <div
                   className="rounded-circle bg-white text-primary d-inline-flex align-items-center justify-content-center me-3 shadow-sm"
@@ -329,11 +329,11 @@ function DoctorAvailabilityPage() {
               </p>
 
               <form
-                className="row g-3"
+                className="d-flex flex-column gap-3 flex-grow-1"
                 onSubmit={addSlotForm.handleSubmit(onAddSlot)}
               >
                 {/* Date */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaCalendarAlt className="me-2 text-primary" />
                     Date
@@ -353,7 +353,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Start Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-success" />
                     Start Time
@@ -373,7 +373,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* End Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-danger" />
                     End Time
@@ -393,7 +393,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Button */}
-                <div className="col-12 d-grid">
+                <div className="d-grid mt-auto">
                   <button
                     type="submit"
                     className="btn btn-outline-primary"
@@ -411,7 +411,7 @@ function DoctorAvailabilityPage() {
         {/*  Generate Slots for a Day  */}
         <div className="col-lg-4 col-md-6">
           <div className="card shadow-sm rounded-4 border border-success-subtle bg-success-subtle bg-opacity-25 h-100">
-            <div className="card-body p-4">
+            <div className="card-body p-4 d-flex flex-column">
               <div className="d-flex align-items-center mb-2">
                 <div
                   className="rounded-circle bg-white text-success d-inline-flex align-items-center justify-content-center me-3 shadow-sm"
@@ -430,11 +430,11 @@ function DoctorAvailabilityPage() {
               </p>
 
               <form
-                className="row g-3"
+                className="d-flex flex-column gap-3 flex-grow-1"
                 onSubmit={generateForm.handleSubmit(onGenerateSlots)}
               >
                 {/* Date */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaCalendarAlt className="me-2 text-primary" />
                     Date
@@ -454,7 +454,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Start Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-success" />
                     Start Time
@@ -474,7 +474,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* End Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-danger" />
                     End Time
@@ -494,7 +494,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Duration */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaStopwatch className="me-2 text-warning" />
                     Duration (Minutes)
@@ -518,7 +518,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Button */}
-                <div className="col-12 d-grid">
+                <div className="d-grid mt-auto">
                   <button
                     type="submit"
                     className="btn btn-outline-success"
@@ -540,7 +540,7 @@ function DoctorAvailabilityPage() {
             style={{ backgroundColor: "#fdf0f3" }}
           >
             {" "}
-            <div className="card-body p-4">
+            <div className="card-body p-4 d-flex flex-column">
               <div className="d-flex align-items-center mb-2">
                 <div
                   className="rounded-circle bg-white d-inline-flex align-items-center justify-content-center me-3 shadow-sm"
@@ -563,11 +563,11 @@ function DoctorAvailabilityPage() {
               </p>
 
               <form
-                className="row g-3"
+                className="d-flex flex-column gap-3 flex-grow-1"
                 onSubmit={blockForm.handleSubmit(onBlockRange)}
               >
                 {/* Date */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaCalendarAlt className="me-2 text-primary" />
                     Date
@@ -587,7 +587,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Start Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-success" />
                     Start Time
@@ -607,7 +607,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* End Time */}
-                <div className="col-12">
+                <div>
                   <label className="form-label fw-semibold small">
                     <FaClock className="me-2 text-danger" />
                     End Time
@@ -627,7 +627,7 @@ function DoctorAvailabilityPage() {
                 </div>
 
                 {/* Button */}
-                <div>
+                <div className="d-grid mt-auto">
                   <button
                     type="submit"
                     className="btn btn-outline-danger"
