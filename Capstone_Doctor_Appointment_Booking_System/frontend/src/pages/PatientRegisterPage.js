@@ -22,6 +22,7 @@ function PatientRegisterPage() {
     formState: { errors },
   } = useForm();
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // send the form data to backend and redirect to login on success
@@ -45,46 +46,96 @@ function PatientRegisterPage() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="mb-3">
             <label className="form-label">Full Name</label>
-            <input className="form-control" {...register("full_name", fullNameRules)} />
-            {errors.full_name && <div className="field-error">{errors.full_name.message}</div>}
+            <input
+              className="form-control"
+              {...register("full_name", fullNameRules)}
+            />
+            {errors.full_name && (
+              <div className="field-error">{errors.full_name.message}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Email</label>
-            <input className="form-control" {...register("email", emailRules)} />
-            {errors.email && <div className="field-error">{errors.email.message}</div>}
+            <input
+              className="form-control"
+              {...register("email", emailRules)}
+            />
+            {errors.email && (
+              <div className="field-error">{errors.email.message}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Phone Number</label>
-            <input className="form-control" {...register("phone_number", phoneRules)} />
-            {errors.phone_number && <div className="field-error">{errors.phone_number.message}</div>}
+            <input
+              className="form-control"
+              {...register("phone_number", phoneRules)}
+            />
+            {errors.phone_number && (
+              <div className="field-error">{errors.phone_number.message}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Gender</label>
-            <select className="form-select" {...register("gender", genderRules)}>
+            <select
+              className="form-select"
+              {...register("gender", genderRules)}
+            >
               <option value="">Select gender</option>
               <option value={GENDERS.MALE}>Male</option>
               <option value={GENDERS.FEMALE}>Female</option>
               <option value={GENDERS.OTHER}>Other</option>
             </select>
-            {errors.gender && <div className="field-error">{errors.gender.message}</div>}
+            {errors.gender && (
+              <div className="field-error">{errors.gender.message}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Date of Birth</label>
-            <input type="date" className="form-control" {...register("date_of_birth", dobRules)} />
-            {errors.date_of_birth && <div className="field-error">{errors.date_of_birth.message}</div>}
+            <input
+              type="date"
+              className="form-control"
+              {...register("date_of_birth", dobRules)}
+            />
+            {errors.date_of_birth && (
+              <div className="field-error">{errors.date_of_birth.message}</div>
+            )}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Password</label>
-            <input type="password" className="form-control" {...register("password", passwordRules)} />
-            {errors.password && <div className="field-error">{errors.password.message}</div>}
+
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                {...register("password", passwordRules)}
+              />
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                <i
+                  className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                ></i>
+              </button>
+            </div>
+
+            {errors.password && (
+              <div className="field-error">{errors.password.message}</div>
+            )}
           </div>
 
-          <button type="submit" className="btn btn-primary w-100" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={submitting}
+          >
             {submitting ? "Registering..." : "Register"}
           </button>
         </form>
