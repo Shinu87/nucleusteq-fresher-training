@@ -1,0 +1,220 @@
+body {
+  background-color: #f5f6f8;
+}
+
+.page-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.section-title {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.app-navbar {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.btn-primary {
+  background-color: #0E8F75;
+  border-color: #0E8F75;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #08745E;
+  border-color: #08745E;
+}
+
+.btn-primary:focus {
+  box-shadow: 0 0 0 0.25rem rgba(14, 143, 117, 0.25);
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2D6A4F;
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.5px;
+}
+
+.auth-subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+.user-greeting {
+  font-size: 0.95rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Filled Button */
+.btn-success {
+  background: #2D6A4F;
+  border-color: #2D6A4F;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+
+.btn-success:hover {
+  background: #1B4332;
+  border-color: #1B4332;
+  transform: translateY(-2px);
+}
+
+/* Outline Button */
+.btn-outline-success {
+  color: #2D6A4F;
+  border-color: #2D6A4F;
+  border-radius: 8px;
+}
+
+.btn-outline-success:hover {
+  background: #2D6A4F;
+  border-color: #2D6A4F;
+  color: #fff;
+}
+
+/* Logout */
+.btn-outline-danger {
+  border-radius: 8px;
+}
+
+.btn-outline-danger:hover {
+  transform: translateY(-2px);
+}
+
+/* Home page hero */
+.hero-section {
+  background-color: #eef7f4;
+  border-bottom: 1px solid #dee2e6;
+  padding: 64px 16px;
+}
+
+.hero-title {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1B4332;
+}
+
+.hero-subtitle {
+  color: #495057;
+  max-width: 640px;
+  margin: 12px auto 0;
+}
+
+/* Home page feature cards */
+.feature-card {
+  height: 100%;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.feature-icon {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+/* Home page about section */
+.about-card {
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin: 40px 0;
+}
+
+.appointment-card {
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.appointment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+.appointment-info div {
+  font-size: 15px;
+}
+
+.appointment-card .badge {
+  font-size: 0.8rem;
+  padding: 8px 12px;
+}
+
+.appointment-card .btn {
+  font-weight: 600;
+}
+
+/* Doctor dashboard: widget cards below the stats */
+.dashboard-widget {
+  height: 100%;
+  padding: 20px;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.widget-title {
+  font-weight: 600;
+  color: #1B4332;
+  margin-bottom: 16px;
+}
+
+.widget-list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f3f5;
+  font-size: 0.92rem;
+}
+
+.widget-list-item:last-of-type {
+  border-bottom: none;
+}
+
+.widget-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: #0E8F75;
+  text-decoration: none;
+}
+
+.widget-link:hover {
+  text-decoration: underline;
+}
+
+.status-badge {
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 20px;
+}
+
+.status-badge-blue {
+  background: #eaf4ff;
+  color: #1a5fb4;
+}
+
+.status-badge-green {
+  background: #e8f7ef;
+  color: #1B4332;
+}
+
+.status-badge-red {
+  background: #fdecea;
+  color: #a02b2b;
+}
+
+.status-badge-grey {
+  background: #f1f3f5;
+  color: #495057;
+}
