@@ -195,9 +195,12 @@ and stored in Airflow XCom.
 
 The final submission contains:
 
-zombie-survival/
+```text
+Shrinivas_airflow_assignment/
 |
-|-- dags / zombie_survival_dag.py
+|-- dags/
+|   |-- zombie_survival_dag.py
+|
 |-- README.md
 |
 |-- screenshots/
@@ -209,3 +212,4 @@ zombie-survival/
     |-- xcom_assess_threat.png
     |-- xcom_dawn_patrol.png
     |-- xcom_medical_check.png
+```
